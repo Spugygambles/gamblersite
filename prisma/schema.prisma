@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  balance      Decimal  @default("0") @db.Decimal(30, 6)
+  entries      BattleEntry[]
+  transactions Transaction[]
+}
+
+model Battle {
+  id        String        @id @default(cuid())
+  title     String
+  status    BattleStatus  @default(OPEN)
+  pot       Decimal       @default("0") @db.Decimal(30, 6)
+  createdAt DateTime      @default(now())
+  entries   BattleEntry[]
+}
+
+model BattleEntry {
+  id        String   @id @default(cuid())
+  battle    Battle   @relation(fields: [battleId], references: [id])
+  battleId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  amount    Decimal  @db.Decimal(30, 6)
+  choice    String
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  amount    Decimal  @db.Decimal(30, 6)
+  type      TxType
+  createdAt DateTime @default(now())
+}
+
+enum TxType {
+  DEPOSIT
+  WITHDRAW
+  BET
+  PRIZE
+}
+
+enum BattleStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+}
