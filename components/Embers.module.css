@@ -1,0 +1,57 @@
+/* Rendered inside an art's stage: it sets --cycle and is the size container
+   the cqw distances in --rise and --sway resolve against. */
+
+.ember {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+}
+
+.ember::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 12%, currentColor 30%, transparent 68%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Each ember's duration and delay are set inline; the dot inside sways on
+     its own timeline so the rise stays at a steady speed. */
+  .ember {
+    animation: rise var(--cycle) linear infinite;
+  }
+
+  .ember::before {
+    animation: sway calc(var(--cycle) / 2) ease-in-out infinite alternate;
+    animation-delay: inherit;
+  }
+}
+
+@keyframes rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(calc(var(--rise) * -0.2)) scale(1);
+  }
+  65% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(var(--rise) * -1)) scale(0.3);
+  }
+}
+
+@keyframes sway {
+  from {
+    transform: translateX(calc(var(--sway) * -1));
+  }
+  to {
+    transform: translateX(var(--sway));
+  }
+}

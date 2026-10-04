@@ -1,0 +1,402 @@
+/*
+ * Ace of clubs and king of hearts dealt into a blackjack: the two cards start
+ * stacked, slide apart into a fan that still overlaps, and a "21" pops up.
+ * It plays as the page loads and again on hover (see BlackjackArt.tsx).
+ *
+ * data-playing is set for one deal (--deal). The intro (data-intro) grows the
+ * stacked pair in; a replay first gathers the fanned cards back into a stack.
+ * From 30% both slide apart, landing in the fan at 72% with a burst of light,
+ * and the 21 pops in. Between deals the hand floats while the embers and
+ * glints keep going, timed off --cycle.
+ *
+ * Base styles are the fanned still frame; motion is only added when the
+ * visitor hasn't asked for reduced motion.
+ */
+
+.stage {
+  --cycle: 4.8s;
+  --deal: 1.4s;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 196, 64, 0.45),
+    rgba(255, 170, 40, 0.14) 55%,
+    rgba(255, 170, 40, 0) 100%
+  );
+}
+
+/* The floor light and embers take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: #ffc94d;
+}
+
+/* Pool of light on the floor under the cards that flashes on the reveal. */
+.floor {
+  position: absolute;
+  top: 90%;
+  left: -50%;
+  width: 200%;
+  height: 40%;
+  border-radius: 50%;
+  opacity: 0.22;
+  background: radial-gradient(closest-side, currentColor, transparent);
+}
+
+/* Flash of light behind the cards as they land in the fan. */
+.burst {
+  position: absolute;
+  inset: -10%;
+  border-radius: 50%;
+  opacity: 0;
+  background: radial-gradient(closest-side, rgba(255, 220, 130, 0.6), rgba(255, 200, 90, 0) 70%);
+}
+
+.shadow {
+  position: absolute;
+  top: 100%;
+  right: 2%;
+  left: 2%;
+  height: 12%;
+  border-radius: 50%;
+  opacity: 0.55;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0));
+}
+
+.hand {
+  position: absolute;
+  inset: 0;
+}
+
+.card {
+  position: absolute;
+  top: 6%;
+  left: 14%;
+  width: 72%;
+  aspect-ratio: 148 / 211;
+  overflow: hidden;
+  container-type: inline-size;
+  /* 7% of the card's width (72cqw of the stage) */
+  border-radius: 5cqw;
+  background: linear-gradient(160deg, #fff 0%, #f1f1f4 100%);
+  box-shadow:
+    0 0 0 0.3cqw rgba(0, 0, 0, 0.08),
+    0 2cqw 5cqw rgba(0, 0, 0, 0.35);
+  /* Pivot below the cards, like a hand of cards held from underneath. */
+  transform-origin: 50% 120%;
+}
+
+/* Gloss that sweeps across the cards as they fan out. */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.7) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+}
+
+.red {
+  color: #e01848;
+}
+
+.black {
+  color: #181818;
+}
+
+/* Inside a card, cqw = % of the card's width. */
+.rank {
+  position: absolute;
+  top: 4cqw;
+  left: 6cqw;
+  font: 700 36cqw/1 Arial, Helvetica, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.pip {
+  position: absolute;
+  top: 47cqw;
+  left: 5cqw;
+  width: 20cqw;
+}
+
+.bigPip {
+  position: absolute;
+  right: 9cqw;
+  bottom: 3cqw;
+  width: 33cqw;
+}
+
+/* The hand at rest: fanned out but still overlapping. */
+.ace {
+  transform: translate(-22%, -1%) rotate(-8deg) scale(1);
+}
+
+.king {
+  transform: translate(22%, 2%) rotate(8deg) scale(1);
+}
+
+/* The hand's total, like the value tag at a blackjack table. */
+.total {
+  position: absolute;
+  top: 108%;
+  left: 50%;
+  translate: -50% -50%;
+  padding: 2cqw 5.5cqw;
+  border-radius: 999px;
+  font: 800 11cqw/1 Arial, Helvetica, sans-serif;
+  letter-spacing: 0.02em;
+  color: #3a2400;
+  background: linear-gradient(#ffe38f, #f6b42c);
+  box-shadow:
+    inset 0 0.4cqw 0 rgba(255, 255, 255, 0.6),
+    0 1cqw 3cqw rgba(0, 0, 0, 0.45),
+    0 0 6cqw rgba(255, 196, 64, 0.45);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hand {
+    animation: float calc(var(--cycle) / 2) ease-in-out infinite alternate;
+  }
+
+  /* One deal, played each time data-playing is set. */
+  .stage[data-playing][data-intro] .ace {
+    animation: deal-ace var(--deal) both;
+  }
+
+  .stage[data-playing][data-intro] .king {
+    animation: deal-king var(--deal) both;
+  }
+
+  .stage[data-playing][data-intro] .total {
+    animation: total-in var(--deal) both;
+  }
+
+  .stage[data-playing]:not([data-intro]) .ace {
+    animation: redeal-ace var(--deal) both;
+  }
+
+  .stage[data-playing]:not([data-intro]) .king {
+    animation: redeal-king var(--deal) both;
+  }
+
+  .stage[data-playing]:not([data-intro]) .total {
+    animation: total-redeal var(--deal) both;
+  }
+
+  .stage[data-playing] .card::after {
+    animation: sheen var(--deal) ease-in-out both;
+  }
+
+  .stage[data-playing] .glow {
+    animation: glow-pulse var(--deal) ease-out both;
+  }
+
+  .stage[data-playing] .burst {
+    animation: burst var(--deal) ease-out both;
+  }
+
+  .stage[data-playing] .floor {
+    animation: floor-flash var(--deal) ease-in-out both;
+  }
+}
+
+@keyframes float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3%);
+  }
+}
+
+/* Intro: the stacked pair grows in, then slides apart with a little overshoot. */
+@keyframes deal-ace {
+  0% {
+    transform: translate(0, 6%) rotate(-2deg) scale(0.88);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  24%,
+  30% {
+    transform: translate(0, 0) rotate(-2deg) scale(1);
+    animation-timing-function: cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  72%,
+  100% {
+    transform: translate(-22%, -1%) rotate(-8deg) scale(1);
+  }
+}
+
+@keyframes deal-king {
+  0% {
+    transform: translate(0, 6%) rotate(2deg) scale(0.88);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  24%,
+  30% {
+    transform: translate(0, 0) rotate(2deg) scale(1);
+    animation-timing-function: cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  72%,
+  100% {
+    transform: translate(22%, 2%) rotate(8deg) scale(1);
+  }
+}
+
+/* Replay: the fanned cards gather back into a stack first. */
+@keyframes redeal-ace {
+  0% {
+    transform: translate(-22%, -1%) rotate(-8deg) scale(1);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  20% {
+    transform: translate(0, 0) rotate(-2deg) scale(0.97);
+    animation-timing-function: ease-out;
+  }
+  30% {
+    transform: translate(0, 0) rotate(-2deg) scale(1);
+    animation-timing-function: cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  72%,
+  100% {
+    transform: translate(-22%, -1%) rotate(-8deg) scale(1);
+  }
+}
+
+@keyframes redeal-king {
+  0% {
+    transform: translate(22%, 2%) rotate(8deg) scale(1);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+  }
+  20% {
+    transform: translate(0, 0) rotate(2deg) scale(0.97);
+    animation-timing-function: ease-out;
+  }
+  30% {
+    transform: translate(0, 0) rotate(2deg) scale(1);
+    animation-timing-function: cubic-bezier(0.34, 1.5, 0.64, 1);
+  }
+  72%,
+  100% {
+    transform: translate(22%, 2%) rotate(8deg) scale(1);
+  }
+}
+
+@keyframes sheen {
+  0%,
+  55% {
+    transform: translateX(-120%);
+  }
+  90%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes total-in {
+  0%,
+  66% {
+    opacity: 0;
+    scale: 0.4;
+  }
+  80% {
+    opacity: 1;
+    scale: 1.18;
+  }
+  90% {
+    scale: 0.96;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes total-redeal {
+  0% {
+    opacity: 1;
+    scale: 1;
+  }
+  14%,
+  66% {
+    opacity: 0;
+    scale: 0.4;
+  }
+  80% {
+    opacity: 1;
+    scale: 1.18;
+  }
+  90% {
+    scale: 0.96;
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Dims while the cards are stacked, flares as they land in the fan. */
+@keyframes glow-pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 0.75;
+    transform: scale(0.92);
+  }
+  76% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes burst {
+  0%,
+  68% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  76% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+@keyframes floor-flash {
+  0% {
+    opacity: 0.22;
+  }
+  30% {
+    opacity: 0.16;
+  }
+  74% {
+    opacity: 0.42;
+  }
+  100% {
+    opacity: 0.22;
+  }
+}

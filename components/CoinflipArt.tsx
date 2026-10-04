@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import Embers, { type Ember } from "./Embers";
+import Glints, { type Glint } from "./Glints";
 import styles from "./CoinflipArt.module.css";
+import { useBannerPlay } from "./useBannerPlay";
 
 // Length of one throw; keep in step with --throw in CoinflipArt.module.css.
 const THROW_MS = 1250;
@@ -10,10 +12,8 @@ const THROW_MS = 1250;
 // Stacked discs between the two faces that give the coin a visible rim mid-flip.
 const EDGE_LAYERS = 12;
 
-// Glowing embers drifting up behind the coin. Positions, sizes, rise and sway
-// are percentages of the coin; `speed` is how many times it rises per cycle and
-// `phase` is how far into its rise it starts, so they don't all appear at once.
-const EMBERS = [
+// Embers drifting up behind the coin and glints around it; see Embers and Glints.
+const EMBERS: Ember[] = [
   { x: -26, y: 112, size: 4.5, rise: 140, sway: 5, speed: 1, phase: 0.15 },
   { x: -12, y: 132, size: 7, rise: 175, sway: -6, speed: 1, phase: 0.6 },
   { x: 4, y: 100, size: 4, rise: 125, sway: 4, speed: 2, phase: 0.35 },
@@ -28,9 +28,7 @@ const EMBERS = [
   { x: 132, y: 138, size: 3, rise: 160, sway: -4, speed: 2, phase: 0.55 },
 ];
 
-// Positions and sizes are percentages of the coin. `start` staggers when each
-// glint fires, as a fraction of its twinkle (half the cycle).
-const SPARKLES = [
+const GLINTS: Glint[] = [
   { x: -8, y: 12, size: 11, start: 0.05 },
   { x: 112, y: 64, size: 12, start: 0.32 },
   { x: 50, y: -18, size: 7, start: 0.56 },
@@ -38,67 +36,24 @@ const SPARKLES = [
   { x: -14, y: 74, size: 8, start: 0.78 },
 ];
 
-type Face = "heads" | "tails";
-
 export default function CoinflipArt() {
-  const stageRef = useRef<HTMLDivElement>(null);
-  // The first render is already mid-throw, so the CSS tosses the coin once as
-  // the page loads (before this script has even run) and it lands on heads.
-  const [face, setFace] = useState<Face>("heads");
-  const [flipping, setFlipping] = useState(true);
-
-  useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
-
-    if (flipping) {
-      const timer = setTimeout(() => setFlipping(false), THROW_MS);
-      return () => clearTimeout(timer);
-    }
-
-    // Between throws, flip again whenever the mouse moves onto the banner.
-    const banner = stage.closest("[data-game-banner]") ?? stage;
-    const flip = () => {
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      // Make sure the browser has seen the last throw end, so the throw
-      // animations restart instead of staying on their final frame.
-      void stage.offsetWidth;
-      setFace((current) => (current === "heads" ? "tails" : "heads"));
-      setFlipping(true);
-    };
-    banner.addEventListener("mouseenter", flip);
-    return () => banner.removeEventListener("mouseenter", flip);
-  }, [flipping]);
+  // The intro throw lands on heads; each hover flips it to the other face.
+  const { ref, playing, replays } = useBannerPlay(THROW_MS);
+  const face = replays % 2 === 0 ? "heads" : "tails";
 
   return (
     <div
-      ref={stageRef}
+      ref={ref}
       className={styles.stage}
       data-face={face}
-      data-flipping={flipping || undefined}
+      data-flipping={playing || undefined}
     >
       <div className={`${styles.glow} ${styles.glowHeads}`} />
       <div className={`${styles.glow} ${styles.glowTails}`} />
       <div className={styles.ambient}>
         <div className={styles.aura} />
         <div className={styles.floor} />
-        {EMBERS.map((e, i) => (
-          <span
-            key={i}
-            className={styles.ember}
-            style={
-              {
-                left: `${e.x}%`,
-                top: `${e.y}%`,
-                width: `${e.size}%`,
-                animationDuration: `calc(var(--cycle) / ${e.speed})`,
-                animationDelay: `calc(var(--cycle) * ${-e.phase / e.speed})`,
-                "--rise": `${e.rise}cqw`,
-                "--sway": `${e.sway}cqw`,
-              } as CSSProperties
-            }
-          />
-        ))}
+        <Embers embers={EMBERS} />
       </div>
       <div className={styles.shadow} />
       <div className={`${styles.ring} ${styles.ringHeads}`} />
@@ -147,18 +102,7 @@ export default function CoinflipArt() {
         </div>
       </div>
 
-      {SPARKLES.map((s, i) => (
-        <span
-          key={i}
-          className={styles.sparkle}
-          style={{
-            left: `${s.x}%`,
-            top: `${s.y}%`,
-            width: `${s.size}%`,
-            animationDelay: `calc(var(--cycle) * ${s.start / 2})`,
-          }}
-        />
-      ))}
+      <Glints glints={GLINTS} />
     </div>
   );
 }

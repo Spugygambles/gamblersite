@@ -102,21 +102,6 @@
   background: radial-gradient(closest-side, currentColor, transparent);
 }
 
-.ember {
-  position: absolute;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  opacity: 0;
-}
-
-.ember::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0 12%, currentColor 30%, transparent 68%);
-}
-
 .shadow {
   position: absolute;
   top: 98%;
@@ -201,16 +186,6 @@
   background: linear-gradient(#555a64, #d3d7df 50%, #555a64);
 }
 
-/* Four-point glints, like the ones drawn on the coin itself. */
-.sparkle {
-  position: absolute;
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  transform: scale(0.8);
-  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
-  background: radial-gradient(circle, #fff 0 22%, #fff3cf 45%, rgba(255, 243, 207, 0) 72%);
-}
-
 /* Resting on tails. */
 .stage[data-face="tails"] .coin {
   transform: rotateY(180deg);
@@ -233,21 +208,6 @@
      its two arcs are symmetric, so it loops cleanly. */
   .aura {
     animation: spin calc(var(--cycle) * 2) linear infinite;
-  }
-
-  /* Each ember's duration and delay are set inline; the dot inside sways on
-     its own timeline so the rise stays at a steady speed. */
-  .ember {
-    animation: rise var(--cycle) linear infinite;
-  }
-
-  .ember::before {
-    animation: sway calc(var(--cycle) / 2) ease-in-out infinite alternate;
-    animation-delay: inherit;
-  }
-
-  .sparkle {
-    animation: twinkle calc(var(--cycle) / 2) ease-in-out infinite both;
   }
 
   .float {
@@ -302,49 +262,6 @@
 @keyframes spin {
   to {
     transform: rotate(1turn);
-  }
-}
-
-@keyframes rise {
-  0% {
-    opacity: 0;
-    transform: translateY(0) scale(0.5);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(calc(var(--rise) * -0.2)) scale(1);
-  }
-  65% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(calc(var(--rise) * -1)) scale(0.3);
-  }
-}
-
-@keyframes sway {
-  from {
-    transform: translateX(calc(var(--sway) * -1));
-  }
-  to {
-    transform: translateX(var(--sway));
-  }
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  12% {
-    opacity: 1;
-    transform: scale(1) rotate(45deg);
-  }
-  28% {
-    opacity: 0;
-    transform: scale(0) rotate(90deg);
   }
 }
 

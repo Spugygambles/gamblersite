@@ -1,0 +1,32 @@
+/* Rendered inside an art's stage, which sets --cycle. */
+
+.glint {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: scale(0.8);
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 22%, #fff3cf 45%, rgba(255, 243, 207, 0) 72%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .glint {
+    animation: twinkle calc(var(--cycle) / 2) ease-in-out infinite both;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  28% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
