@@ -1,20 +1,24 @@
 /*
  * A 3x3 mines board standing up and leaning back a little, played as a round:
  * it starts as plain dark tiles, five are clicked one after another (the tile
- * presses in, a ripple goes out, it lights green and its gem pops out toward
- * the viewer), then the sixth click hits the bomb, which pops out, shakes and
- * jolts the board. Last, the tiles nobody clicked turn faintly green and show
- * their gems flat, in a wave from the bomb. It plays as the page loads and
- * again on hover (see MinesArt.tsx).
+ * presses in, a ring spreads, it lights green and its gem pops out toward the
+ * viewer), then the sixth click hits the bomb, which pops out and shakes while
+ * a burst of red light goes off and the board jolts. Last, the three tiles
+ * nobody clicked turn faintly green and show their gems lying flat, one after
+ * another. It plays as the page loads and again on hover (see MinesArt.tsx,
+ * which sets the round's length and every tile's timing).
  *
- * data-playing is set for one round (--play). The intro (data-intro) also
- * pops the tiles up; a replay first clears the board. Each tile's click or
- * reveal time comes in as --t. Between rounds the gems bob and sparkle, the
- * fuse crackles and embers drift up, timed off --cycle so they loop cleanly.
+ * data-playing is set for one round. The intro (data-intro) also pops the
+ * tiles up; a replay first clears the board. Each tile's click or reveal time
+ * comes in as --t, and the bomb's as --bomb-at. Between rounds the gems bob
+ * and sparkle, the fuse crackles and embers drift up, timed off --cycle so
+ * they loop cleanly.
  *
  * The board is a real 3D object: everything from .board down to .tile keeps
  * transform-style: preserve-3d, so those may not get opacity, filter or
- * overflow (any of which would flatten it). Fades happen on the leaves.
+ * overflow (any of which would flatten it). Fades happen on the leaves, and
+ * glows are drawn inside the SVGs rather than with CSS filters, which the
+ * tiles would slice.
  *
  * Base styles are the finished round; motion is only added when the visitor
  * hasn't asked for reduced motion.
@@ -22,13 +26,12 @@
 
 .stage {
   --cycle: 4.8s;
-  --play: 3.4s;
   --green: #4be853;
   /* How far the board leans back from upright. */
   --tilt: 22deg;
   /* How far tiles stand off the board, and how far a pick pops out. */
   --depth: 4.5cqw;
-  --lift: 7cqw;
+  --lift: 9cqw;
   --radius: 2.8cqw;
   /* cqw here = % of the stage's width, since .stage is the size container */
   position: relative;
@@ -56,10 +59,17 @@
   color: var(--green);
 }
 
+/* The board is drawn at twice the size and scaled back down, so the browser
+   rasterizes the tilted tiles at double resolution and their edges stay
+   crisp. The scene is the size container for everything inside it, so cqw
+   there still means % of the stage's width once scaled. Its own perspective
+   and jolt resolve against the stage, so they are written doubled. */
 .scene {
   position: absolute;
-  inset: 0;
-  perspective: 340cqw;
+  inset: -50%;
+  scale: 0.5;
+  container-type: inline-size;
+  perspective: 680cqw;
 }
 
 .board {
@@ -92,15 +102,11 @@
     inset 0 -1.2cqw 2cqw rgba(0, 0, 0, 0.3);
 }
 
-/* The edges the viewer can see, so each tile stands off the board: the
-   bottom one because the board leans back, the sides through perspective. */
-.sideBottom,
-.sideLeft,
-.sideRight {
-  position: absolute;
-}
-
+/* The bottom edge of each tile, which shows because the board leans back.
+   (The side edges are left off: they would cut through the gems as they
+   pop out.) */
 .sideBottom {
+  position: absolute;
   top: 100%;
   left: 3%;
   width: 94%;
@@ -110,44 +116,23 @@
   transform: rotateX(-90deg);
 }
 
-.sideLeft,
-.sideRight {
-  top: 3%;
-  width: var(--depth);
-  height: 94%;
-}
-
-.sideLeft {
-  right: 100%;
-  background: linear-gradient(270deg, #14151d, #0a0b10);
-  transform-origin: right;
-  transform: rotateY(-90deg);
-}
-
-.sideRight {
-  left: 100%;
-  background: linear-gradient(90deg, #14151d, #0a0b10);
-  transform-origin: left;
-  transform: rotateY(90deg);
-}
-
 .lit {
   position: absolute;
   inset: 0;
   border: 0.7cqw solid #45a375;
   border-radius: var(--radius);
-  background: linear-gradient(155deg, rgba(48, 160, 92, 0.32), rgba(26, 90, 56, 0.24));
+  background: linear-gradient(160deg, #243b33, #1d2f2a);
   box-shadow:
-    inset 0 0 4cqw rgba(75, 232, 83, 0.35),
-    0 0 4cqw rgba(75, 232, 83, 0.45);
+    inset 0 0 3cqw rgba(75, 232, 83, 0.12),
+    0 0 2.5cqw rgba(69, 163, 117, 0.22);
 }
 
 .tile[data-kind="bomb"] .lit {
-  border-color: #c03a3c;
-  background: linear-gradient(155deg, rgba(170, 36, 46, 0.4), rgba(90, 18, 26, 0.32));
+  border-color: #a53436;
+  background: linear-gradient(160deg, #3d2026, #331b20);
   box-shadow:
-    inset 0 0 4cqw rgba(255, 70, 70, 0.4),
-    0 0 4cqw rgba(255, 70, 70, 0.5);
+    inset 0 0 3cqw rgba(255, 70, 70, 0.14),
+    0 0 2.5cqw rgba(255, 70, 70, 0.25);
 }
 
 /* Tiles nobody clicked, shown once the round is over: faintly green, with
@@ -161,70 +146,60 @@
 }
 
 .flatGem {
+  /* How far it fades in; see @keyframes show. */
+  --shown: 0.32;
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 62%;
+  width: 56%;
   translate: -50% -50%;
-  opacity: 0.32;
+  opacity: var(--shown);
 }
 
 /* Soft shadow the popped gem casts on its tile. */
 .dropShadow {
   position: absolute;
-  top: 60%;
-  left: 24%;
-  width: 52%;
+  top: 62%;
+  left: 28%;
+  width: 44%;
   height: 22%;
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
 }
 
-/* The click: a flash of white on the tile and a ring spreading from it. */
+/* The click: a ring spreading out from under the cursor. */
 .ripple {
   position: absolute;
   inset: 14%;
-  border: 1cqw solid rgba(255, 255, 255, 0.9);
+  border: 0.8cqw solid rgba(200, 255, 205, 0.95);
   border-radius: 50%;
   opacity: 0;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0));
 }
 
-/* Ring that flashes out of a tile as its pick pops. */
+/* Outline that flashes out from a gem's tile as the gem pops. */
 .flash {
   position: absolute;
-  inset: -14%;
+  inset: -6%;
   border: 0.7cqw solid #7dff86;
-  border-radius: 5cqw;
+  border-radius: var(--radius);
   opacity: 0;
 }
 
-.tile[data-kind="bomb"] .flash {
-  inset: -110%;
-  border: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    rgba(255, 150, 70, 0.8),
-    rgba(255, 70, 50, 0.35) 55%,
-    rgba(255, 60, 50, 0)
-  );
-}
-
-/* Centred on the tile, lifted off it toward the viewer, then tilted back by
-   exactly the board's lean so it faces the viewer head-on. */
+/* Centred on the tile (nudged down so the lifted pick sits over it), lifted
+   off it toward the viewer, then tilted back by exactly the board's lean so
+   it faces the viewer head-on. */
 .sprite {
   position: absolute;
-  top: 50%;
+  top: calc(50% + var(--lift) * 0.4);
   left: 50%;
-  width: 96%;
+  width: 80%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%) translateZ(var(--lift)) rotateX(calc(var(--tilt) * -1));
 }
 
 /* The bomb is the payoff, so it comes out a little bigger than the gems. */
 .tile[data-kind="bomb"] .sprite {
-  width: 118%;
+  width: 130%;
 }
 
 .pop,
@@ -235,17 +210,16 @@
 
 .gem {
   position: absolute;
-  top: 12%;
-  right: 6%;
-  left: 6%;
-  filter: drop-shadow(0 0 2cqw rgba(75, 232, 83, 0.75));
+  top: 14%;
+  right: 8%;
+  left: 8%;
+  overflow: visible;
 }
 
 .bomb {
   position: absolute;
-  inset: 0;
+  inset: 16%;
   overflow: visible;
-  filter: drop-shadow(0 0 2cqw rgba(255, 70, 70, 0.6));
 }
 
 .bombBody,
@@ -264,14 +238,35 @@
 /* Four-point glint that catches on each gem now and then. */
 .twinkle {
   position: absolute;
-  top: 22%;
-  left: 20%;
-  width: 26%;
+  top: 30%;
+  left: 30%;
+  width: 22%;
   aspect-ratio: 1;
   translate: -50% -50%;
   transform: scale(0);
   clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
   background: radial-gradient(circle, #fff 0 22%, #d8ffdc 45%, rgba(216, 255, 220, 0) 72%);
+}
+
+/* The bomb's burst of light, centred on its tile (bottom left of the board)
+   and drawn over everything. */
+.stage::after {
+  content: "";
+  position: absolute;
+  top: 95%;
+  left: 2%;
+  width: 170%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: 0;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 120, 70, 0.65),
+    rgba(255, 50, 50, 0.22) 45%,
+    rgba(255, 50, 50, 0)
+  );
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -294,22 +289,27 @@
     animation: crackle 0.3s ease-in-out infinite alternate;
   }
 
-  /* Every click, intro or replay: the tile presses in, the ripple spreads
-     and a ring flashes as the pick pops out. */
-  .stage[data-playing] .tile:not([data-kind="rest"]) .top {
-    animation: press 0.32s ease-out var(--t) both;
+  /* Every click, intro or replay: the tile presses in under a ring, then an
+     outline flashes as the gem pops out. The bomb instead goes off: its
+     burst, the board's jolt and the top of its pop all land together. */
+  .stage[data-playing] .tile[data-kind="gem"] .top {
+    animation: press 0.28s ease-out var(--t) both;
   }
 
   .stage[data-playing] .ripple {
-    animation: ripple 0.5s ease-out var(--t) both;
+    animation: ripple 0.3s cubic-bezier(0.2, 0.7, 0.3, 1) var(--t) both;
   }
 
   .stage[data-playing] .flash {
-    animation: flash 0.55s ease-out calc(var(--t) + 80ms) both;
+    animation: flash 0.35s ease-out calc(var(--t) + 80ms) both;
   }
 
   .stage[data-playing] .scene {
-    animation: jolt 0.45s linear calc(var(--bomb-at) + 120ms) both;
+    animation: jolt 0.5s ease-out calc(var(--bomb-at) + 185ms) both;
+  }
+
+  .stage[data-playing]::after {
+    animation: boom 0.6s ease-out calc(var(--bomb-at) + 182ms) both;
   }
 
   /* Intro: the tiles pop up in a wave first. */
@@ -322,12 +322,18 @@
     animation: show 0.25s ease-out calc(var(--t) + 80ms) both;
   }
 
+  .stage[data-playing][data-intro] .tile[data-kind="gem"] .lit {
+    animation:
+      show 0.25s ease-out calc(var(--t) + 80ms) both,
+      face-flash 0.18s ease-out calc(var(--t) + 80ms);
+  }
+
   .stage[data-playing][data-intro] .tile[data-kind="gem"] .pop {
-    animation: gem-pop 0.55s calc(var(--t) + 80ms) both;
+    animation: gem-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1) calc(var(--t) + 80ms) both;
   }
 
   .stage[data-playing][data-intro] .tile[data-kind="bomb"] .pop {
-    animation: bomb-pop 0.6s calc(var(--t) + 80ms) both;
+    animation: bomb-pop 0.75s linear calc(var(--t) + 80ms) both;
   }
 
   .stage[data-playing][data-intro] .restTint,
@@ -344,16 +350,23 @@
       show 0.25s ease-out calc(var(--t) + 80ms) forwards;
   }
 
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="gem"] .lit {
+    animation:
+      hide 0.2s ease-in forwards,
+      show 0.25s ease-out calc(var(--t) + 80ms) forwards,
+      face-flash 0.18s ease-out calc(var(--t) + 80ms);
+  }
+
   .stage[data-playing]:not([data-intro]) .tile[data-kind="gem"] .pop {
     animation:
       sink 0.22s ease-in forwards,
-      gem-pop 0.55s calc(var(--t) + 80ms) forwards;
+      gem-pop 0.42s cubic-bezier(0.2, 0.9, 0.3, 1) calc(var(--t) + 80ms) forwards;
   }
 
   .stage[data-playing]:not([data-intro]) .tile[data-kind="bomb"] .pop {
     animation:
       sink 0.22s ease-in forwards,
-      bomb-pop 0.6s calc(var(--t) + 80ms) forwards;
+      bomb-pop 0.75s linear calc(var(--t) + 80ms) forwards;
   }
 
   .stage[data-playing]:not([data-intro]) .restTint,
@@ -366,10 +379,10 @@
 
 @keyframes bob {
   from {
-    transform: translateY(0);
+    transform: translateY(2.5%);
   }
   to {
-    transform: translateY(-5%);
+    transform: translateY(-2.5%);
   }
 }
 
@@ -423,8 +436,8 @@
   0% {
     transform: translateZ(0) scale(1);
   }
-  35% {
-    transform: translateZ(calc(var(--depth) * -0.7)) scale(0.94);
+  30% {
+    transform: translateZ(calc(var(--depth) * -1)) scale(0.9);
   }
   70% {
     transform: translateZ(0.4cqw) scale(1.02);
@@ -437,21 +450,26 @@
 @keyframes ripple {
   0% {
     opacity: 0;
-    transform: scale(0.3);
+    transform: scale(0.35);
   }
-  8% {
-    opacity: 0.9;
-    transform: scale(0.4);
+  1% {
+    opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: scale(1.7);
+    transform: scale(1.15);
   }
 }
 
+/* Fades in to full opacity, or to --shown for leaves that rest fainter.
+   The end is spelled out: left implicit, a replay would take it from the
+   hide animation underneath and stay hidden. */
 @keyframes show {
   from {
     opacity: 0;
+  }
+  to {
+    opacity: var(--shown, 1);
   }
 }
 
@@ -465,14 +483,16 @@
 @keyframes gem-pop {
   0% {
     opacity: 0;
-    transform: scale(0.15);
+    transform: scale(0.3);
   }
-  45% {
+  12% {
     opacity: 1;
-    transform: scale(1.28);
   }
-  70% {
-    transform: scale(0.94);
+  40% {
+    transform: scale(1.1);
+  }
+  65% {
+    transform: scale(0.97);
   }
   100% {
     opacity: 1;
@@ -480,26 +500,30 @@
   }
 }
 
-/* Pops out like a gem, then shakes. */
+/* Pops out like a gem, peaking as the burst goes off, then shakes. */
 @keyframes bomb-pop {
   0% {
     opacity: 0;
-    transform: scale(0.15) rotate(0deg);
+    transform: scale(0.3) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1);
   }
-  35% {
+  8% {
     opacity: 1;
-    transform: scale(1.32) rotate(0deg);
   }
-  50% {
-    transform: scale(1.05) rotate(-12deg);
+  20% {
+    transform: scale(1.15) rotate(0deg);
+    animation-timing-function: ease-in-out;
   }
-  62% {
+  34% {
+    transform: scale(1.04) rotate(-12deg);
+  }
+  48% {
     transform: scale(1) rotate(10deg);
   }
-  74% {
+  62% {
     transform: scale(1) rotate(-6deg);
   }
-  86% {
+  78% {
     transform: scale(1) rotate(3deg);
   }
   100% {
@@ -511,43 +535,64 @@
 @keyframes sink {
   to {
     opacity: 0;
-    transform: scale(0.15);
+    transform: scale(0.3);
   }
 }
 
 @keyframes flash {
   0% {
     opacity: 0;
-    transform: scale(0.5);
+    transform: scale(0.9);
   }
-  6% {
+  10% {
     opacity: 0.9;
-    transform: scale(0.56);
   }
   100% {
     opacity: 0;
-    transform: scale(1.35);
+    transform: scale(1.08);
   }
 }
 
+/* A clicked gem's tile lights up white-green for a moment as it turns. */
+@keyframes face-flash {
+  from {
+    box-shadow:
+      inset 0 0 0 100cqw rgba(190, 255, 200, 0.35),
+      0 0 4cqw rgba(75, 232, 83, 0.45);
+  }
+}
+
+@keyframes boom {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Doubled, as .scene is drawn at twice the size. */
 @keyframes jolt {
   0%,
   100% {
-    transform: translate(0, 0);
+    transform: translate(0, 0) rotate(0deg);
   }
-  15% {
-    transform: translate(-1.8cqw, 1cqw);
+  9% {
+    transform: translate(-9cqw, 5cqw) rotate(-1.5deg);
   }
-  30% {
-    transform: translate(1.6cqw, -1.2cqw);
+  25% {
+    transform: translate(7.6cqw, -5.2cqw) rotate(1.2deg);
   }
-  45% {
-    transform: translate(-1.2cqw, 0.7cqw);
+  42% {
+    transform: translate(-5.2cqw, 3.2cqw) rotate(-0.7deg);
   }
   60% {
-    transform: translate(0.9cqw, -0.5cqw);
+    transform: translate(2.8cqw, -1.6cqw) rotate(0deg);
   }
-  75% {
-    transform: translate(-0.5cqw, 0.3cqw);
+  78% {
+    transform: translate(-1.2cqw, 0.6cqw) rotate(0deg);
   }
 }
