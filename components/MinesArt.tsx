@@ -6,43 +6,51 @@ import styles from "./MinesArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // Length of one round; keep in step with --play in MinesArt.module.css.
-const PLAY_MS = 2400;
+const PLAY_MS = 3700;
 
-type Kind = "gem" | "bomb" | "hidden";
-type Tile = { kind: Kind; at?: number };
+// A 5x5 board like the game's, numbered row by row. The player clicks eight
+// gems, then hits the bomb, and the tiles nobody clicked are revealed in a
+// wave spreading out from it. Times are ms into the round.
+const SIZE = 5;
+const CLICKS = [12, 7, 13, 17, 11, 8, 18, 6];
+const FIRST_CLICK = 750;
+const CLICK_GAP = 230;
+const BOMB = 16;
+const BOMB_AT = 2700;
+const REVEAL_AT = 3120;
+const REVEAL_STEP = 45;
 
-// When the bomb is revealed (ms into the round); the board jolts then.
-const BOMB_AT = 1750;
+type Kind = "gem" | "bomb" | "rest";
+type Tile = { kind: Kind; at: number };
 
-// The 4x4 board, row by row. `at` is when a tile is revealed (ms into the
-// round): the gems come up in a ring around the board, front right first, and
-// the bomb last in the open middle at the front, where nothing hides it.
-const gem = (at: number): Tile => ({ kind: "gem", at });
-const hidden: Tile = { kind: "hidden" };
-const BOARD: Tile[] = [
-  hidden, gem(1330), hidden, gem(1160),
-  gem(1500), hidden, hidden, gem(990),
-  hidden, { kind: "bomb", at: BOMB_AT }, hidden, gem(820),
-  hidden, hidden, gem(650), hidden,
-];
+const BOARD: Tile[] = Array.from({ length: SIZE * SIZE }, (_, i) => {
+  const click = CLICKS.indexOf(i);
+  if (click >= 0) return { kind: "gem", at: FIRST_CLICK + click * CLICK_GAP };
+  if (i === BOMB) return { kind: "bomb", at: BOMB_AT };
+  const ring = Math.max(
+    Math.abs(Math.floor(i / SIZE) - Math.floor(BOMB / SIZE)),
+    Math.abs((i % SIZE) - (BOMB % SIZE)),
+  );
+  return { kind: "rest", at: REVEAL_AT + ring * REVEAL_STEP };
+});
 
 // Green embers drifting up behind the board; see Embers.
 const EMBERS: Ember[] = [
-  { x: -22, y: 104, size: 4.5, rise: 150, sway: 5, speed: 1, phase: 0.15 },
-  { x: -8, y: 120, size: 6, rise: 170, sway: -6, speed: 1, phase: 0.6 },
-  { x: 8, y: 96, size: 3.5, rise: 135, sway: 4, speed: 2, phase: 0.35 },
-  { x: 24, y: 126, size: 5, rise: 185, sway: 6, speed: 1, phase: 0.85 },
+  { x: -30, y: 104, size: 4.5, rise: 150, sway: 5, speed: 1, phase: 0.15 },
+  { x: -14, y: 120, size: 6, rise: 170, sway: -6, speed: 1, phase: 0.6 },
+  { x: 4, y: 96, size: 3.5, rise: 135, sway: 4, speed: 2, phase: 0.35 },
+  { x: 22, y: 126, size: 5, rise: 185, sway: 6, speed: 1, phase: 0.85 },
   { x: 40, y: 110, size: 3, rise: 150, sway: -4, speed: 2, phase: 0.7 },
-  { x: 56, y: 130, size: 6, rise: 190, sway: -5, speed: 1, phase: 0.3 },
-  { x: 72, y: 104, size: 3.5, rise: 145, sway: 5, speed: 2, phase: 0.95 },
-  { x: 88, y: 124, size: 5, rise: 180, sway: -6, speed: 1, phase: 0.5 },
-  { x: 104, y: 100, size: 4, rise: 130, sway: 4, speed: 2, phase: 0.1 },
-  { x: 120, y: 118, size: 6, rise: 165, sway: -5, speed: 1, phase: 0.75 },
+  { x: 58, y: 130, size: 6, rise: 190, sway: -5, speed: 1, phase: 0.3 },
+  { x: 76, y: 104, size: 3.5, rise: 145, sway: 5, speed: 2, phase: 0.95 },
+  { x: 94, y: 124, size: 5, rise: 180, sway: -6, speed: 1, phase: 0.5 },
+  { x: 112, y: 100, size: 4, rise: 130, sway: 4, speed: 2, phase: 0.1 },
+  { x: 128, y: 118, size: 6, rise: 165, sway: -5, speed: 1, phase: 0.75 },
 ];
 
 export default function MinesArt() {
-  // The board pops up and the picks are revealed as the page loads; each
-  // hover hides them again and replays the round.
+  // The round plays as the page loads; each hover clears the board and plays
+  // it again.
   const { ref, playing, replays } = useBannerPlay(PLAY_MS);
 
   return (
@@ -69,28 +77,32 @@ export default function MinesArt() {
   );
 }
 
-function BoardTile({ kind, at = 0, index }: Tile & { index: number }) {
+function BoardTile({ kind, at, index }: Tile & { index: number }) {
   return (
     <div
       className={styles.tile}
       data-kind={kind}
-      style={{ "--i": index, "--d": `${at}ms` } as CSSProperties}
+      style={{ "--i": index, "--t": `${at}ms` } as CSSProperties}
     >
-      <div className={styles.sideFront} />
-      <div className={styles.sideLeft} />
+      <div className={styles.sideBottom} />
+      <div className={styles.sideRight} />
       <div className={styles.top}>
-        {kind === "hidden" ? (
-          <Gem className={styles.flatGem} />
+        {kind === "rest" ? (
+          <>
+            <div className={styles.restTint} />
+            <Gem className={styles.flatGem} />
+          </>
         ) : (
           <>
             <div className={styles.lit} />
+            <div className={styles.ripple} />
             <div className={styles.flash} />
           </>
         )}
       </div>
 
-      {/* Revealed picks stand up off the board, turned to face the viewer. */}
-      {kind !== "hidden" && (
+      {/* Clicked tiles pop their gem (or the bomb) out toward the viewer. */}
+      {kind !== "rest" && (
         <div className={styles.sprite}>
           <div className={styles.pop}>
             <div className={styles.bob}>
