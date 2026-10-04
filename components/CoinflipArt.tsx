@@ -1,8 +1,27 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import styles from "./CoinflipArt.module.css";
 
 // Stacked discs between the two faces that give the coin a visible rim mid-flip.
 const EDGE_LAYERS = 12;
+
+// Glowing embers drifting up behind the coin. Positions, sizes, rise and sway
+// are percentages of the coin; `speed` is how many times it rises per cycle and
+// `phase` is how far into its rise it starts, so they don't all appear at once.
+const EMBERS = [
+  { x: -26, y: 112, size: 4.5, rise: 140, sway: 5, speed: 1, phase: 0.15 },
+  { x: -12, y: 132, size: 7, rise: 175, sway: -6, speed: 1, phase: 0.6 },
+  { x: 4, y: 100, size: 4, rise: 125, sway: 4, speed: 2, phase: 0.35 },
+  { x: 18, y: 140, size: 5, rise: 185, sway: 6, speed: 1, phase: 0.85 },
+  { x: 34, y: 116, size: 3, rise: 150, sway: -4, speed: 2, phase: 0.7 },
+  { x: 50, y: 146, size: 6, rise: 190, sway: -5, speed: 1, phase: 0.3 },
+  { x: 66, y: 112, size: 4, rise: 145, sway: 5, speed: 2, phase: 0.95 },
+  { x: 82, y: 136, size: 5, rise: 180, sway: -6, speed: 1, phase: 0.5 },
+  { x: 96, y: 102, size: 4, rise: 130, sway: 4, speed: 2, phase: 0.1 },
+  { x: 110, y: 128, size: 6, rise: 165, sway: -5, speed: 1, phase: 0.75 },
+  { x: 124, y: 110, size: 4.5, rise: 140, sway: 6, speed: 1, phase: 0.4 },
+  { x: 132, y: 138, size: 3, rise: 160, sway: -4, speed: 2, phase: 0.55 },
+];
 
 // Positions and sizes are percentages of the coin. `start` is when each glint
 // fires, as a fraction of one throw (half the cycle): two fire as the coin
@@ -18,9 +37,29 @@ const SPARKLES = [
 export default function CoinflipArt() {
   return (
     <div className={styles.stage}>
-      <div className={styles.rays} />
       <div className={`${styles.glow} ${styles.glowHeads}`} />
       <div className={`${styles.glow} ${styles.glowTails}`} />
+      <div className={styles.ambient}>
+        <div className={styles.aura} />
+        <div className={styles.floor} />
+        {EMBERS.map((e, i) => (
+          <span
+            key={i}
+            className={styles.ember}
+            style={
+              {
+                left: `${e.x}%`,
+                top: `${e.y}%`,
+                width: `${e.size}%`,
+                animationDuration: `calc(var(--cycle) / ${e.speed})`,
+                animationDelay: `calc(var(--cycle) * ${-e.phase / e.speed})`,
+                "--rise": `${e.rise}cqw`,
+                "--sway": `${e.sway}cqw`,
+              } as CSSProperties
+            }
+          />
+        ))}
+      </div>
       <div className={styles.shadow} />
       <div className={`${styles.ring} ${styles.ringHeads}`} />
       <div className={`${styles.ring} ${styles.ringTails}`} />
@@ -34,7 +73,8 @@ export default function CoinflipArt() {
               alt=""
               width={464}
               height={464}
-              sizes="(max-width: 640px) 25vw, 160px"
+              // Served as-is: re-encoding blurs the pixel-art edges.
+              unoptimized
               loading="eager"
               draggable={false}
             />
@@ -57,7 +97,7 @@ export default function CoinflipArt() {
               alt=""
               width={464}
               height={464}
-              sizes="(max-width: 640px) 25vw, 160px"
+              unoptimized
               loading="eager"
               draggable={false}
             />

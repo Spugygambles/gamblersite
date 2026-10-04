@@ -9,12 +9,13 @@ type GameBannerProps = {
 };
 
 export default function GameBanner({ title, art, href }: GameBannerProps) {
+  // The art carries the banner on its own; the title is kept for screen readers.
   const content = (
     <>
       <div className={styles.art} aria-hidden="true">
         {art}
       </div>
-      <span className={styles.title}>{title}</span>
+      <span className="sr-only">{title}</span>
     </>
   );
 

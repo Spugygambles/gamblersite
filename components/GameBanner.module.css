@@ -5,12 +5,10 @@
   aspect-ratio: 300 / 466;
   overflow: hidden;
   isolation: isolate;
-  container-type: inline-size;
   border-radius: 20px;
-  color: #fff;
   text-decoration: none;
   background:
-    radial-gradient(90% 55% at 50% 40%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(90% 55% at 50% 45%, rgba(255, 255, 255, 0.05), transparent 70%),
     linear-gradient(155deg, #353941 0%, #2b2d3d 48%, #25213d 100%);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.06),
@@ -18,6 +16,17 @@
   transition:
     transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow 300ms ease;
+}
+
+/* Fine grain over the background so the dark gradient doesn't band. */
+.banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Diagonal shine that sweeps across once each time the banner is hovered. */
@@ -45,27 +54,12 @@
 
 .art {
   position: absolute;
-  top: 42%;
+  top: 47%;
   left: 50%;
-  width: 50%;
+  width: 56%;
   aspect-ratio: 1;
   translate: -50% -50%;
   transition: scale 400ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.title {
-  position: absolute;
-  top: 71%;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  translate: 0 -50%;
-  font-size: clamp(14px, 7cqw, 24px);
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-align: center;
-  text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 @media (hover: hover) {
