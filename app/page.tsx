@@ -1,6 +1,7 @@
 import BlackjackArt from "@/components/BlackjackArt";
 import CoinflipArt from "@/components/CoinflipArt";
 import GameBanner from "@/components/GameBanner";
+import MinesArt from "@/components/MinesArt";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           <GameBanner title="Coinflip" art={<CoinflipArt />} />
           <GameBanner title="Blackjack" art={<BlackjackArt />} />
+          <GameBanner title="Mines" art={<MinesArt />} />
         </div>
       </div>
     </main>

@@ -1,0 +1,456 @@
+/*
+ * A corner of the mines board seen from the side, played as a round: the
+ * tiles pop up in a wave, then the picks are revealed one by one (the tile
+ * lights green, a ring flashes and the gem springs out) until the bomb turns
+ * up, shakes and jolts the board. It plays as the page loads and again on
+ * hover (see MinesArt.tsx).
+ *
+ * data-playing is set for one round (--play). The intro (data-intro) also
+ * pops the tiles up; a replay first sinks the revealed picks back into the
+ * board. Each tile's reveal time comes in as --d. Between rounds the gems bob
+ * and sparkle, the fuse crackles and embers drift up, timed off --cycle.
+ *
+ * The board is a real 3D plane: everything from .board down keeps
+ * transform-style: preserve-3d, so nothing in that chain may get opacity,
+ * filter or overflow (any of those would flatten it). Fades happen on the
+ * leaves instead.
+ *
+ * Base styles are the finished round; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+.stage {
+  --cycle: 4.8s;
+  --play: 2.4s;
+  --green: #4be853;
+  --tilt: 58deg;
+  --turn: -34deg;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.glow {
+  position: absolute;
+  inset: -20% -45% -25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(60, 220, 90, 0.26),
+    rgba(60, 220, 90, 0.08) 55%,
+    rgba(60, 220, 90, 0) 100%
+  );
+}
+
+/* The embers take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: var(--green);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  perspective: 320cqw;
+}
+
+.board {
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4cqw;
+  width: 112cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: rotateX(var(--tilt)) rotateZ(var(--turn));
+  transform-style: preserve-3d;
+}
+
+.tile {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.top {
+  position: absolute;
+  inset: 0;
+  border-radius: 1.8cqw;
+  background: #1b1c25;
+  box-shadow: inset 0 0 0 0.5cqw #272a36;
+}
+
+/* The two edges facing the viewer, so each tile has some thickness. */
+.sideFront,
+.sideLeft {
+  position: absolute;
+}
+
+.sideFront {
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 3.5cqw;
+  background: #0d0e14;
+  transform-origin: top;
+  transform: rotateX(-90deg);
+}
+
+.sideLeft {
+  top: 0;
+  right: 100%;
+  width: 3.5cqw;
+  height: 100%;
+  background: #13141c;
+  transform-origin: right;
+  transform: rotateY(-90deg);
+}
+
+/* Unpicked tiles show a dim gem printed on them, turned upright on screen. */
+.flatGem {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 62%;
+  translate: -50% -50%;
+  rotate: calc(var(--turn) * -1);
+  opacity: 0.28;
+}
+
+.lit {
+  position: absolute;
+  inset: 0;
+  border: 0.6cqw solid #45a375;
+  border-radius: 1.8cqw;
+  background: rgba(40, 140, 80, 0.22);
+  box-shadow:
+    inset 0 0 3cqw rgba(75, 232, 83, 0.35),
+    0 0 3cqw rgba(75, 232, 83, 0.4);
+}
+
+.tile[data-kind="bomb"] .lit {
+  border-color: #c03a3c;
+  background: rgba(150, 30, 40, 0.3);
+  box-shadow:
+    inset 0 0 3cqw rgba(255, 70, 70, 0.4),
+    0 0 3cqw rgba(255, 70, 70, 0.45);
+}
+
+/* Ring that flashes out of a tile as it's revealed. */
+.flash {
+  position: absolute;
+  inset: -12%;
+  border: 0.6cqw solid #7dff86;
+  border-radius: 3cqw;
+  opacity: 0;
+}
+
+.tile[data-kind="bomb"] .flash {
+  inset: -60%;
+  border-color: #ff6a4d;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 150, 70, 0.75), rgba(255, 80, 60, 0));
+}
+
+/* Anchored by its bottom centre to the middle of the tile, lifted slightly off
+   it, then turned back by exactly the board's rotation so it faces the
+   viewer. */
+.sprite {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 112%;
+  aspect-ratio: 1;
+  transform-origin: 50% 100%;
+  transform: translate(-50%, -100%) translateZ(2cqw) rotateZ(calc(var(--turn) * -1))
+    rotateX(calc(var(--tilt) * -1));
+}
+
+/* The bomb is the payoff, so it stands a little bigger than the gems. */
+.tile[data-kind="bomb"] .sprite {
+  width: 128%;
+}
+
+.pop,
+.bob {
+  position: absolute;
+  inset: 0;
+}
+
+.pop {
+  transform-origin: 50% 90%;
+}
+
+.gem {
+  position: absolute;
+  right: 4%;
+  bottom: 8%;
+  left: 4%;
+  filter: drop-shadow(0 0 1.6cqw rgba(75, 232, 83, 0.75));
+}
+
+.bomb {
+  position: absolute;
+  inset: 0 0 4%;
+  overflow: visible;
+  filter: drop-shadow(0 0 1.6cqw rgba(255, 70, 70, 0.6));
+}
+
+.bombBody,
+.spark {
+  transform-box: fill-box;
+}
+
+.bombBody {
+  transform-origin: 40% 70%;
+}
+
+.spark {
+  transform-origin: center;
+}
+
+/* Four-point glint that catches on each gem now and then. */
+.twinkle {
+  position: absolute;
+  top: 18%;
+  left: 18%;
+  width: 26%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: scale(0);
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 22%, #d8ffdc 45%, rgba(216, 255, 220, 0) 72%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Always running. */
+  .bob {
+    animation: bob calc(var(--cycle) / 2) ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * -0.37s);
+  }
+
+  .twinkle {
+    animation: twinkle calc(var(--cycle) / 2) ease-in-out infinite both;
+    animation-delay: calc(var(--i) * -0.53s);
+  }
+
+  .bombBody {
+    animation: sizzle 0.4s ease-in-out infinite alternate;
+  }
+
+  .spark {
+    animation: crackle 0.3s ease-in-out infinite alternate;
+  }
+
+  /* Intro: the tiles pop up in a wave before the picks are revealed. */
+  .stage[data-playing][data-intro] .tile {
+    animation: tile-in 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) calc(var(--i) * 28ms) both;
+  }
+
+  .stage[data-playing][data-intro] .lit {
+    animation: lit-in 0.25s ease-out var(--d) both;
+  }
+
+  .stage[data-playing][data-intro] .tile[data-kind="gem"] .pop {
+    animation: gem-pop 0.55s var(--d) both;
+  }
+
+  .stage[data-playing][data-intro] .tile[data-kind="bomb"] .pop {
+    animation: bomb-pop 0.6s var(--d) both;
+  }
+
+  /* Replay: the picks sink back into the board first, then come up again.
+     The reveal only fills forwards, so the sink holds until each one's turn. */
+  .stage[data-playing]:not([data-intro]) .lit {
+    animation:
+      lit-out 0.2s ease-in forwards,
+      lit-in 0.25s ease-out var(--d) forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="gem"] .pop {
+    animation:
+      sink 0.22s ease-in forwards,
+      gem-pop 0.55s var(--d) forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="bomb"] .pop {
+    animation:
+      sink 0.22s ease-in forwards,
+      bomb-pop 0.6s var(--d) forwards;
+  }
+
+  .stage[data-playing] .flash {
+    animation: flash 0.55s ease-out var(--d) both;
+  }
+
+  .stage[data-playing] .scene {
+    animation: jolt 0.45s linear var(--bomb-at) both;
+  }
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-6%);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  28% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
+
+@keyframes sizzle {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes crackle {
+  from {
+    opacity: 0.75;
+    transform: scale(0.75) rotate(-14deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.18) rotate(16deg);
+  }
+}
+
+@keyframes tile-in {
+  from {
+    transform: translateZ(-10cqw) scale(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes lit-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lit-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Springs up out of the tile, overshoots and settles. */
+@keyframes gem-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(45%) scale(0.2);
+  }
+  45% {
+    opacity: 1;
+    transform: translateY(-16%) scale(1.22);
+  }
+  70% {
+    transform: translateY(3%) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Springs up like a gem, then shakes. */
+@keyframes bomb-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(45%) scale(0.2) rotate(0deg);
+  }
+  35% {
+    opacity: 1;
+    transform: translateY(-14%) scale(1.28) rotate(0deg);
+  }
+  50% {
+    transform: translateY(0) scale(1.05) rotate(-12deg);
+  }
+  62% {
+    transform: translateY(0) scale(1) rotate(10deg);
+  }
+  74% {
+    transform: translateY(0) scale(1) rotate(-6deg);
+  }
+  86% {
+    transform: translateY(0) scale(1) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes sink {
+  to {
+    opacity: 0;
+    transform: translateY(45%) scale(0.2);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  6% {
+    opacity: 0.9;
+    transform: scale(0.56);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes jolt {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  15% {
+    transform: translate(-1.6cqw, 0.8cqw);
+  }
+  30% {
+    transform: translate(1.4cqw, -1cqw);
+  }
+  45% {
+    transform: translate(-1cqw, 0.6cqw);
+  }
+  60% {
+    transform: translate(0.8cqw, -0.4cqw);
+  }
+  75% {
+    transform: translate(-0.4cqw, 0.2cqw);
+  }
+}
