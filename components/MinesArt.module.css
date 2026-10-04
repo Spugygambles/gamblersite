@@ -1,11 +1,11 @@
 /*
- * The mines board standing up, leaning back a little and turned slightly to
- * the side, played as a round: it starts as plain dark tiles, eight are
- * clicked one after another (the tile presses in, a ripple goes out, it lights
- * green and its gem pops out toward the viewer), then the ninth click hits the
- * bomb, which pops out, shakes and jolts the board. Last, the tiles nobody
- * clicked turn faintly green and show their gems flat, in a wave from the
- * bomb. It plays as the page loads and again on hover (see MinesArt.tsx).
+ * A 3x3 mines board standing up and leaning back a little, played as a round:
+ * it starts as plain dark tiles, five are clicked one after another (the tile
+ * presses in, a ripple goes out, it lights green and its gem pops out toward
+ * the viewer), then the sixth click hits the bomb, which pops out, shakes and
+ * jolts the board. Last, the tiles nobody clicked turn faintly green and show
+ * their gems flat, in a wave from the bomb. It plays as the page loads and
+ * again on hover (see MinesArt.tsx).
  *
  * data-playing is set for one round (--play). The intro (data-intro) also
  * pops the tiles up; a replay first clears the board. Each tile's click or
@@ -22,13 +22,14 @@
 
 .stage {
   --cycle: 4.8s;
-  --play: 3.7s;
+  --play: 3.4s;
   --green: #4be853;
-  --tilt: 24deg;
-  --turn: -20deg;
+  /* How far the board leans back from upright. */
+  --tilt: 22deg;
   /* How far tiles stand off the board, and how far a pick pops out. */
-  --depth: 3.6cqw;
-  --lift: 6cqw;
+  --depth: 4.5cqw;
+  --lift: 7cqw;
+  --radius: 2.8cqw;
   /* cqw here = % of the stage's width, since .stage is the size container */
   position: relative;
   width: 100%;
@@ -66,12 +67,12 @@
   top: 50%;
   left: 50%;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3cqw;
-  width: 140cqw;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4.5cqw;
+  width: 132cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
-  transform: rotateX(var(--tilt)) rotateY(var(--turn));
+  transform: rotateX(var(--tilt));
   transform-style: preserve-3d;
 }
 
@@ -83,35 +84,49 @@
 .top {
   position: absolute;
   inset: 0;
-  border-radius: 2cqw;
-  background: linear-gradient(155deg, #262834 0%, #1b1c25 55%, #16171e 100%);
+  border-radius: var(--radius);
+  background: linear-gradient(165deg, #2b2d3a 0%, #1d1e28 50%, #17181f 100%);
   box-shadow:
-    inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.05),
-    inset 0 0.5cqw 0 rgba(255, 255, 255, 0.05);
+    inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.06),
+    inset 0 0.7cqw 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1.2cqw 2cqw rgba(0, 0, 0, 0.3);
 }
 
-/* The two edges facing the viewer, so each tile stands off the board. */
+/* The edges the viewer can see, so each tile stands off the board: the
+   bottom one because the board leans back, the sides through perspective. */
 .sideBottom,
+.sideLeft,
 .sideRight {
   position: absolute;
 }
 
 .sideBottom {
   top: 100%;
-  left: 2%;
-  width: 96%;
+  left: 3%;
+  width: 94%;
   height: var(--depth);
-  background: linear-gradient(#0e0f15, #07080b);
+  background: linear-gradient(#11121a, #07080b);
   transform-origin: top;
   transform: rotateX(-90deg);
 }
 
+.sideLeft,
 .sideRight {
-  top: 2%;
-  left: 100%;
+  top: 3%;
   width: var(--depth);
-  height: 96%;
-  background: linear-gradient(90deg, #15161e, #0b0c11);
+  height: 94%;
+}
+
+.sideLeft {
+  right: 100%;
+  background: linear-gradient(270deg, #14151d, #0a0b10);
+  transform-origin: right;
+  transform: rotateY(-90deg);
+}
+
+.sideRight {
+  left: 100%;
+  background: linear-gradient(90deg, #14151d, #0a0b10);
   transform-origin: left;
   transform: rotateY(90deg);
 }
@@ -119,8 +134,8 @@
 .lit {
   position: absolute;
   inset: 0;
-  border: 0.6cqw solid #45a375;
-  border-radius: 2cqw;
+  border: 0.7cqw solid #45a375;
+  border-radius: var(--radius);
   background: linear-gradient(155deg, rgba(48, 160, 92, 0.32), rgba(26, 90, 56, 0.24));
   box-shadow:
     inset 0 0 4cqw rgba(75, 232, 83, 0.35),
@@ -140,7 +155,7 @@
 .restTint {
   position: absolute;
   inset: 0;
-  border-radius: 2cqw;
+  border-radius: var(--radius);
   background: rgba(40, 140, 80, 0.1);
   box-shadow: inset 0 0 0 0.45cqw rgba(69, 163, 117, 0.35);
 }
@@ -152,6 +167,17 @@
   width: 62%;
   translate: -50% -50%;
   opacity: 0.32;
+}
+
+/* Soft shadow the popped gem casts on its tile. */
+.dropShadow {
+  position: absolute;
+  top: 60%;
+  left: 24%;
+  width: 52%;
+  height: 22%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
 }
 
 /* The click: a flash of white on the tile and a ring spreading from it. */
@@ -168,8 +194,8 @@
 .flash {
   position: absolute;
   inset: -14%;
-  border: 0.6cqw solid #7dff86;
-  border-radius: 4cqw;
+  border: 0.7cqw solid #7dff86;
+  border-radius: 5cqw;
   opacity: 0;
 }
 
@@ -185,16 +211,15 @@
   );
 }
 
-/* Centred on the tile, lifted off it toward the viewer, then turned back by
-   exactly the board's rotation so it faces the viewer head-on. */
+/* Centred on the tile, lifted off it toward the viewer, then tilted back by
+   exactly the board's lean so it faces the viewer head-on. */
 .sprite {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 96%;
   aspect-ratio: 1;
-  transform: translate(-50%, -50%) translateZ(var(--lift)) rotateY(calc(var(--turn) * -1))
-    rotateX(calc(var(--tilt) * -1));
+  transform: translate(-50%, -50%) translateZ(var(--lift)) rotateX(calc(var(--tilt) * -1));
 }
 
 /* The bomb is the payoff, so it comes out a little bigger than the gems. */
@@ -289,10 +314,11 @@
 
   /* Intro: the tiles pop up in a wave first. */
   .stage[data-playing][data-intro] .tile {
-    animation: tile-in 0.45s cubic-bezier(0.34, 1.5, 0.64, 1) calc(var(--i) * 20ms) both;
+    animation: tile-in 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) calc(var(--i) * 45ms) both;
   }
 
-  .stage[data-playing][data-intro] .lit {
+  .stage[data-playing][data-intro] .lit,
+  .stage[data-playing][data-intro] .dropShadow {
     animation: show 0.25s ease-out calc(var(--t) + 80ms) both;
   }
 
@@ -311,7 +337,8 @@
 
   /* Replay: the board clears first, then plays again. Each reveal only fills
      forwards, so the cleared look holds until that tile's turn. */
-  .stage[data-playing]:not([data-intro]) .lit {
+  .stage[data-playing]:not([data-intro]) .lit,
+  .stage[data-playing]:not([data-intro]) .dropShadow {
     animation:
       hide 0.2s ease-in forwards,
       show 0.25s ease-out calc(var(--t) + 80ms) forwards;

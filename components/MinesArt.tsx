@@ -6,19 +6,19 @@ import styles from "./MinesArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // Length of one round; keep in step with --play in MinesArt.module.css.
-const PLAY_MS = 3700;
+const PLAY_MS = 3400;
 
-// A 5x5 board like the game's, numbered row by row. The player clicks eight
-// gems, then hits the bomb, and the tiles nobody clicked are revealed in a
-// wave spreading out from it. Times are ms into the round.
-const SIZE = 5;
-const CLICKS = [12, 7, 13, 17, 11, 8, 18, 6];
+// A 3x3 board, numbered row by row. The player clicks five gems, then hits the
+// bomb, and the tiles nobody clicked are revealed in a wave spreading out from
+// it. Times are ms into the round.
+const SIZE = 3;
+const CLICKS = [4, 1, 5, 7, 3];
 const FIRST_CLICK = 750;
-const CLICK_GAP = 230;
-const BOMB = 16;
-const BOMB_AT = 2700;
-const REVEAL_AT = 3120;
-const REVEAL_STEP = 45;
+const CLICK_GAP = 300;
+const BOMB = 6;
+const BOMB_AT = 2350;
+const REVEAL_AT = 2800;
+const REVEAL_STEP = 60;
 
 type Kind = "gem" | "bomb" | "rest";
 type Tile = { kind: Kind; at: number };
@@ -36,16 +36,16 @@ const BOARD: Tile[] = Array.from({ length: SIZE * SIZE }, (_, i) => {
 
 // Green embers drifting up behind the board; see Embers.
 const EMBERS: Ember[] = [
-  { x: -30, y: 104, size: 4.5, rise: 150, sway: 5, speed: 1, phase: 0.15 },
-  { x: -14, y: 120, size: 6, rise: 170, sway: -6, speed: 1, phase: 0.6 },
-  { x: 4, y: 96, size: 3.5, rise: 135, sway: 4, speed: 2, phase: 0.35 },
-  { x: 22, y: 126, size: 5, rise: 185, sway: 6, speed: 1, phase: 0.85 },
-  { x: 40, y: 110, size: 3, rise: 150, sway: -4, speed: 2, phase: 0.7 },
-  { x: 58, y: 130, size: 6, rise: 190, sway: -5, speed: 1, phase: 0.3 },
+  { x: -24, y: 104, size: 4.5, rise: 150, sway: 5, speed: 1, phase: 0.15 },
+  { x: -8, y: 120, size: 6, rise: 170, sway: -6, speed: 1, phase: 0.6 },
+  { x: 8, y: 96, size: 3.5, rise: 135, sway: 4, speed: 2, phase: 0.35 },
+  { x: 26, y: 126, size: 5, rise: 185, sway: 6, speed: 1, phase: 0.85 },
+  { x: 44, y: 110, size: 3, rise: 150, sway: -4, speed: 2, phase: 0.7 },
+  { x: 60, y: 130, size: 6, rise: 190, sway: -5, speed: 1, phase: 0.3 },
   { x: 76, y: 104, size: 3.5, rise: 145, sway: 5, speed: 2, phase: 0.95 },
-  { x: 94, y: 124, size: 5, rise: 180, sway: -6, speed: 1, phase: 0.5 },
-  { x: 112, y: 100, size: 4, rise: 130, sway: 4, speed: 2, phase: 0.1 },
-  { x: 128, y: 118, size: 6, rise: 165, sway: -5, speed: 1, phase: 0.75 },
+  { x: 92, y: 124, size: 5, rise: 180, sway: -6, speed: 1, phase: 0.5 },
+  { x: 108, y: 100, size: 4, rise: 130, sway: 4, speed: 2, phase: 0.1 },
+  { x: 124, y: 118, size: 6, rise: 165, sway: -5, speed: 1, phase: 0.75 },
 ];
 
 export default function MinesArt() {
@@ -85,6 +85,7 @@ function BoardTile({ kind, at, index }: Tile & { index: number }) {
       style={{ "--i": index, "--t": `${at}ms` } as CSSProperties}
     >
       <div className={styles.sideBottom} />
+      <div className={styles.sideLeft} />
       <div className={styles.sideRight} />
       <div className={styles.top}>
         {kind === "rest" ? (
@@ -95,6 +96,7 @@ function BoardTile({ kind, at, index }: Tile & { index: number }) {
         ) : (
           <>
             <div className={styles.lit} />
+            <div className={styles.dropShadow} />
             <div className={styles.ripple} />
             <div className={styles.flash} />
           </>
@@ -122,10 +124,23 @@ function BoardTile({ kind, at, index }: Tile & { index: number }) {
   );
 }
 
-// The site's faceted green gem.
+// The site's faceted green gem, with a light sheen from the top and a little
+// shade toward the point.
 function Gem({ className }: { className: string }) {
+  const id = useId();
   return (
     <svg className={className} viewBox="0 0 100 90">
+      <defs>
+        <clipPath id={`${id}-shape`}>
+          <polygon points="4,30 32,8 68,8 96,30 50,88" />
+        </clipPath>
+        <linearGradient id={`${id}-sheen`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.38" />
+          <stop offset="0.45" stopColor="#fff" stopOpacity="0" />
+          <stop offset="0.7" stopColor="#000" stopOpacity="0" />
+          <stop offset="1" stopColor="#000" stopOpacity="0.22" />
+        </linearGradient>
+      </defs>
       <polygon points="4,30 32,8 38,30" fill="#4ce854" />
       <polygon points="32,8 68,8 62,30 38,30" fill="#22a62e" />
       <polygon points="68,8 96,30 62,30" fill="#62f26e" />
@@ -133,6 +148,15 @@ function Gem({ className }: { className: string }) {
       <polygon points="4,30 38,30 50,88" fill="#168f1a" />
       <polygon points="38,30 62,30 50,88" fill="#25b827" />
       <polygon points="62,30 96,30 50,88" fill="#1fab21" />
+      <rect width="100" height="90" fill={`url(#${id}-sheen)`} clipPath={`url(#${id}-shape)`} />
+      <polygon points="12,28 29,13 33,15 18,29" fill="#fff" opacity="0.45" />
+      <polyline
+        points="4,30 96,30"
+        fill="none"
+        stroke="#c9ffcd"
+        strokeOpacity="0.35"
+        strokeWidth="1.2"
+      />
     </svg>
   );
 }
