@@ -19,11 +19,14 @@ export default function GameBanner({ title, art, href }: GameBannerProps) {
     </>
   );
 
+  // data-game-banner lets the art react to the pointer anywhere on the card.
   return href ? (
-    <Link href={href} className={styles.banner}>
+    <Link href={href} className={styles.banner} data-game-banner>
       {content}
     </Link>
   ) : (
-    <div className={styles.banner}>{content}</div>
+    <div className={styles.banner} data-game-banner>
+      {content}
+    </div>
   );
 }

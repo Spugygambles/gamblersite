@@ -1,6 +1,11 @@
+"use client";
+
 import Image from "next/image";
-import type { CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import styles from "./CoinflipArt.module.css";
+
+// Length of one throw; keep in step with --throw in CoinflipArt.module.css.
+const THROW_MS = 1250;
 
 // Stacked discs between the two faces that give the coin a visible rim mid-flip.
 const EDGE_LAYERS = 12;
@@ -23,9 +28,8 @@ const EMBERS = [
   { x: 132, y: 138, size: 3, rise: 160, sway: -4, speed: 2, phase: 0.55 },
 ];
 
-// Positions and sizes are percentages of the coin. `start` is when each glint
-// fires, as a fraction of one throw (half the cycle): two fire as the coin
-// lands, one at the top of the toss, and the rest while it idles.
+// Positions and sizes are percentages of the coin. `start` staggers when each
+// glint fires, as a fraction of its twinkle (half the cycle).
 const SPARKLES = [
   { x: -8, y: 12, size: 11, start: 0.05 },
   { x: 112, y: 64, size: 12, start: 0.32 },
@@ -34,9 +38,45 @@ const SPARKLES = [
   { x: -14, y: 74, size: 8, start: 0.78 },
 ];
 
+type Face = "heads" | "tails";
+
 export default function CoinflipArt() {
+  const stageRef = useRef<HTMLDivElement>(null);
+  // The first render is already mid-throw, so the CSS tosses the coin once as
+  // the page loads (before this script has even run) and it lands on heads.
+  const [face, setFace] = useState<Face>("heads");
+  const [flipping, setFlipping] = useState(true);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    if (flipping) {
+      const timer = setTimeout(() => setFlipping(false), THROW_MS);
+      return () => clearTimeout(timer);
+    }
+
+    // Between throws, flip again whenever the mouse moves onto the banner.
+    const banner = stage.closest("[data-game-banner]") ?? stage;
+    const flip = () => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // Make sure the browser has seen the last throw end, so the throw
+      // animations restart instead of staying on their final frame.
+      void stage.offsetWidth;
+      setFace((current) => (current === "heads" ? "tails" : "heads"));
+      setFlipping(true);
+    };
+    banner.addEventListener("mouseenter", flip);
+    return () => banner.removeEventListener("mouseenter", flip);
+  }, [flipping]);
+
   return (
-    <div className={styles.stage}>
+    <div
+      ref={stageRef}
+      className={styles.stage}
+      data-face={face}
+      data-flipping={flipping || undefined}
+    >
       <div className={`${styles.glow} ${styles.glowHeads}`} />
       <div className={`${styles.glow} ${styles.glowTails}`} />
       <div className={styles.ambient}>
@@ -64,43 +104,45 @@ export default function CoinflipArt() {
       <div className={`${styles.ring} ${styles.ringHeads}`} />
       <div className={`${styles.ring} ${styles.ringTails}`} />
 
-      <div className={styles.toss}>
-        <div className={styles.coin}>
-          <div className={`${styles.face} ${styles.heads}`}>
-            <Image
-              className={styles.faceImg}
-              src="/coinflip/heads.png"
-              alt=""
-              width={464}
-              height={464}
-              // Served as-is: re-encoding blurs the pixel-art edges.
-              unoptimized
-              loading="eager"
-              draggable={false}
-            />
-          </div>
-          {/* A tilted face shows the far half of the rim, so each half is
-              colored to match the face on the opposite side. */}
-          {Array.from({ length: EDGE_LAYERS }, (_, i) => (
-            <div
-              key={i}
-              className={`${styles.edge} ${i < EDGE_LAYERS / 2 ? styles.edgeTails : styles.edgeHeads}`}
-              style={{
-                transform: `translateZ(calc(var(--depth) * ${0.5 - (i + 0.5) / EDGE_LAYERS}))`,
-              }}
-            />
-          ))}
-          <div className={`${styles.face} ${styles.tails}`}>
-            <Image
-              className={styles.faceImg}
-              src="/coinflip/tails.png"
-              alt=""
-              width={464}
-              height={464}
-              unoptimized
-              loading="eager"
-              draggable={false}
-            />
+      <div className={styles.float}>
+        <div className={styles.toss}>
+          <div className={styles.coin}>
+            <div className={`${styles.face} ${styles.heads}`}>
+              <Image
+                className={styles.faceImg}
+                src="/coinflip/heads.png"
+                alt=""
+                width={464}
+                height={464}
+                // Served as-is: re-encoding blurs the pixel-art edges.
+                unoptimized
+                loading="eager"
+                draggable={false}
+              />
+            </div>
+            {/* A tilted face shows the far half of the rim, so each half is
+                colored to match the face on the opposite side. */}
+            {Array.from({ length: EDGE_LAYERS }, (_, i) => (
+              <div
+                key={i}
+                className={`${styles.edge} ${i < EDGE_LAYERS / 2 ? styles.edgeTails : styles.edgeHeads}`}
+                style={{
+                  transform: `translateZ(calc(var(--depth) * ${0.5 - (i + 0.5) / EDGE_LAYERS}))`,
+                }}
+              />
+            ))}
+            <div className={`${styles.face} ${styles.tails}`}>
+              <Image
+                className={styles.faceImg}
+                src="/coinflip/tails.png"
+                alt=""
+                width={464}
+                height={464}
+                unoptimized
+                loading="eager"
+                draggable={false}
+              />
+            </div>
           </div>
         </div>
       </div>
