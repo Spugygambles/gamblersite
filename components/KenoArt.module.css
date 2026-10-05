@@ -1,0 +1,561 @@
+/*
+ * A 3x3 corner of the keno board standing up and leaning back a little, like
+ * the Mines banner, played as a round: the tiles start plain, five numbers are
+ * picked one after another (each presses in and turns purple), then five
+ * numbers are drawn. A picked number that comes up is a hit: its tile flips
+ * over like a card to show the purple gem, sending a ring across the board
+ * and a few sparks up off it. An unpicked number that comes up is a miss: its
+ * tile shudders and the number turns red. It plays as the page loads and again
+ * on hover (see KenoArt.tsx, which sets the round's length and every tile's
+ * timing).
+ *
+ * data-playing is set for one round. The intro (data-intro) also pops the
+ * tiles up; a replay first clears the board. Each tile's pick and draw times
+ * come in as --pick and --draw. Between rounds a shine sweeps across the gems
+ * now and then and embers drift up, timed off --cycle so they loop cleanly.
+ *
+ * The board is a real 3D object: everything from .board down to .flipper
+ * keeps transform-style: preserve-3d, so those may not get opacity, filter or
+ * overflow (any of which would flatten it). Fades happen on the leaves.
+ *
+ * Base styles are the finished round; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+.stage {
+  --cycle: 4.8s;
+  --purple: #b46cff;
+  /* The site's keno colors: plain tiles, picks, misses and hits. */
+  --plain-face: #1c1f28;
+  --plain-num: #99989d;
+  --pick-face: #342053;
+  --pick-num: #9746ff;
+  --miss-face: #181820;
+  --miss-num: #cf3d40;
+  --hit-face: #7a37ee;
+  /* How far the board leans back from upright. */
+  --tilt: 22deg;
+  /* How deep a pick presses a tile in, and how far a hit lifts as it flips. */
+  --depth: 4.5cqw;
+  --lift: 9cqw;
+  --radius: 2.8cqw;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(150, 80, 255, 0.24),
+    rgba(150, 80, 255, 0.07) 55%,
+    rgba(150, 80, 255, 0) 100%
+  );
+}
+
+/* The embers take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: var(--purple);
+}
+
+/* The board is drawn at twice the size and scaled back down, so the browser
+   rasterizes the tilted tiles at double resolution and their edges and
+   numbers stay crisp. The scene is the size container for everything inside
+   it, so cqw there still means % of the stage's width once scaled. Its own
+   perspective resolves against the stage, so it is written doubled. */
+.scene {
+  position: absolute;
+  inset: -50%;
+  scale: 0.5;
+  container-type: inline-size;
+  perspective: 680cqw;
+}
+
+.board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4.5cqw;
+  width: 132cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: rotateX(var(--tilt));
+  transform-style: preserve-3d;
+}
+
+.tile,
+.flipper {
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.flipper {
+  position: absolute;
+  inset: 0;
+}
+
+/* A hit rests flipped over, gem side up. */
+.tile[data-kind="hit"] .flipper {
+  transform: rotateY(180deg);
+}
+
+.front,
+.back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+}
+
+.front {
+  display: grid;
+  place-items: center;
+  background-color: var(--plain-face);
+  box-shadow:
+    inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.05),
+    inset 0 0.7cqw 0 rgba(255, 255, 255, 0.05);
+}
+
+.tile[data-kind="pick"] .front,
+.tile[data-kind="hit"] .front {
+  background-color: var(--pick-face);
+}
+
+.tile[data-kind="miss"] .front {
+  background-color: var(--miss-face);
+}
+
+.num {
+  font: 700 14.5cqw/1 Arial, Helvetica, sans-serif;
+  letter-spacing: -0.03em;
+  color: var(--plain-num);
+}
+
+.tile[data-kind="pick"] .num,
+.tile[data-kind="hit"] .num {
+  color: var(--pick-num);
+}
+
+.tile[data-kind="miss"] .num {
+  color: var(--miss-num);
+}
+
+/* Light that washes over a tile's face the moment it's drawn. */
+.flash {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(closest-side, rgba(235, 215, 255, 0.85), rgba(190, 140, 255, 0.35));
+}
+
+.tile[data-kind="miss"] .flash {
+  background: radial-gradient(closest-side, rgba(255, 120, 120, 0.7), rgba(255, 60, 60, 0.25));
+}
+
+.back {
+  overflow: hidden;
+  transform: rotateY(180deg);
+  background: var(--hit-face);
+  box-shadow:
+    inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.12),
+    0 0 3.5cqw rgba(160, 80, 255, 0.45);
+}
+
+.gem {
+  position: absolute;
+  inset: 0;
+}
+
+.gemNum {
+  font: 700 32px Arial, Helvetica, sans-serif;
+  letter-spacing: -0.03em;
+  fill: #220838;
+}
+
+/* Gloss that sweeps across a gem now and then. */
+.shine {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 65%
+  );
+}
+
+/* Four-point glint on the gem's bright corner. */
+.twinkle {
+  position: absolute;
+  top: 17%;
+  left: 83%;
+  width: 26%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transform: scale(0);
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 22%, #f0dcff 45%, rgba(240, 220, 255, 0) 72%);
+}
+
+/* Ring that runs out across the board as a hit lands. */
+.wave {
+  position: absolute;
+  inset: 0;
+  border: 0.8cqw solid #c79bff;
+  border-radius: var(--radius);
+  opacity: 0;
+}
+
+/* Sparks come off the landed gem toward the viewer, facing them head-on. */
+.sparks {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(var(--lift)) rotateX(calc(var(--tilt) * -1));
+}
+
+.spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 25%, #dcb8ff 50%, rgba(200, 150, 255, 0) 75%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Always running. */
+  .shine {
+    animation: shine var(--cycle) ease-in-out infinite;
+    animation-delay: calc(var(--i) * -0.6s);
+  }
+
+  .twinkle {
+    animation: twinkle calc(var(--cycle) / 2) ease-in-out infinite both;
+    animation-delay: calc(var(--i) * -0.53s);
+  }
+
+  /* Every round, intro or replay: draws light the tile up; hits flip over
+     and land with a ring and sparks, misses shudder. */
+  .stage[data-playing] .tile:is([data-kind="hit"], [data-kind="miss"]) .flash {
+    animation: flash 0.4s ease-out var(--draw) both;
+  }
+
+  .stage[data-playing] .tile[data-kind="miss"] .flipper {
+    animation: shudder 0.45s ease-out var(--draw);
+  }
+
+  .stage[data-playing] .wave {
+    animation: wave 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) calc(var(--draw) + 380ms) both;
+  }
+
+  .stage[data-playing] .spark {
+    animation: spark 0.6s cubic-bezier(0.2, 0.8, 0.3, 1) calc(var(--draw) + 380ms) both;
+  }
+
+  .stage[data-playing] .back {
+    animation: land-glow 0.6s ease-out calc(var(--draw) + 380ms);
+  }
+
+  /* Intro: the tiles pop up in a wave first. */
+  .stage[data-playing][data-intro] .tile {
+    animation: tile-in 0.5s cubic-bezier(0.34, 1.5, 0.64, 1) calc(var(--i) * 45ms) both;
+  }
+
+  .stage[data-playing][data-intro] .tile:is([data-kind="pick"], [data-kind="hit"]) .front {
+    animation:
+      pick-face 0.3s ease-out var(--pick) both,
+      press 0.3s ease-out var(--pick) both;
+  }
+
+  .stage[data-playing][data-intro] .tile:is([data-kind="pick"], [data-kind="hit"]) .num {
+    animation: pick-num 0.3s ease-out var(--pick) both;
+  }
+
+  .stage[data-playing][data-intro] .tile[data-kind="hit"] .flipper {
+    animation: flip 0.55s ease-in-out var(--draw) both;
+  }
+
+  .stage[data-playing][data-intro] .tile[data-kind="miss"] .front {
+    animation: miss-face 0.45s ease-out var(--draw) both;
+  }
+
+  .stage[data-playing][data-intro] .tile[data-kind="miss"] .num {
+    animation: miss-num 0.45s ease-out var(--draw) both;
+  }
+
+  /* Replay: the board clears first, then plays again. Each step only fills
+     forwards, so the cleared look holds until that tile's turn. */
+  .stage[data-playing]:not([data-intro]) .tile:is([data-kind="pick"], [data-kind="hit"]) .front {
+    animation:
+      unpick-face 0.25s ease-in forwards,
+      pick-face 0.3s ease-out var(--pick) forwards,
+      press 0.3s ease-out var(--pick);
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile:is([data-kind="pick"], [data-kind="hit"]) .num {
+    animation:
+      unpick-num 0.25s ease-in forwards,
+      pick-num 0.3s ease-out var(--pick) forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="hit"] .flipper {
+    animation:
+      unflip 0.3s ease-in-out forwards,
+      flip 0.55s ease-in-out var(--draw) forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="miss"] .front {
+    animation:
+      unmiss-face 0.25s ease-in forwards,
+      miss-face 0.45s ease-out var(--draw) forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .tile[data-kind="miss"] .num {
+    animation:
+      unmiss-num 0.25s ease-in forwards,
+      miss-num 0.45s ease-out var(--draw) forwards;
+  }
+}
+
+@keyframes tile-in {
+  from {
+    transform: translateZ(-12cqw) scale(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* A pick: the tile presses in like a button and turns purple. */
+@keyframes press {
+  0% {
+    transform: translateZ(0) scale(1);
+  }
+  35% {
+    transform: translateZ(calc(var(--depth) * -1)) scale(0.92);
+  }
+  70% {
+    transform: translateZ(0.4cqw) scale(1.02);
+  }
+  100% {
+    transform: translateZ(0) scale(1);
+  }
+}
+
+@keyframes pick-face {
+  from {
+    background-color: var(--plain-face);
+  }
+  to {
+    background-color: var(--pick-face);
+  }
+}
+
+@keyframes pick-num {
+  from {
+    color: var(--plain-num);
+  }
+  to {
+    color: var(--pick-num);
+  }
+}
+
+@keyframes unpick-face {
+  from {
+    background-color: var(--pick-face);
+  }
+  to {
+    background-color: var(--plain-face);
+  }
+}
+
+@keyframes unpick-num {
+  from {
+    color: var(--pick-num);
+  }
+  to {
+    color: var(--plain-num);
+  }
+}
+
+/* A hit lifts toward the viewer as it turns over, overshoots a touch and
+   settles gem side up. */
+@keyframes flip {
+  0% {
+    transform: translateZ(0) rotateY(0deg);
+  }
+  50% {
+    transform: translateZ(var(--lift)) rotateY(90deg);
+  }
+  82% {
+    transform: translateZ(0) rotateY(192deg);
+  }
+  100% {
+    transform: translateZ(0) rotateY(180deg);
+  }
+}
+
+@keyframes unflip {
+  from {
+    transform: translateZ(0) rotateY(180deg);
+  }
+  to {
+    transform: translateZ(0) rotateY(0deg);
+  }
+}
+
+/* A miss shakes its head. */
+@keyframes shudder {
+  0% {
+    transform: none;
+  }
+  15% {
+    transform: translateZ(calc(var(--depth) * -0.6)) rotateZ(-7deg);
+  }
+  32% {
+    transform: translateZ(calc(var(--depth) * -0.3)) rotateZ(6deg);
+  }
+  50% {
+    transform: rotateZ(-4deg);
+  }
+  68% {
+    transform: rotateZ(2deg);
+  }
+  84% {
+    transform: rotateZ(-1deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes miss-face {
+  from {
+    background-color: var(--plain-face);
+  }
+  to {
+    background-color: var(--miss-face);
+  }
+}
+
+@keyframes miss-num {
+  0% {
+    color: var(--plain-num);
+  }
+  25% {
+    color: #ff6a6a;
+  }
+  100% {
+    color: var(--miss-num);
+  }
+}
+
+@keyframes unmiss-face {
+  from {
+    background-color: var(--miss-face);
+  }
+  to {
+    background-color: var(--plain-face);
+  }
+}
+
+@keyframes unmiss-num {
+  from {
+    color: var(--miss-num);
+  }
+  to {
+    color: var(--plain-num);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes wave {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}
+
+@keyframes spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(90deg);
+  }
+}
+
+/* The gem glows bright as it lands, then settles. */
+@keyframes land-glow {
+  from {
+    box-shadow:
+      inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.5),
+      0 0 7cqw rgba(190, 120, 255, 0.9);
+  }
+}
+
+@keyframes shine {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  88%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  28% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
