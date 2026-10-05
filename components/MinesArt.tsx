@@ -84,7 +84,6 @@ function BoardTile({ kind, at, index }: Tile & { index: number }) {
       data-kind={kind}
       style={{ "--i": index, "--t": `${at}ms` } as CSSProperties}
     >
-      <div className={styles.sideBottom} />
       <div className={styles.top}>
         {kind === "rest" ? (
           <>

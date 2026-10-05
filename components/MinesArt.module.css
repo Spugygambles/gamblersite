@@ -29,7 +29,7 @@
   --green: #4be853;
   /* How far the board leans back from upright. */
   --tilt: 22deg;
-  /* How far tiles stand off the board, and how far a pick pops out. */
+  /* How deep a click presses a tile in, and how far a pick pops out. */
   --depth: 4.5cqw;
   --lift: 9cqw;
   --radius: 2.8cqw;
@@ -100,20 +100,6 @@
     inset 0 0 0 0.35cqw rgba(255, 255, 255, 0.06),
     inset 0 0.7cqw 0 rgba(255, 255, 255, 0.06),
     inset 0 -1.2cqw 2cqw rgba(0, 0, 0, 0.3);
-}
-
-/* The bottom edge of each tile, which shows because the board leans back.
-   (The side edges are left off: they would cut through the gems as they
-   pop out.) */
-.sideBottom {
-  position: absolute;
-  top: 100%;
-  left: 3%;
-  width: 94%;
-  height: var(--depth);
-  background: linear-gradient(#11121a, #07080b);
-  transform-origin: top;
-  transform: rotateX(-90deg);
 }
 
 .lit {
