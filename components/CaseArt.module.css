@@ -1,0 +1,446 @@
+/*
+ * The toxic case, popped open: it sits glowing on a pad of green light and,
+ * as the page loads and again on hover, squashes and hops with a wiggle
+ * while its loot pops out: the skull mask and the launcher across it rise up
+ * out of the case and the striped launcher out front jumps, then they drop
+ * back in as the case lands. A flash of green light goes off behind it,
+ * toxic bubbles boil up out of the lid, sparkles twinkle round it and a ring
+ * runs out across the pad (see CaseArt.tsx).
+ *
+ * data-playing is set for one pop; the intro (data-intro) also grows the case
+ * in first. Between pops the case floats, its aura breathes and green spores
+ * drift up, timed off --cycle so they loop cleanly.
+ *
+ * Base styles are the case at rest; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+.stage {
+  --cycle: 4.8s;
+  --toxic: #7dff3a;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+/* Green light round the case. */
+.aura {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: 190cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  opacity: 0.8;
+  background: radial-gradient(
+    closest-side,
+    rgba(110, 255, 60, 0.3),
+    rgba(110, 255, 60, 0.08) 50%,
+    rgba(110, 255, 60, 0) 100%
+  );
+}
+
+/* The spores take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: var(--toxic);
+}
+
+/* The glowing pad the case sits on. */
+.pad {
+  position: absolute;
+  top: 97%;
+  left: 50%;
+  width: 136cqw;
+  height: 30cqw;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(150, 255, 90, 0.45),
+    rgba(90, 220, 40, 0.18) 55%,
+    rgba(90, 220, 40, 0) 100%
+  );
+  box-shadow: inset 0 0 0 0.5cqw rgba(160, 255, 110, 0.25);
+}
+
+/* Ring that runs out across the pad as the case lands. */
+.ring {
+  position: absolute;
+  top: 97%;
+  left: 50%;
+  width: 136cqw;
+  height: 30cqw;
+  translate: -50% -50%;
+  opacity: 0;
+  border: 0.7cqw solid #c6ff9e;
+  border-radius: 50%;
+}
+
+.shadow {
+  position: absolute;
+  top: 96%;
+  left: 50%;
+  width: 104cqw;
+  height: 14cqw;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+}
+
+/* Flash of light behind the case as it pops. */
+.burst {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 150cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(240, 255, 225, 0.9),
+    rgba(150, 255, 80, 0.45) 35%,
+    rgba(110, 255, 60, 0) 70%
+  );
+}
+
+/* Out of the open lid. */
+.bubble {
+  position: absolute;
+  top: 35%;
+  left: 52%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(240, 255, 225, 0.95) 0 12%,
+    rgba(150, 255, 80, 0.75) 30%,
+    rgba(90, 220, 40, 0.25) 60%,
+    rgba(90, 220, 40, 0) 72%
+  );
+}
+
+/* ---- Case -------------------------------------------------------------- */
+
+.float,
+.hop,
+.enter {
+  position: absolute;
+  inset: 0;
+}
+
+/* Squashes and stretches from its base. */
+.hop {
+  transform-origin: 50% 96%;
+}
+
+.caseBox {
+  position: absolute;
+  top: 43%;
+  left: 50%;
+  width: 122cqw;
+  aspect-ratio: 764 / 752;
+  translate: -50% -50%;
+  filter: drop-shadow(0 0 3cqw rgba(110, 255, 60, 0.35));
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each piece of loot pivots round its own middle. */
+.loot {
+  transform-origin: 62% 30%;
+}
+
+.launcher {
+  transform-origin: 45% 86%;
+}
+
+.sparkle {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 22%, #e4ffd2 45%, rgba(200, 255, 170, 0) 72%);
+}
+
+/* ---- Motion ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Always running. */
+  .float {
+    animation: float calc(var(--cycle) / 2) ease-in-out infinite alternate;
+  }
+
+  .aura {
+    animation: breathe calc(var(--cycle) / 2) ease-in-out infinite alternate;
+  }
+
+  /* Every pop, intro or replay: a beat, then the hop at 0.4s. */
+  .stage[data-playing] .hop {
+    animation: hop 1s linear 400ms;
+  }
+
+  .stage[data-playing] .loot {
+    animation: loot-pop 1.2s linear 400ms;
+  }
+
+  .stage[data-playing] .launcher {
+    animation: launcher-pop 1.2s linear 460ms;
+  }
+
+  .stage[data-playing] .shadow {
+    animation: shadow 1s linear 400ms;
+  }
+
+  .stage[data-playing] .burst {
+    animation: burst 0.8s ease-out 600ms both;
+  }
+
+  .stage[data-playing] .ring {
+    animation: ring 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 1060ms both;
+  }
+
+  .stage[data-playing] .pad {
+    animation: pad 0.7s ease-out 1060ms;
+  }
+
+  .stage[data-playing] .bubble {
+    animation: bubble 1.1s cubic-bezier(0.2, 0.7, 0.4, 1) calc(600ms + var(--k) * 60ms) both;
+  }
+
+  .stage[data-playing] .sparkle {
+    animation: twinkle 0.7s ease-in-out calc(550ms + var(--k) * 90ms) both;
+  }
+
+  .stage[data-playing][data-intro] .enter {
+    animation: grow 0.45s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  }
+}
+
+@keyframes float {
+  from {
+    transform: translateY(-1.2cqw);
+  }
+  to {
+    transform: translateY(1.2cqw);
+  }
+}
+
+@keyframes breathe {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 0.95;
+  }
+}
+
+@keyframes grow {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Squash, hop with a wiggle, land with a squash and settle. */
+@keyframes hop {
+  0% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  14% {
+    transform: scale(1.07, 0.88);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
+  }
+  34% {
+    transform: translateY(-7cqw) scale(0.97, 1.05) rotate(-4deg);
+    animation-timing-function: ease-in-out;
+  }
+  48% {
+    transform: translateY(-8cqw) scale(1, 1) rotate(3deg);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.8, 0.4);
+  }
+  66% {
+    transform: translateY(0) scale(1.06, 0.92) rotate(-2deg);
+    animation-timing-function: ease-out;
+  }
+  82% {
+    transform: translateY(-1.5cqw) scale(0.98, 1.03) rotate(1deg);
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* The mask and the launcher across the case pop up out of it, hang a
+   moment and drop back in with a little bounce. */
+@keyframes loot-pop {
+  0% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  16% {
+    transform: translateY(1cqw);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  40% {
+    transform: translateY(-12cqw) rotate(-3deg) scale(1.05);
+    animation-timing-function: ease-in-out;
+  }
+  60% {
+    transform: translateY(-13cqw) rotate(2deg) scale(1.05);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
+  }
+  80% {
+    transform: translateY(0.6cqw) rotate(0deg) scale(1);
+    animation-timing-function: ease-out;
+  }
+  90% {
+    transform: translateY(-1.2cqw);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* The launcher out front jumps up and tips, then lands back. */
+@keyframes launcher-pop {
+  0% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  16% {
+    transform: translateY(0.6cqw);
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  40% {
+    transform: translateY(-7cqw) rotate(-4deg);
+    animation-timing-function: ease-in-out;
+  }
+  60% {
+    transform: translateY(-8cqw) rotate(3deg);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
+  }
+  80% {
+    transform: translateY(0.4cqw) rotate(0deg);
+    animation-timing-function: ease-out;
+  }
+  90% {
+    transform: translateY(-0.8cqw);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* The shadow shrinks and fades while the case is in the air. */
+@keyframes shadow {
+  0%,
+  14% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  34%,
+  48% {
+    opacity: 0.45;
+    transform: scale(0.7);
+  }
+  66% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes pad {
+  0% {
+    filter: brightness(1);
+  }
+  15% {
+    filter: brightness(1.9);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes bubble {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  15% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), -34cqw) scale(1.1);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}
