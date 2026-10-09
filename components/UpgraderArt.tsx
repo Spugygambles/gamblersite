@@ -1,7 +1,7 @@
 "use client";
 
 import { Montserrat } from "next/font/google";
-import type { CSSProperties } from "react";
+import { useId, type CSSProperties } from "react";
 import Embers, { type Ember } from "./Embers";
 import styles from "./UpgraderArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
@@ -10,30 +10,36 @@ import { useBannerPlay } from "./useBannerPlay";
 const montserrat = Montserrat({ weight: "800", subsets: ["latin"] });
 
 // Length of one spin: it must outlast the last animation in
-// UpgraderArt.module.css (the green wash settling, ending at 2800 + 900 =
+// UpgraderArt.module.css (the purple wash settling, ending at 2800 + 900 =
 // 3700ms).
 const PLAY_MS = 3800;
+
+// The win zone: ZONE degrees of the ring clockwise from the top. Keep in step
+// with --rest in UpgraderArt.module.css, where the pointer lands inside it.
+const ZONE = 40;
+const RING_R = 46;
+const ZONE_LEN = (ZONE / 360) * 2 * Math.PI * RING_R;
 
 // Sparks thrown off the pointer as it lands in the zone, and off the new
 // value as it bursts in, in cqw.
 const TIP_SPARKS = [
-  { dx: -14, dy: -10, size: 5 },
-  { dx: 2, dy: -17, size: 4 },
-  { dx: 15, dy: -9, size: 5 },
-  { dx: 17, dy: 6, size: 4 },
-  { dx: -16, dy: 5, size: 4 },
+  { dx: -14, dy: -12, size: 5 },
+  { dx: 2, dy: -18, size: 4 },
+  { dx: 16, dy: -10, size: 5 },
+  { dx: 18, dy: 6, size: 4 },
+  { dx: -16, dy: 6, size: 4 },
 ];
 
 const VALUE_SPARKS = [
-  { dx: -48, dy: -16, size: 7 },
-  { dx: -34, dy: 18, size: 5 },
+  { dx: -50, dy: -16, size: 7 },
+  { dx: -36, dy: 18, size: 5 },
   { dx: -12, dy: -24, size: 6 },
   { dx: 14, dy: -23, size: 5 },
-  { dx: 36, dy: 16, size: 6 },
-  { dx: 50, dy: -12, size: 7 },
+  { dx: 38, dy: 16, size: 6 },
+  { dx: 52, dy: -12, size: 7 },
 ];
 
-// Green embers drifting up beside the dial; see Embers.
+// Purple embers drifting up beside the dial; see Embers.
 const EMBERS: Ember[] = [
   { x: -30, y: 118, size: 5.5, rise: 170, sway: 3, speed: 1, phase: 0.15 },
   { x: -22, y: 128, size: 4, rise: 150, sway: -3, speed: 2, phase: 0.6 },
@@ -49,6 +55,7 @@ export default function UpgraderArt() {
   // The dial spins as the page loads; each hover sets $1 back in and spins
   // again.
   const { ref, playing, replays } = useBannerPlay(PLAY_MS);
+  const id = useId();
 
   return (
     <div
@@ -62,38 +69,57 @@ export default function UpgraderArt() {
       <div className={styles.ambient}>
         <Embers embers={EMBERS} />
       </div>
-      <div className={styles.shadow} />
 
-      <div className={styles.scene}>
-        <div className={styles.disc}>
-          <div className={styles.ticks} />
-          <div className={styles.track} />
-          <div className={styles.sweep} />
-          <div className={styles.arc} />
-          <div className={styles.arcGlow} />
-          <div className={styles.plate} />
-          <div className={styles.wave} />
+      <div className={styles.dial}>
+        <div className={styles.face} />
 
-          {/* The pointer rides the track; a trail follows it while it's fast. */}
-          <div className={styles.pointer}>
-            <div className={styles.tail} />
-            <span className={styles.bead} />
-            <span className={styles.marker} />
-            <span className={styles.tipBurst}>
-              {TIP_SPARKS.map((s, i) => (
-                <Spark key={i} {...s} />
-              ))}
-            </span>
-          </div>
+        {/* The white ring and, over it, the purple zone that wins. */}
+        <svg className={styles.ring} viewBox="0 0 100 100">
+          <defs>
+            <filter id={`${id}-glow`} x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.6" />
+            </filter>
+          </defs>
+          <circle className={styles.track} cx="50" cy="50" r={RING_R} />
+          <g transform="rotate(-90 50 50)">
+            <circle
+              className={styles.zoneGlow}
+              cx="50"
+              cy="50"
+              r={RING_R}
+              strokeDasharray={`${ZONE_LEN} 999`}
+              filter={`url(#${id}-glow)`}
+            />
+            <circle
+              className={styles.zone}
+              cx="50"
+              cy="50"
+              r={RING_R}
+              strokeDasharray={`${ZONE_LEN} 999`}
+            />
+          </g>
+        </svg>
+        <div className={styles.glint} />
+        <div className={styles.wave} />
 
-          {/* Lifted off the dial and turned to face the viewer. */}
-          <div className={`${styles.value} ${montserrat.className}`}>
-            {VALUE_SPARKS.map((s, i) => (
+        {/* The pointer runs round inside the ring; a trail follows it while
+            it's fast. */}
+        <div className={styles.pointer}>
+          <div className={styles.trail} />
+          <span className={styles.marker} />
+          <span className={styles.tipBurst}>
+            {TIP_SPARKS.map((s, i) => (
               <Spark key={i} {...s} />
             ))}
-            <span className={styles.from}>$1.00</span>
-            <span className={styles.to}>$100.00</span>
-          </div>
+          </span>
+        </div>
+
+        <div className={`${styles.value} ${montserrat.className}`}>
+          {VALUE_SPARKS.map((s, i) => (
+            <Spark key={i} {...s} />
+          ))}
+          <span className={styles.from}>$1.00</span>
+          <span className={styles.to}>$100.00</span>
         </div>
       </div>
     </div>

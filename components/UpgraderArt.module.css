@@ -1,19 +1,16 @@
 /*
- * An upgrade from $1 to $100: a dial leaning back like the Mines and Keno
- * boards, with $1.00 floating over its centre and a thin green win zone on
- * its track. The pointer whips round three times, slows and creeps into the
- * zone; the zone flashes, a shockwave runs off the dial, sparks fly off the
- * pointer and $1.00 bursts into a green $100.00. It plays as the page loads
- * and again on hover (see UpgraderArt.tsx).
+ * A $1 to $100 upgrade, laid out like the site's Upgrader: a white ring with
+ * a purple win zone at the top, a small pointer running round just inside it
+ * and the value in the middle. The pointer whips round counter-clockwise
+ * three times trailing purple light, slows and creeps into the zone; the zone
+ * flashes, the ring blushes purple, a shockwave runs off it, sparks fly and
+ * $1.00 bursts into a purple $100.00. It plays as the page loads and again
+ * on hover (see UpgraderArt.tsx).
  *
  * data-playing is set for one spin. The intro (data-intro) also pops the dial
  * in; a replay swaps $1.00 back in and spins on from where the pointer
- * rests. Between spins a glint circles the track and embers drift up, timed
+ * rests. Between spins a glint circles the ring and embers drift up, timed
  * off --cycle so they loop cleanly.
- *
- * The dial is a real 3D object: .scene and .disc keep transform-style:
- * preserve-3d, so they may not get opacity, filter or overflow. Fades happen
- * on the leaves.
  *
  * Base styles are the finished spin; motion is only added when the visitor
  * hasn't asked for reduced motion.
@@ -21,12 +18,10 @@
 
 .stage {
   --cycle: 4.8s;
-  --green: #4be853;
-  /* How far the dial leans back. */
-  --tilt: 28deg;
-  /* Where the pointer comes to rest: inside the zone (34deg to 54deg),
-     near its far edge. */
-  --rest: 50deg;
+  --purple: #a24ef3;
+  --lilac: #c99dff;
+  /* Where the pointer comes to rest: inside the zone (0deg to 40deg). */
+  --rest: 22deg;
   /* cqw here = % of the stage's width, since .stage is the size container */
   position: relative;
   width: 100%;
@@ -40,153 +35,108 @@
   border-radius: 50%;
   background: radial-gradient(
     closest-side,
-    rgba(150, 165, 230, 0.16),
-    rgba(150, 165, 230, 0.05) 55%,
-    rgba(150, 165, 230, 0) 100%
+    rgba(150, 90, 255, 0.2),
+    rgba(150, 90, 255, 0.06) 55%,
+    rgba(150, 90, 255, 0) 100%
   );
 }
 
-/* Green light behind the dial once the upgrade hits. */
+/* Purple light behind the dial once the upgrade hits. */
 .winGlow {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 180cqw;
+  width: 190cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
   border-radius: 50%;
-  opacity: 0.4;
-  background: radial-gradient(closest-side, rgba(75, 232, 83, 0.32), rgba(75, 232, 83, 0));
+  opacity: 0.45;
+  background: radial-gradient(closest-side, rgba(162, 78, 243, 0.4), rgba(162, 78, 243, 0));
 }
 
 /* The embers take their color from here. */
 .ambient {
   position: absolute;
   inset: 0;
-  color: var(--green);
+  color: #b06cff;
 }
 
-/* The dial's shadow on the card. */
-.shadow {
-  position: absolute;
-  top: 101%;
-  left: 50%;
-  width: 128cqw;
-  height: 22cqw;
-  translate: -50% -50%;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
-}
-
-/* The dial is drawn at twice the size and scaled back down, so the browser
-   rasterizes it at double resolution and its edges and numbers stay crisp.
-   The scene is the size container for everything inside it, so cqw there
-   still means % of the stage's width once scaled. Its own perspective
-   resolves against the stage, so it is written doubled. */
-.scene {
-  position: absolute;
-  inset: -50%;
-  scale: 0.5;
-  container-type: inline-size;
-  perspective: 680cqw;
-}
-
-.disc {
+.dial {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 134cqw;
+  width: 128cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
-  border-radius: 50%;
-  transform: rotateX(var(--tilt));
-  transform-style: preserve-3d;
-  background: radial-gradient(closest-side, #181b28 0 98.5%, rgba(24, 27, 40, 0) 99.5%);
-  box-shadow:
-    0 0 0 0.4cqw rgba(255, 255, 255, 0.06),
-    0 0 6cqw rgba(0, 0, 0, 0.45);
 }
 
-/* Every layer of the dial covers the whole disc; masks cut each to its ring.
-   Radii are % of the disc's radius. */
-.ticks,
-.track,
-.sweep,
-.arc,
-.arcGlow,
-.plate,
+.face,
+.ring,
+.glint,
 .wave,
 .pointer,
-.tail {
+.trail {
   position: absolute;
-  inset: 0;
   border-radius: 50%;
 }
 
-/* Fine ticks round the rim. */
-.ticks {
-  background: repeating-conic-gradient(rgba(255, 255, 255, 0.22) 0 1.2deg, transparent 1.2deg 6deg);
-  mask-image: radial-gradient(closest-side, transparent 92%, #000 92.5%, #000 98%, transparent 98.5%);
+.ring,
+.glint,
+.pointer,
+.trail {
+  inset: 0;
 }
 
-/* The track the pointer runs round, 74% to 88%. */
+/* The dark face inside the ring. */
+.face {
+  inset: 7%;
+  background: radial-gradient(closest-side, #0f1019 0%, #141522 70%, #1a1b29 100%);
+  box-shadow:
+    inset 0 0 6cqw rgba(0, 0, 0, 0.6),
+    0 0 0 0.3cqw rgba(255, 255, 255, 0.04);
+}
+
+.ring {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.track,
+.zone,
+.zoneGlow {
+  fill: none;
+}
+
 .track {
-  background: radial-gradient(
-    closest-side,
-    transparent 73.5%,
-    #2c3148 74%,
-    #121521 76.5%,
-    #121521 85.5%,
-    #2c3148 88%,
-    transparent 88.5%
-  );
+  stroke: #f2f0fa;
+  stroke-width: 1.6;
 }
 
-.sweep,
-.arc,
-.tail {
-  mask-image: radial-gradient(closest-side, transparent 74%, #000 74.5%, #000 87.5%, transparent 88%);
+.zone {
+  stroke: var(--purple);
+  stroke-width: 2.8;
+  stroke-linecap: round;
 }
 
-/* A faint glint circling the track. */
-.sweep {
-  background: conic-gradient(transparent 0 290deg, rgba(255, 255, 255, 0.1) 360deg);
+.zoneGlow {
+  stroke: var(--purple);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  opacity: 0.65;
 }
 
-/* The win zone: 20deg of the track, 34deg to 54deg round from the top. */
-.arc {
-  background: conic-gradient(
-    from 34deg,
-    #3ccf4a 0deg,
-    #a6ffad 10deg,
-    #3ccf4a 20deg,
-    transparent 20deg 360deg
-  );
+/* A soft glint circling the ring. */
+.glint {
+  background: conic-gradient(transparent 0 290deg, rgba(255, 255, 255, 0.45) 360deg);
+  mask-image: radial-gradient(closest-side, transparent 88%, #000 90%, #000 94%, transparent 96%);
 }
 
-.arcGlow {
-  opacity: 0.55;
-  background: conic-gradient(from 34deg, var(--green) 0deg 20deg, transparent 20deg 360deg);
-  mask-image: radial-gradient(closest-side, transparent 66%, #000 72%, #000 90%, transparent 96%);
-  filter: blur(1.4cqw);
-}
-
-/* The face in the middle the value floats over. */
-.plate {
-  background: radial-gradient(
-    closest-side,
-    #272b40 0%,
-    #1b1e2d 55%,
-    #141622 69%,
-    #2f3550 70%,
-    transparent 70.8%
-  );
-}
-
-/* Shockwave off the rim when the upgrade hits. */
+/* Shockwave off the ring when the upgrade hits. */
 .wave {
+  inset: 4%;
   opacity: 0;
-  border: 0.8cqw solid #a6ffad;
+  border: 0.7cqw solid var(--lilac);
 }
 
 /* ---- Pointer ----------------------------------------------------------- */
@@ -196,67 +146,50 @@
   transform: rotate(var(--rest));
 }
 
-/* Light smeared behind the pointer while it's fast. */
-.tail {
+/* Purple light smeared along the ring behind the pointer while it's fast.
+   The pointer runs counter-clockwise, so the trail lies clockwise of it. */
+.trail {
   opacity: 0;
   background: conic-gradient(
-    from -100deg,
-    rgba(220, 255, 225, 0) 0deg,
-    rgba(220, 255, 225, 0.6) 100deg,
-    transparent 100.5deg 360deg
+    rgba(225, 195, 255, 0.85) 0deg,
+    rgba(162, 78, 243, 0.4) 45deg,
+    rgba(162, 78, 243, 0) 120deg
   );
+  mask-image: radial-gradient(closest-side, transparent 82%, #000 86%, #000 95%, transparent 98%);
 }
 
-/* On the middle of the track (81% out) and just outside it (95%). */
-.bead,
+/* A small triangle just inside the ring, pointing the way it runs. */
 .marker,
 .tipBurst {
   position: absolute;
+  top: 10.5%;
   left: 50%;
 }
 
-.bead,
-.tipBurst {
-  top: 9.5%;
-}
-
-.bead {
+.marker {
   width: 6cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff 0 30%, #c9ffce 45%, rgba(75, 232, 83, 0.6) 60%, rgba(75, 232, 83, 0) 72%);
-}
-
-.marker {
-  top: 2.5%;
-  width: 7cqw;
-  aspect-ratio: 1.1;
-  translate: -50% -50%;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  background: linear-gradient(#fff, #dcffe0);
+  clip-path: polygon(0 50%, 100% 0, 100% 100%);
+  background: linear-gradient(90deg, #fff, #d9c8f5);
+  filter: drop-shadow(0 0 1cqw rgba(200, 160, 255, 0.8));
 }
 
 /* ---- Value ------------------------------------------------------------- */
 
-/* Centred on the dial, lifted off it toward the viewer, then tilted back by
-   exactly the dial's lean so it faces the viewer head-on. */
-/* It has a real box (Chrome clips an animated layer that spills out of a
-   zero-sized one in 3D), with the two values stacked in it. */
 .value {
   position: absolute;
   top: 50%;
   left: 50%;
   display: grid;
   place-items: center;
-  width: 124cqw;
-  height: 38cqw;
+  width: 110cqw;
+  height: 34cqw;
   translate: -50% -50%;
-  font-size: 17.5cqw;
+  font-size: 17cqw;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.02em;
-  transform: translateZ(8cqw) rotateX(calc(var(--tilt) * -1));
 }
 
 .from,
@@ -267,13 +200,13 @@
 
 .from {
   opacity: 0;
-  color: #eef0f8;
-  text-shadow: 0 0 4cqw rgba(220, 230, 255, 0.3);
+  color: #f1f0f8;
+  text-shadow: 0 0 4cqw rgba(220, 210, 255, 0.3);
 }
 
 .to {
-  color: var(--green);
-  text-shadow: 0 0 4cqw rgba(75, 232, 83, 0.55);
+  color: #b77dff;
+  text-shadow: 0 0 4cqw rgba(162, 78, 243, 0.65);
 }
 
 .spark {
@@ -284,19 +217,15 @@
   translate: -50% -50%;
   opacity: 0;
   clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
-  background: radial-gradient(circle, #fff 0 25%, #c9ffce 50%, rgba(160, 255, 170, 0) 75%);
+  background: radial-gradient(circle, #fff 0 25%, #e0c8ff 50%, rgba(200, 150, 255, 0) 75%);
 }
 
 /* ---- Motion ------------------------------------------------------------ */
 
 @media (prefers-reduced-motion: no-preference) {
   /* Always running. */
-  .sweep {
-    animation: sweep var(--cycle) linear infinite;
-  }
-
-  .bead {
-    animation: bead calc(var(--cycle) / 8) ease-in-out infinite alternate;
+  .glint {
+    animation: glint var(--cycle) linear infinite;
   }
 
   /* Every spin, intro or replay. The pointer spins from 0.5s for 2.3s and
@@ -305,8 +234,8 @@
     animation: spin 2.3s cubic-bezier(0.12, 0.62, 0.1, 1) 500ms both;
   }
 
-  .stage[data-playing] .tail {
-    animation: tail 2.3s linear 500ms both;
+  .stage[data-playing] .trail {
+    animation: trail 2.3s linear 500ms both;
   }
 
   .stage[data-playing] .from {
@@ -315,8 +244,12 @@
       swap-out 0.2s ease-in 2800ms forwards;
   }
 
-  .stage[data-playing] .arc {
-    animation: arc-flash 0.6s ease-out 2800ms;
+  .stage[data-playing] .zone {
+    animation: zone-flash 0.6s ease-out 2800ms;
+  }
+
+  .stage[data-playing] .track {
+    animation: ring-flash 0.7s ease-out 2800ms;
   }
 
   .stage[data-playing] .wave {
@@ -331,21 +264,21 @@
     animation: win-glow 0.9s ease-out 2800ms both;
   }
 
-  /* Intro: the dial pops up first. */
-  .stage[data-playing][data-intro] .disc {
-    animation: disc-in 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  /* Intro: the dial pops up first, the pointer starting from the bottom. */
+  .stage[data-playing][data-intro] .dial {
+    animation: dial-in 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
   }
 
   .stage[data-playing][data-intro] .pointer {
-    --spin-from: 0deg;
+    --spin-from: 180deg;
   }
 
   .stage[data-playing][data-intro] .to {
     animation: win-in 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) 2800ms both;
   }
 
-  .stage[data-playing][data-intro] .arcGlow {
-    animation: arc-win 0.9s ease-out 2800ms both;
+  .stage[data-playing][data-intro] .zoneGlow {
+    animation: zone-win 0.9s ease-out 2800ms both;
   }
 
   /* Replay: $100.00 makes way for $1.00 and the pointer spins on from where
@@ -360,56 +293,49 @@
       win-in 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) 2800ms forwards;
   }
 
-  .stage[data-playing]:not([data-intro]) .arcGlow {
+  .stage[data-playing]:not([data-intro]) .zoneGlow {
     animation:
-      arc-dim 0.3s ease-out forwards,
-      arc-win 0.9s ease-out 2800ms forwards;
+      zone-dim 0.3s ease-out forwards,
+      zone-win 0.9s ease-out 2800ms forwards;
   }
 }
 
-@keyframes sweep {
+@keyframes glint {
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes bead {
+@keyframes dial-in {
   from {
-    scale: 0.9;
+    opacity: 0;
+    scale: 0.6;
   }
   to {
-    scale: 1.1;
+    opacity: 1;
+    scale: 1;
   }
 }
 
-@keyframes disc-in {
-  from {
-    transform: rotateX(var(--tilt)) scale(0.2);
-  }
-  to {
-    transform: rotateX(var(--tilt)) scale(1);
-  }
-}
-
-/* Three whole turns and on into the zone. */
+/* Three whole turns counter-clockwise and on into the zone. */
 @keyframes spin {
   from {
     transform: rotate(var(--spin-from, 0deg));
   }
   to {
-    transform: rotate(calc(var(--rest) + 1080deg));
+    transform: rotate(calc(var(--rest) - 1080deg));
   }
 }
 
-@keyframes tail {
+@keyframes trail {
   0% {
     opacity: 0;
   }
   6% {
-    opacity: 0.95;
+    opacity: 1;
   }
   45% {
-    opacity: 0.7;
+    opacity: 0.75;
   }
   80%,
   100% {
@@ -455,48 +381,59 @@
     opacity: 0;
     scale: 0.4;
     color: #fff;
-    text-shadow: 0 0 9cqw rgba(75, 232, 83, 0.95);
+    text-shadow: 0 0 9cqw rgba(162, 78, 243, 1);
   }
   40% {
     opacity: 1;
     scale: 1.18;
-    color: #d6ffd9;
+    color: #ead9ff;
   }
   100% {
     opacity: 1;
     scale: 1;
-    color: var(--green);
-    text-shadow: 0 0 4cqw rgba(75, 232, 83, 0.55);
+    color: #b77dff;
+    text-shadow: 0 0 4cqw rgba(162, 78, 243, 0.65);
   }
 }
 
-@keyframes arc-flash {
+@keyframes zone-flash {
   from {
-    filter: brightness(2.2);
+    stroke: #f0e2ff;
   }
   to {
-    filter: brightness(1);
+    stroke: var(--purple);
   }
 }
 
-@keyframes arc-win {
+/* The white ring blushes purple for a moment. */
+@keyframes ring-flash {
+  0%,
+  100% {
+    stroke: #f2f0fa;
+  }
+  15% {
+    stroke: var(--lilac);
+  }
+}
+
+@keyframes zone-win {
   0% {
-    opacity: 0.2;
+    opacity: 0.3;
   }
   10% {
     opacity: 1;
   }
   100% {
-    opacity: 0.55;
+    opacity: 0.65;
   }
 }
 
-@keyframes arc-dim {
+@keyframes zone-dim {
   from {
-    opacity: 0.55;
+    opacity: 0.65;
   }
   to {
-    opacity: 0.2;
+    opacity: 0.3;
   }
 }
 
@@ -510,7 +447,7 @@
   }
   100% {
     opacity: 0;
-    transform: scale(1.3);
+    transform: scale(1.28);
   }
 }
 
@@ -539,6 +476,6 @@
     opacity: 1;
   }
   100% {
-    opacity: 0.4;
+    opacity: 0.45;
   }
 }
