@@ -1,14 +1,15 @@
 /*
- * A $1 to $100 upgrade, laid out like the site's Upgrader: a white ring with
- * a purple win zone at the top, a small pointer running round just inside it
- * and the value in the middle. The pointer whips round counter-clockwise
- * three times trailing purple light, slows and creeps into the zone; the zone
- * flashes, the ring blushes purple, a shockwave runs off it, sparks fly and
- * $1.00 bursts into a purple $100.00. It plays as the page loads and again
+ * A 10x upgrade from $10 to $100, laid out like the site's Upgrader: a white
+ * ring with a purple win zone (10% of it) at the top, a small arrow running
+ * round just inside it, pointing out at the ring, and the value in the
+ * middle. The arrow whips round clockwise three times trailing purple light,
+ * slows and creeps into the zone; the zone flashes, the ring blushes purple,
+ * a shockwave runs off it, sparks fly and $10.00 bursts into a purple
+ * $100.00. It plays as the page loads and again
  * on hover (see UpgraderArt.tsx).
  *
  * data-playing is set for one spin. The intro (data-intro) also pops the dial
- * in; a replay swaps $1.00 back in and spins on from where the pointer
+ * in; a replay swaps $10.00 back in and spins on from where the pointer
  * rests. Between spins a glint circles the ring and embers drift up, timed
  * off --cycle so they loop cleanly.
  *
@@ -20,8 +21,8 @@
   --cycle: 4.8s;
   --purple: #a24ef3;
   --lilac: #c99dff;
-  /* Where the pointer comes to rest: inside the zone (0deg to 40deg). */
-  --rest: 22deg;
+  /* Where the pointer comes to rest: inside the zone (0deg to 36deg). */
+  --rest: 20deg;
   /* cqw here = % of the stage's width, since .stage is the size container */
   position: relative;
   width: 100%;
@@ -147,18 +148,20 @@
 }
 
 /* Purple light smeared along the ring behind the pointer while it's fast.
-   The pointer runs counter-clockwise, so the trail lies clockwise of it. */
+   The pointer runs clockwise, so the trail lies counter-clockwise of it. */
 .trail {
   opacity: 0;
   background: conic-gradient(
-    rgba(225, 195, 255, 0.85) 0deg,
-    rgba(162, 78, 243, 0.4) 45deg,
-    rgba(162, 78, 243, 0) 120deg
+    from -120deg,
+    rgba(162, 78, 243, 0) 0deg,
+    rgba(162, 78, 243, 0.4) 75deg,
+    rgba(225, 195, 255, 0.85) 120deg,
+    transparent 120.5deg
   );
   mask-image: radial-gradient(closest-side, transparent 82%, #000 86%, #000 95%, transparent 98%);
 }
 
-/* A small triangle just inside the ring, pointing the way it runs. */
+/* A small arrow just inside the ring, pointing out at it. */
 .marker,
 .tipBurst {
   position: absolute;
@@ -170,8 +173,8 @@
   width: 6cqw;
   aspect-ratio: 1;
   translate: -50% -50%;
-  clip-path: polygon(0 50%, 100% 0, 100% 100%);
-  background: linear-gradient(90deg, #fff, #d9c8f5);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  background: linear-gradient(#fff, #d9c8f5);
   filter: drop-shadow(0 0 1cqw rgba(200, 160, 255, 0.8));
 }
 
@@ -281,7 +284,7 @@
     animation: zone-win 0.9s ease-out 2800ms both;
   }
 
-  /* Replay: $100.00 makes way for $1.00 and the pointer spins on from where
+  /* Replay: $100.00 makes way for $10.00 and the pointer spins on from where
      it rests. */
   .stage[data-playing]:not([data-intro]) .pointer {
     --spin-from: var(--rest);
@@ -317,13 +320,13 @@
   }
 }
 
-/* Three whole turns counter-clockwise and on into the zone. */
+/* Three whole turns clockwise and on into the zone. */
 @keyframes spin {
   from {
     transform: rotate(var(--spin-from, 0deg));
   }
   to {
-    transform: rotate(calc(var(--rest) - 1080deg));
+    transform: rotate(calc(var(--rest) + 1080deg));
   }
 }
 

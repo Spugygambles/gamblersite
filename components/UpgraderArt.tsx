@@ -14,9 +14,10 @@ const montserrat = Montserrat({ weight: "800", subsets: ["latin"] });
 // 3700ms).
 const PLAY_MS = 3800;
 
-// The win zone: ZONE degrees of the ring clockwise from the top. Keep in step
-// with --rest in UpgraderArt.module.css, where the pointer lands inside it.
-const ZONE = 40;
+// The win zone: ZONE degrees of the ring clockwise from the top, a 10% chance
+// for a 10x upgrade. Keep in step with --rest in UpgraderArt.module.css, where
+// the pointer lands inside it.
+const ZONE = 36;
 const RING_R = 46;
 const ZONE_LEN = (ZONE / 360) * 2 * Math.PI * RING_R;
 
@@ -52,7 +53,7 @@ const EMBERS: Ember[] = [
 ];
 
 export default function UpgraderArt() {
-  // The dial spins as the page loads; each hover sets $1 back in and spins
+  // The dial spins as the page loads; each hover sets $10 back in and spins
   // again.
   const { ref, playing, replays } = useBannerPlay(PLAY_MS);
   const id = useId();
@@ -118,7 +119,7 @@ export default function UpgraderArt() {
           {VALUE_SPARKS.map((s, i) => (
             <Spark key={i} {...s} />
           ))}
-          <span className={styles.from}>$1.00</span>
+          <span className={styles.from}>$10.00</span>
           <span className={styles.to}>$100.00</span>
         </div>
       </div>
