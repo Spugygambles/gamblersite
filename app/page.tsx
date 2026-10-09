@@ -5,6 +5,7 @@ import KenoArt from "@/components/KenoArt";
 import LimboArt from "@/components/LimboArt";
 import CrashArt from "@/components/CrashArt";
 import MinesArt from "@/components/MinesArt";
+import UpgraderArt from "@/components/UpgraderArt";
 
 export default function Home() {
   return (
@@ -20,6 +21,7 @@ export default function Home() {
           <GameBanner title="Keno" art={<KenoArt />} />
           <GameBanner title="Crash" art={<CrashArt />} />
           <GameBanner title="Limbo" art={<LimboArt />} />
+          <GameBanner title="Upgrader" art={<UpgraderArt />} />
         </div>
       </div>
     </main>
