@@ -1,0 +1,877 @@
+/*
+ * The Rustwild stream banner: a long 16:3 strip that loops every --loop
+ * between two scenes.
+ *
+ * 0s     A claw swipe tears across the banner and flashes; the logo's claw
+ *        marks slash in, then RUST slides in from the left and WILD from the
+ *        right. A shine runs over the wordmark twice while it holds.
+ * 4.5s   Another swipe carries it to the promo: "10%" punches in while its
+ *        digits spin like slot reels and land, DEPOSIT BONUS and
+ *        + MORE REWARDS rise into place and the rewards pop up beside them.
+ * 10s    Back to the first swipe.
+ *
+ * Every animation runs on the same --loop (or a whole fraction of it) with
+ * keyframes given as % of the loop, so the banner repeats seamlessly; delays
+ * are written as "offset - --loop" so staggered parts are already running
+ * when the page opens. cqw = % of the banner's width.
+ *
+ * Base styles are the logo at rest; motion is only added when the viewer
+ * hasn't asked for reduced motion.
+ */
+
+.banner {
+  --loop: 10s;
+  --purple: #7838f0;
+  --purple-hi: #9a64ff;
+  --lilac: #c4a4ff;
+  --white: #f5f5f7;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 3;
+  overflow: hidden;
+  container-type: inline-size;
+  color: var(--white);
+  background: #15161a;
+  isolation: isolate;
+}
+
+/* ---- Backdrop ---------------------------------------------------------- */
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 140% at 50% 130%, rgba(120, 56, 240, 0.28), transparent 70%),
+    linear-gradient(90deg, #121317, #1d1f24 50%, #121317);
+}
+
+/* A thin purple rim and a darker vignette around the edge. */
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 0.1cqw rgba(154, 100, 255, 0.35),
+    inset 0 0 5cqw rgba(0, 0, 0, 0.65);
+}
+
+/* Two soft pools of purple light that drift back and forth. */
+.aurora {
+  position: absolute;
+  inset: -40% -15%;
+  background:
+    radial-gradient(closest-side at 28% 50%, rgba(120, 56, 240, 0.34), transparent),
+    radial-gradient(closest-side at 72% 55%, rgba(154, 100, 255, 0.22), transparent);
+}
+
+/* Faint diagonal scratches, at the claw's angle, sliding slowly past. */
+.hatch {
+  position: absolute;
+  inset: 0 -5cqw;
+  background: repeating-linear-gradient(
+    -52deg,
+    rgba(255, 255, 255, 0.028) 0 0.22cqw,
+    transparent 0.22cqw 2.2cqw
+  );
+  mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent);
+}
+
+/* Light running along the top and bottom edges. */
+.backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent, var(--purple-hi), #fff, var(--purple-hi), transparent) -70% 0 / 40%
+      0.16cqw no-repeat,
+    linear-gradient(90deg, transparent, var(--purple-hi), #fff, var(--purple-hi), transparent) 170% 100% /
+      40% 0.16cqw no-repeat;
+}
+
+/* The embers take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: #8b4dff;
+}
+
+/* ---- Logo scene -------------------------------------------------------- */
+
+.logoScene,
+.promoScene {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promoScene {
+  gap: 2.6cqw;
+  opacity: 0;
+}
+
+.logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  isolation: isolate;
+}
+
+/* Purple light behind the logo that blooms as the words land. */
+.logo::before {
+  content: "";
+  position: absolute;
+  inset: -60% -12%;
+  z-index: -1;
+  opacity: 0.35;
+  background: radial-gradient(closest-side, rgba(120, 56, 240, 0.55), transparent);
+}
+
+.claw {
+  width: 10.5cqw;
+  margin-right: 2.2cqw;
+  overflow: visible;
+  filter: drop-shadow(0 0 1cqw rgba(120, 56, 240, 0.6));
+}
+
+.clawMark {
+  fill: var(--purple);
+  transform-box: fill-box;
+  transform-origin: 100% 0%;
+}
+
+.rust,
+.wild {
+  display: inline-block;
+  font-size: 8.6cqw;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  color: transparent;
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Each word is painted through a wide gradient with a bright band in the
+   middle; sliding it across sweeps a shine over the letters. */
+.rust {
+  background-image: linear-gradient(100deg, var(--white) 0 44%, #fff 47%, #d6c2ff 50%, #fff 53%, var(--white) 56% 100%);
+  filter: drop-shadow(0 0 1.2cqw rgba(255, 255, 255, 0.12));
+}
+
+.wild {
+  margin-left: 0.04em;
+  background-image: linear-gradient(100deg, var(--purple) 0 44%, #b28cff 47%, #f1e8ff 50%, #b28cff 53%, var(--purple) 56% 100%);
+  filter: drop-shadow(0 0 1.4cqw rgba(120, 56, 240, 0.6));
+}
+
+/* ---- Promo scene ------------------------------------------------------- */
+
+.percent {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 11.5cqw;
+  line-height: 1;
+  filter: drop-shadow(0 0 1.6cqw rgba(120, 56, 240, 0.85));
+}
+
+/* A slot reel: a window one digit tall that a strip of digits spins past. */
+.reel {
+  display: block;
+  height: 1.2em;
+  overflow: hidden;
+  mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent);
+}
+
+.reelStrip {
+  display: flex;
+  flex-direction: column;
+  color: #f4eeff;
+}
+
+.reelStrip > span {
+  display: block;
+  height: 1.2em;
+  line-height: 1.2em;
+  text-align: center;
+}
+
+/* Landed on 1 and 0: the last digit of each strip. */
+.reelStrip[data-reel="tens"] {
+  transform: translateY(-13.2em);
+}
+
+.reelStrip[data-reel="ones"] {
+  transform: translateY(-24em);
+}
+
+.sign {
+  margin-left: 0.04em;
+  color: var(--purple-hi);
+}
+
+/* Ring that bursts out as the reels land. */
+.ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5em;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 0.25cqw solid var(--lilac);
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5cqw;
+}
+
+/* Each line rises into place through a slot the height of the line. */
+.line {
+  display: block;
+  overflow: hidden;
+  padding: 0.2cqw 0.3cqw;
+}
+
+.headline {
+  display: inline-block;
+  font-size: 4.4cqw;
+  line-height: 1.05;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  color: transparent;
+  background-image: linear-gradient(100deg, var(--white) 0 44%, #fff 47%, #d6c2ff 50%, #fff 53%, var(--white) 56% 100%);
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.subline {
+  display: inline-block;
+  padding: 0.35cqw 1.1cqw;
+  font-size: 2.5cqw;
+  line-height: 1.1;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  color: var(--lilac);
+  border: 0.12cqw solid rgba(154, 100, 255, 0.55);
+  border-radius: 0.7cqw;
+  background: rgba(120, 56, 240, 0.18);
+}
+
+.rewards {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.1cqw;
+  margin-left: 0.8cqw;
+}
+
+.reward {
+  display: block;
+  filter: drop-shadow(0 0 1cqw rgba(120, 56, 240, 0.7));
+}
+
+.crown,
+.gem {
+  width: 4.8cqw;
+  margin-bottom: 0.8cqw;
+}
+
+.gift {
+  width: 7cqw;
+}
+
+/* ---- Claw swipe -------------------------------------------------------- */
+
+.swipe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.slashGlow,
+.slash,
+.slashCore {
+  transform-box: fill-box;
+  transform-origin: 100% 50%;
+  transform: scale(0, 1);
+}
+
+.slashGlow {
+  fill: rgba(140, 80, 255, 0.5);
+  filter: blur(0.6cqw);
+}
+
+.slash {
+  fill: var(--purple);
+}
+
+.slashCore {
+  fill: #f3ecff;
+}
+
+.flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(205, 175, 255, 0.55),
+    rgba(120, 56, 240, 0.28) 55%,
+    rgba(120, 56, 240, 0) 100%
+  );
+}
+
+/* ---- Motion ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  .aurora {
+    animation: aurora var(--loop) ease-in-out infinite;
+  }
+
+  .hatch {
+    animation: hatch calc(var(--loop) / 2) linear infinite;
+  }
+
+  .backdrop::before {
+    animation: edge-light calc(var(--loop) / 4) linear infinite;
+  }
+
+  .ambient {
+    --cycle: calc(var(--loop) / 2);
+  }
+
+  .swipe path {
+    animation: slash var(--loop) linear infinite;
+    animation-delay: calc(var(--k) * 45ms - var(--loop));
+  }
+
+  .flash {
+    animation: flash var(--loop) linear infinite;
+  }
+
+  .logoScene {
+    animation: logo-scene var(--loop) linear infinite;
+  }
+
+  .promoScene {
+    animation: promo-scene var(--loop) linear infinite;
+  }
+
+  .logo::before {
+    animation: logo-bloom var(--loop) ease-out infinite;
+  }
+
+  .clawMark {
+    animation: claw-mark var(--loop) linear infinite;
+    animation-delay: calc(var(--k) * 70ms - var(--loop));
+  }
+
+  .rust {
+    animation:
+      rust-in var(--loop) linear infinite,
+      shine-logo var(--loop) ease-in-out infinite;
+  }
+
+  .wild {
+    animation:
+      wild-in var(--loop) linear infinite,
+      shine-logo var(--loop) ease-in-out infinite;
+    animation-delay: 0s, calc(120ms - var(--loop));
+  }
+
+  .percent {
+    animation: percent-in var(--loop) linear infinite;
+  }
+
+  .reelStrip[data-reel="tens"] {
+    animation: reel-tens var(--loop) linear infinite;
+  }
+
+  .reelStrip[data-reel="ones"] {
+    animation: reel-ones var(--loop) linear infinite;
+  }
+
+  .ring {
+    animation: ring var(--loop) linear infinite;
+  }
+
+  .headline {
+    animation:
+      rise-headline var(--loop) linear infinite,
+      shine-promo var(--loop) ease-in-out infinite;
+  }
+
+  .subline {
+    animation: rise-subline var(--loop) linear infinite;
+  }
+
+  .reward {
+    animation:
+      reward-pop var(--loop) linear infinite,
+      bob calc(var(--loop) / 8) ease-in-out infinite alternate;
+  }
+
+  .crown {
+    animation-delay: calc(0ms - var(--loop)), -0.4s;
+  }
+
+  .gift {
+    animation-delay: calc(130ms - var(--loop)), -0.9s;
+  }
+
+  .gem {
+    animation-delay: calc(260ms - var(--loop)), -0.15s;
+  }
+}
+
+/* Ambient loops. */
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translateX(-7cqw);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(7cqw);
+    opacity: 1;
+  }
+}
+
+/* One stripe spacing along the x axis: 2.2cqw / sin(52deg). */
+@keyframes hatch {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(2.792cqw);
+  }
+}
+
+@keyframes edge-light {
+  from {
+    background-position:
+      -70% 0,
+      170% 100%;
+  }
+  to {
+    background-position:
+      170% 0,
+      -70% 100%;
+  }
+}
+
+@keyframes bob {
+  from {
+    translate: 0 0.35cqw;
+  }
+  to {
+    translate: 0 -0.35cqw;
+  }
+}
+
+/* The swipe: each slash tears in from its top-right end in 0.2s, holds a
+   moment, then thins out and fades. It runs at 0s and again at 4.5s. */
+@keyframes slash {
+  0% {
+    transform: scale(0, 1);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+  }
+  2% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+  3.5% {
+    transform: scale(1, 1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+  }
+  6% {
+    transform: scale(1, 0.15);
+    opacity: 0;
+  }
+  6.1%,
+  45% {
+    transform: scale(0, 1);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.3, 0.7, 0.4, 1);
+  }
+  47% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+  48.5% {
+    transform: scale(1, 1);
+    opacity: 1;
+    animation-timing-function: ease-in;
+  }
+  51% {
+    transform: scale(1, 0.15);
+    opacity: 0;
+  }
+  51.1%,
+  100% {
+    transform: scale(0, 1);
+    opacity: 1;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+  }
+  1.8% {
+    opacity: 1;
+  }
+  4.5%,
+  44.8% {
+    opacity: 0;
+  }
+  46.8% {
+    opacity: 1;
+  }
+  49.5%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Scenes: the logo shows from 0.25s to 4.75s and the promo the rest of the
+   time, each swapping under a swipe's flash. */
+@keyframes logo-scene {
+  0%,
+  2.4% {
+    opacity: 0;
+  }
+  2.5% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    animation-timing-function: ease-in;
+  }
+  44.5% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    animation-timing-function: ease-in;
+  }
+  47.5% {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(0.6cqw);
+  }
+  47.6%,
+  100% {
+    opacity: 0;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes promo-scene {
+  0% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    animation-timing-function: ease-in;
+  }
+  1.5% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    animation-timing-function: ease-in;
+  }
+  2.5% {
+    opacity: 0;
+    transform: scale(1.06);
+    filter: blur(0.6cqw);
+  }
+  2.6%,
+  47.4% {
+    opacity: 0;
+    transform: none;
+    filter: blur(0);
+  }
+  47.5%,
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+/* Logo entrance. */
+@keyframes claw-mark {
+  0%,
+  2.8% {
+    transform: scale(0);
+    opacity: 0;
+    fill: #fff;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.2);
+  }
+  3% {
+    opacity: 1;
+  }
+  5.5% {
+    transform: scale(1);
+    fill: #fff;
+  }
+  8% {
+    fill: var(--purple);
+  }
+  48%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    fill: var(--purple);
+  }
+}
+
+@keyframes rust-in {
+  0%,
+  3.4% {
+    opacity: 0;
+    transform: translateX(-6cqw) skewX(-12deg);
+    filter: drop-shadow(0 0 1.2cqw rgba(255, 255, 255, 0.12)) blur(0.8cqw);
+    animation-timing-function: cubic-bezier(0.15, 0.85, 0.25, 1);
+  }
+  7.5% {
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 1.2cqw rgba(255, 255, 255, 0.12)) blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 1.2cqw rgba(255, 255, 255, 0.12)) blur(0);
+  }
+}
+
+@keyframes wild-in {
+  0%,
+  4.4% {
+    opacity: 0;
+    transform: translateX(6cqw) skewX(-12deg);
+    filter: drop-shadow(0 0 1.4cqw rgba(120, 56, 240, 0.6)) blur(0.8cqw);
+    animation-timing-function: cubic-bezier(0.15, 0.85, 0.25, 1);
+  }
+  8.5% {
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 1.4cqw rgba(120, 56, 240, 0.6)) blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: drop-shadow(0 0 1.4cqw rgba(120, 56, 240, 0.6)) blur(0);
+  }
+}
+
+@keyframes logo-bloom {
+  0%,
+  7.5% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  9.5% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  20%,
+  44.5% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  47.5%,
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* Shine passes at 1.8s and 3.4s. */
+@keyframes shine-logo {
+  0%,
+  18% {
+    background-position: 100% 0;
+  }
+  25% {
+    background-position: 0% 0;
+  }
+  25.1%,
+  34% {
+    background-position: 100% 0;
+  }
+  41%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+/* Promo entrance. */
+@keyframes percent-in {
+  0%,
+  10% {
+    opacity: 1;
+    transform: none;
+  }
+  10.1%,
+  47.6% {
+    opacity: 0;
+    transform: scale(1.7);
+    animation-timing-function: cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+  49.5% {
+    opacity: 1;
+    transform: scale(0.94);
+  }
+  51%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* The reels spin from 0 at 4.8s; tens lands on 1 at 5.6s, ones on 0 at 5.85s,
+   each overshooting a hair and settling. */
+@keyframes reel-tens {
+  0%,
+  10% {
+    transform: translateY(-13.2em);
+  }
+  10.1%,
+  48% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.35, 0.1, 0.25, 1);
+  }
+  55.4% {
+    transform: translateY(-13.42em);
+    animation-timing-function: ease-out;
+  }
+  56.5%,
+  100% {
+    transform: translateY(-13.2em);
+  }
+}
+
+@keyframes reel-ones {
+  0%,
+  10% {
+    transform: translateY(-24em);
+  }
+  10.1%,
+  48% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.35, 0.1, 0.25, 1);
+  }
+  57.9% {
+    transform: translateY(-24.22em);
+    animation-timing-function: ease-out;
+  }
+  59%,
+  100% {
+    transform: translateY(-24em);
+  }
+}
+
+@keyframes ring {
+  0%,
+  58.4% {
+    opacity: 0;
+    transform: scale(0.45);
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  58.5% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  65%,
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+@keyframes rise-headline {
+  0%,
+  10% {
+    opacity: 1;
+    transform: none;
+  }
+  10.1%,
+  49.8% {
+    opacity: 0;
+    transform: translateY(110%);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  }
+  54.5%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rise-subline {
+  0%,
+  10% {
+    opacity: 1;
+    transform: none;
+  }
+  10.1%,
+  53.5% {
+    opacity: 0;
+    transform: translateY(120%);
+    animation-timing-function: cubic-bezier(0.2, 0.85, 0.25, 1);
+  }
+  58%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Shine passes over the headline at 7s. */
+@keyframes shine-promo {
+  0%,
+  70% {
+    background-position: 100% 0;
+  }
+  78%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+/* The rewards pop up from 5.7s, a little apart (their delays). */
+@keyframes reward-pop {
+  0%,
+  10% {
+    scale: 1;
+    rotate: 0deg;
+  }
+  10.1%,
+  57% {
+    scale: 0;
+    rotate: -25deg;
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.3, 1.4);
+  }
+  61%,
+  100% {
+    scale: 1;
+    rotate: 0deg;
+  }
+}
