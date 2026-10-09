@@ -1,0 +1,424 @@
+/*
+ * A case battle: two cases face off, the New Year case on the left in warm
+ * orange light and the Music Box on the right in cool blue, with a purple VS
+ * between them. As the page loads the cases slide in from either side; then,
+ * every time (on load and on hover), the VS slams down with a flash, the
+ * cases wind up and lunge at each other, and where they meet a shockwave,
+ * a streak of light and sparks go off, the VS shudders, and the cases
+ * recoil and settle while sparkles twinkle over them (see BattleArt.tsx).
+ *
+ * Between battles the cases float out of step and embers drift up in each
+ * side's color, timed off --cycle so they loop cleanly. --dir is -1 on the
+ * left and 1 on the right, so one set of keyframes mirrors for both sides.
+ *
+ * Base styles are the cases at rest; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+.stage {
+  --cycle: 4.8s;
+  --purple: #8a3df0;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+/* Each side's light on the floor and behind its case. */
+.glowLeft,
+.glowRight {
+  position: absolute;
+  top: 62%;
+  width: 150cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+}
+
+.glowLeft {
+  left: 4%;
+  background: radial-gradient(closest-side, rgba(255, 120, 60, 0.32), rgba(255, 120, 60, 0));
+}
+
+.glowRight {
+  left: 96%;
+  background: radial-gradient(closest-side, rgba(70, 180, 255, 0.32), rgba(70, 180, 255, 0));
+}
+
+/* The embers take their color from here. */
+.embersLeft,
+.embersRight {
+  position: absolute;
+  inset: 0;
+}
+
+.embersLeft {
+  color: #ff8a4a;
+}
+
+.embersRight {
+  color: #5ec8ff;
+}
+
+/* ---- Cases ------------------------------------------------------------- */
+
+.side {
+  position: absolute;
+  top: 52%;
+  translate: -50% -50%;
+}
+
+.side[data-side="left"] {
+  --dir: -1;
+  left: 7%;
+  width: 82cqw;
+}
+
+.side[data-side="right"] {
+  --dir: 1;
+  left: 95%;
+  width: 88cqw;
+}
+
+.shadow {
+  position: absolute;
+  top: 92%;
+  left: 50%;
+  width: 84%;
+  height: 14cqw;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+/* Each pivots near the bottom of its case's inner edge, where they meet. */
+.clash {
+  transform-origin: 50% 90%;
+}
+
+.case {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.side[data-side="left"] .case {
+  filter: drop-shadow(0 0 3cqw rgba(255, 120, 60, 0.35));
+}
+
+.side[data-side="right"] .case {
+  filter: drop-shadow(0 0 3cqw rgba(70, 180, 255, 0.35));
+}
+
+/* ---- The clash --------------------------------------------------------- */
+
+/* Where the cases meet, between them. */
+.center {
+  position: absolute;
+  top: 58%;
+  left: 51%;
+  width: 70cqw;
+  height: 50cqw;
+  translate: -50% -50%;
+}
+
+.flash,
+.flare,
+.ring,
+.spark,
+.vsSlam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.flash {
+  width: 90cqw;
+  aspect-ratio: 1;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(245, 235, 255, 0.95),
+    rgba(170, 100, 255, 0.5) 35%,
+    rgba(140, 60, 255, 0) 70%
+  );
+}
+
+.flare {
+  width: 180cqw;
+  height: 2cqw;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 255, 255, 0.95),
+    rgba(190, 140, 255, 0.6) 45%,
+    rgba(190, 140, 255, 0)
+  );
+}
+
+.ring {
+  width: 60cqw;
+  height: 34cqw;
+  opacity: 0;
+  border: 0.8cqw solid #d6b8ff;
+  border-radius: 50%;
+}
+
+.spark {
+  aspect-ratio: 1;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 25%, #ffe6c2 50%, rgba(255, 200, 140, 0) 75%);
+}
+
+.vs {
+  display: block;
+  font-size: 29cqw;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #fff;
+  -webkit-text-stroke: 1.6cqw var(--purple);
+  paint-order: stroke fill;
+  text-shadow:
+    0 0 2cqw rgba(170, 90, 255, 0.9),
+    0 0 7cqw rgba(140, 60, 255, 0.6);
+  transform: skewX(-8deg);
+}
+
+.sparkle {
+  position: absolute;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 22%, #efe2ff 45%, rgba(220, 200, 255, 0) 72%);
+}
+
+/* ---- Motion ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Always running: the cases float out of step. */
+  .float {
+    animation: float calc(var(--cycle) / 2) ease-in-out infinite alternate;
+    /* Half a bob apart: 0 on the left, -2.4s on the right. */
+    animation-delay: calc((var(--dir) + 1) * var(--cycle) / -4);
+  }
+
+  /* Every battle, intro or replay. The VS slams at 0.45s; the cases lunge
+     from 0.75s and meet at about 0.95s, when the clash goes off. */
+  .stage[data-playing] .vsSlam {
+    animation: slam 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) 450ms both;
+  }
+
+  .stage[data-playing] .flash {
+    animation: flash 0.55s ease-out 450ms both;
+  }
+
+  .stage[data-playing] .clash {
+    animation: clash 0.7s linear 750ms;
+  }
+
+  .stage[data-playing] .vs {
+    animation: shudder 0.45s linear 950ms;
+  }
+
+  .stage[data-playing] .ring {
+    animation: ring 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 950ms both;
+  }
+
+  .stage[data-playing] .flare {
+    animation: flare 0.7s ease-out 950ms both;
+  }
+
+  .stage[data-playing] .spark {
+    animation: spark 0.65s cubic-bezier(0.2, 0.8, 0.3, 1) 950ms both;
+  }
+
+  .stage[data-playing] .glowLeft,
+  .stage[data-playing] .glowRight {
+    animation: glow 0.8s ease-out 950ms;
+  }
+
+  .stage[data-playing] .sparkle {
+    animation: twinkle 0.7s ease-in-out calc(1000ms + var(--k) * 110ms) both;
+  }
+
+  /* Intro: the cases slide in from either side first. */
+  .stage[data-playing][data-intro] .slide {
+    animation: slide-in 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  }
+}
+
+@keyframes float {
+  from {
+    transform: translateY(-1.2cqw);
+  }
+  to {
+    transform: translateY(1.2cqw);
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--dir) * 55cqw));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slam {
+  0% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
+}
+
+/* Wind up away from the middle, lunge in, recoil and settle. */
+@keyframes clash {
+  0% {
+    transform: none;
+    animation-timing-function: ease-out;
+  }
+  12% {
+    transform: translateX(calc(var(--dir) * 3cqw)) rotate(calc(var(--dir) * 3deg));
+    animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5);
+  }
+  30% {
+    transform: translateX(calc(var(--dir) * -9cqw)) rotate(calc(var(--dir) * -8deg));
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1);
+  }
+  52% {
+    transform: translateX(calc(var(--dir) * 2.5cqw)) rotate(calc(var(--dir) * 4deg));
+    animation-timing-function: ease-in-out;
+  }
+  74% {
+    transform: translateX(calc(var(--dir) * -1cqw)) rotate(calc(var(--dir) * -1.5deg));
+    animation-timing-function: ease-in-out;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* The VS jolts as the cases hit. */
+@keyframes shudder {
+  0%,
+  100% {
+    transform: skewX(-8deg);
+  }
+  15% {
+    transform: skewX(-8deg) translate(-1.2cqw, 0.6cqw) scale(1.15);
+  }
+  35% {
+    transform: skewX(-8deg) translate(1cqw, -0.5cqw) scale(1.08);
+  }
+  55% {
+    transform: skewX(-8deg) translate(-0.6cqw, 0.3cqw) scale(1.03);
+  }
+  75% {
+    transform: skewX(-8deg) translate(0.3cqw, 0);
+  }
+}
+
+@keyframes ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes flare {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  12% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(90deg);
+  }
+}
+
+@keyframes glow {
+  0% {
+    filter: brightness(1);
+  }
+  15% {
+    filter: brightness(1.8);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(90deg);
+  }
+}

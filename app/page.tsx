@@ -1,3 +1,4 @@
+import BattleArt from "@/components/BattleArt";
 import BlackjackArt from "@/components/BlackjackArt";
 import CaseArt from "@/components/CaseArt";
 import CoinflipArt from "@/components/CoinflipArt";
@@ -24,6 +25,7 @@ export default function Home() {
           <GameBanner title="Limbo" art={<LimboArt />} />
           <GameBanner title="Upgrader" art={<UpgraderArt />} />
           <GameBanner title="Cases" art={<CaseArt />} />
+          <GameBanner title="Case Battles" art={<BattleArt />} />
         </div>
       </div>
     </main>
