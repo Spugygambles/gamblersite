@@ -90,8 +90,8 @@ export default function CaseArt() {
                   className={layer === "base" ? styles.layer : `${styles.layer} ${styles[layer]}`}
                   src={`/cases/toxic-case-${layer}.png`}
                   alt=""
-                  width={764}
-                  height={752}
+                  width={796}
+                  height={780}
                   // Served as-is: already sized for sharp high-DPI screens.
                   unoptimized
                   loading="eager"
