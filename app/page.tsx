@@ -2,6 +2,7 @@ import BlackjackArt from "@/components/BlackjackArt";
 import CoinflipArt from "@/components/CoinflipArt";
 import GameBanner from "@/components/GameBanner";
 import KenoArt from "@/components/KenoArt";
+import LimboArt from "@/components/LimboArt";
 import CrashArt from "@/components/CrashArt";
 import MinesArt from "@/components/MinesArt";
 
@@ -18,6 +19,7 @@ export default function Home() {
           <GameBanner title="Mines" art={<MinesArt />} />
           <GameBanner title="Keno" art={<KenoArt />} />
           <GameBanner title="Crash" art={<CrashArt />} />
+          <GameBanner title="Limbo" art={<LimboArt />} />
         </div>
       </div>
     </main>

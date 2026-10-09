@@ -1,0 +1,384 @@
+/*
+ * Limbo, like the site's game: a big multiplier sits at a white 1.00×, rolls
+ * up fast and eases into 2.29×, which turns green as it lands, with a ring,
+ * sparks, a flare of light across the card and a green wash behind it, and
+ * the result drops into the corner as the game's last-result pill. It plays
+ * as the page loads and again on hover (see LimboArt.tsx).
+ *
+ * data-playing is set for one roll; the multiplier pops back in at 1.00× each
+ * time and, on a replay, the old pill slips away first. Between rolls green
+ * embers drift up, timed off --cycle so they loop cleanly.
+ *
+ * The multiplier is drawn with CSS counters from --limbo-total, the result in
+ * hundredths, so the roll is an ordinary animation that pauses and replays
+ * with everything else.
+ *
+ * Base styles are the finished roll; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+@property --limbo-total {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 229;
+}
+
+/* Whole part and hundredths of --limbo-total. Rounding (total - 50) / 100 to
+   the nearest integer gives the whole part. */
+@property --limbo-whole {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 2;
+}
+
+@property --limbo-cents {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 29;
+}
+
+.stage {
+  --cycle: 4.8s;
+  /* The game's win green. */
+  --green: #68c888;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(150, 165, 230, 0.16),
+    rgba(150, 165, 230, 0.05) 55%,
+    rgba(150, 165, 230, 0) 100%
+  );
+}
+
+/* Green light behind the multiplier once it lands. */
+.winGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 170cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  opacity: 0.4;
+  background: radial-gradient(closest-side, rgba(104, 200, 136, 0.38), rgba(104, 200, 136, 0));
+}
+
+/* The embers take their color from here. */
+.ambient {
+  position: absolute;
+  inset: 0;
+  color: var(--green);
+}
+
+/* A streak of light straight across the card through the multiplier. */
+.flare {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 190cqw;
+  height: 1.8cqw;
+  translate: -50% -50%;
+  opacity: 0.25;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(235, 255, 240, 0.95),
+    rgba(104, 200, 136, 0.55) 45%,
+    rgba(104, 200, 136, 0)
+  );
+}
+
+/* The point the multiplier, its ring and its sparks are centred on. */
+.readout {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.num {
+  --limbo-total: 229;
+  --limbo-whole: calc((var(--limbo-total) - 50) / 100);
+  --limbo-cents: calc(var(--limbo-total) - var(--limbo-whole) * 100);
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  counter-reset: whole var(--limbo-whole) cents var(--limbo-cents);
+  font-size: 38cqw;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--green);
+  text-shadow: 0 0 5cqw rgba(104, 200, 136, 0.5);
+}
+
+.num::before,
+.num::after {
+  content: counter(whole) "." counter(cents, decimal-leading-zero) "\00D7";
+}
+
+/* A blurred copy trailing below the digits while they roll. */
+.num::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(12%);
+  filter: blur(1.4cqw);
+}
+
+.ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 140cqw;
+  height: 58cqw;
+  translate: -50% -50%;
+  opacity: 0;
+  border: 0.9cqw solid #a8f0bf;
+  border-radius: 50%;
+}
+
+.spark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 25%, #c8f7d6 50%, rgba(170, 240, 195, 0) 75%);
+}
+
+/* The game's last-result pill, up in the card's top-right corner. */
+.pill {
+  position: absolute;
+  top: -70cqw;
+  right: -29cqw;
+  padding: 1.8cqw 3.2cqw;
+  font-size: 7.5cqw;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--green);
+  border-radius: 2.4cqw;
+  background: rgba(104, 200, 136, 0.16);
+  box-shadow:
+    inset 0 0 0 0.4cqw rgba(104, 200, 136, 0.28),
+    0 0 4cqw rgba(104, 200, 136, 0.25);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Every roll, intro or replay. The multiplier pops in at 1.00×, holds a
+     beat, rolls up for 0.6s and lands at 1.2s. */
+  .stage[data-playing] .num {
+    animation:
+      rush 0.6s ease-in 600ms both,
+      num-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards,
+      roll 0.6s linear 600ms both,
+      num-win 0.5s ease-out 1200ms both;
+  }
+
+  .stage[data-playing] .num::after {
+    animation: ghost 0.6s linear 600ms both;
+  }
+
+  .stage[data-playing] .ring {
+    animation: ring 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 1200ms both;
+  }
+
+  .stage[data-playing] .spark {
+    animation: spark 0.65s cubic-bezier(0.2, 0.8, 0.3, 1) 1200ms both;
+  }
+
+  .stage[data-playing] .winGlow {
+    animation: win-glow 0.9s ease-out 1200ms both;
+  }
+
+  .stage[data-playing] .flare {
+    animation: flare 0.8s ease-out 1200ms both;
+  }
+
+  .stage[data-playing][data-intro] .pill {
+    animation: pill-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) 1300ms both;
+  }
+
+  .stage[data-playing]:not([data-intro]) .pill {
+    animation:
+      pill-out 0.2s ease-in forwards,
+      pill-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.3) 1300ms forwards;
+  }
+}
+
+@keyframes num-in {
+  from {
+    opacity: 0;
+    scale: 0.8;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* Grows a touch as it climbs, dropping back as the landing pop takes over. */
+@keyframes rush {
+  0% {
+    scale: 1;
+  }
+  92% {
+    scale: 1.07;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+/* 1.00× to 2.29×: fast at first, easing in to the result. */
+@keyframes roll {
+  0% {
+    --limbo-total: 100;
+  }
+  15% {
+    --limbo-total: 125;
+  }
+  30% {
+    --limbo-total: 158;
+  }
+  45% {
+    --limbo-total: 185;
+  }
+  60% {
+    --limbo-total: 204;
+  }
+  75% {
+    --limbo-total: 218;
+  }
+  88% {
+    --limbo-total: 226;
+  }
+  100% {
+    --limbo-total: 229;
+  }
+}
+
+@keyframes ghost {
+  0% {
+    opacity: 0;
+  }
+  15%,
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes num-win {
+  0% {
+    color: #fff;
+    text-shadow: 0 0 5cqw rgba(220, 230, 255, 0.35);
+    transform: scale(1);
+  }
+  30% {
+    color: #d2fadf;
+    text-shadow: 0 0 9cqw rgba(104, 200, 136, 0.95);
+    transform: scale(1.16);
+  }
+  100% {
+    color: var(--green);
+    text-shadow: 0 0 5cqw rgba(104, 200, 136, 0.5);
+    transform: scale(1);
+  }
+}
+
+@keyframes ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.3);
+  }
+}
+
+@keyframes spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(90deg);
+  }
+}
+
+@keyframes win-glow {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes flare {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+  10% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0.25;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(-60%) scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pill-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-60%) scale(0.6);
+  }
+}
