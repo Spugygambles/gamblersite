@@ -1,0 +1,596 @@
+/*
+ * A rocket launch for Limbo: the rocket sits on its pad under a dim 1.00×,
+ * ignites and shakes in a roll of smoke, then blasts off while the multiplier
+ * counts up faster and faster and star streaks stretch past. It lands on
+ * 3.87×, which turns green with a ring, sparks and a wash of green light. It
+ * plays as the page loads and again on hover (see LimboArt.tsx).
+ *
+ * data-playing is set for one launch. The intro (data-intro) fades the rocket
+ * in on its pad; a replay first drops the cruising rocket back onto the pad.
+ * Between launches the rocket cruises, bobbing, its flame flickering, while
+ * stars stream past, timed off --cycle so they loop cleanly.
+ *
+ * The multiplier is drawn with CSS counters from --limbo-total, the result in
+ * hundredths, so the count is an ordinary animation that pauses and replays
+ * with everything else.
+ *
+ * Base styles are the finished launch; motion is only added when the visitor
+ * hasn't asked for reduced motion.
+ */
+
+@property --limbo-total {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 387;
+}
+
+/* Whole part and hundredths of --limbo-total. Rounding (total - 50) / 100 to
+   the nearest integer gives the whole part. */
+@property --limbo-whole {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 3;
+}
+
+@property --limbo-cents {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 87;
+}
+
+.stage {
+  --cycle: 4.8s;
+  --green: #4be853;
+  /* How far below its cruising height the rocket sits on the pad. */
+  --pad-drop: 26cqw;
+  /* cqw here = % of the stage's width, since .stage is the size container */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(80, 150, 255, 0.24),
+    rgba(80, 150, 255, 0.07) 55%,
+    rgba(80, 150, 255, 0) 100%
+  );
+}
+
+/* Green light behind the multiplier once it lands. */
+.winGlow {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  width: 150cqw;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border-radius: 50%;
+  opacity: 0.35;
+  background: radial-gradient(closest-side, rgba(75, 232, 83, 0.4), rgba(75, 232, 83, 0));
+}
+
+/* ---- Stars rushing past ------------------------------------------------ */
+
+.warp {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+}
+
+.streak {
+  position: absolute;
+  top: -90%;
+  width: 0.7cqw;
+  border-radius: 0.35cqw;
+  opacity: 0;
+  background: linear-gradient(rgba(140, 190, 255, 0), rgba(205, 230, 255, 0.85));
+}
+
+/* ---- Launch pad and smoke ---------------------------------------------- */
+
+.pad {
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  width: 44cqw;
+  height: 3.6cqw;
+  translate: -50% 0;
+  opacity: 0;
+  border-radius: 1.5cqw;
+  background: linear-gradient(#5d6480, #2c3044);
+  box-shadow:
+    inset 0 0.4cqw 0 rgba(255, 255, 255, 0.18),
+    0 0 4cqw rgba(255, 140, 70, 0.25);
+}
+
+.puff {
+  position: absolute;
+  top: 121%;
+  left: 50%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(232, 235, 245, 0.95),
+    rgba(175, 181, 205, 0.55) 50%,
+    rgba(170, 176, 200, 0) 70%
+  );
+}
+
+/* ---- Rocket ------------------------------------------------------------ */
+
+/* At cruising height; the pad is --pad-drop below. */
+.rocket {
+  position: absolute;
+  top: 76%;
+  left: 50%;
+  width: 34cqw;
+  aspect-ratio: 60 / 120;
+  translate: -50% -50%;
+}
+
+.hover,
+.shake,
+.flamePower {
+  position: absolute;
+  inset: 0;
+}
+
+.ship {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  filter: drop-shadow(0 0 2cqw rgba(120, 180, 255, 0.35));
+}
+
+/* Hangs from the nozzle; scaled down to a pilot light before launch. */
+.flamePower {
+  transform-origin: 50% 80%;
+}
+
+/* Hot glow at the nozzle and a long faint trail beneath. */
+.flamePower::before,
+.flamePower::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+}
+
+.flamePower::before {
+  top: 66%;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 170, 80, 0.55), rgba(255, 90, 60, 0));
+}
+
+.flamePower::after {
+  top: 95%;
+  width: 18%;
+  height: 120%;
+  border-radius: 50%;
+  background: linear-gradient(rgba(255, 190, 110, 0.6), rgba(255, 110, 140, 0.25) 45%, rgba(255, 90, 140, 0));
+}
+
+.flame {
+  position: absolute;
+  top: 78%;
+  left: 50%;
+  width: 40%;
+  translate: -50% 0;
+  overflow: visible;
+  transform-origin: 50% 0;
+}
+
+/* ---- Multiplier -------------------------------------------------------- */
+
+/* The point the multiplier, its ring and its sparks are centred on. */
+.readout {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+}
+
+.num {
+  --limbo-total: 387;
+  --limbo-whole: calc((var(--limbo-total) - 50) / 100);
+  --limbo-cents: calc(var(--limbo-total) - var(--limbo-whole) * 100);
+  position: absolute;
+  top: 0;
+  left: 0;
+  translate: -50% -50%;
+  counter-reset: whole var(--limbo-whole) cents var(--limbo-cents);
+  font: 700 30cqw/1 Arial, Helvetica, sans-serif;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  color: var(--green);
+  text-shadow: 0 0 4cqw rgba(75, 232, 83, 0.55);
+}
+
+.num::before {
+  content: counter(whole) "." counter(cents, decimal-leading-zero) "\00D7";
+}
+
+.ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 112cqw;
+  height: 48cqw;
+  translate: -50% -50%;
+  opacity: 0;
+  border: 0.8cqw solid #9cff9f;
+  border-radius: 50%;
+}
+
+.spark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  opacity: 0;
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  background: radial-gradient(circle, #fff 0 25%, #c8ffcb 50%, rgba(160, 255, 165, 0) 75%);
+}
+
+/* ---- Motion ------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Always running. */
+  .streak {
+    animation: fall var(--cycle) linear infinite;
+  }
+
+  .hover {
+    animation: cruise calc(var(--cycle) / 2) ease-in-out infinite alternate;
+  }
+
+  .flame {
+    animation: flicker 0.12s ease-in-out infinite alternate;
+  }
+
+  /* Every launch, intro or replay. */
+  .stage[data-playing] .shake {
+    animation: shake 0.3s linear 350ms;
+  }
+
+  .stage[data-playing] .puff {
+    animation: puff 1s ease-out calc(450ms + var(--k) * 25ms) both;
+  }
+
+  .stage[data-playing] .warp {
+    animation: warp 2.1s ease-in-out 500ms both;
+  }
+
+  .stage[data-playing] .num {
+    animation:
+      count 1.4s linear 650ms both,
+      num-wake 0.3s ease-out 650ms both,
+      num-win 0.45s ease-out 2050ms forwards;
+  }
+
+  .stage[data-playing] .ring {
+    animation: ring 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) 2050ms both;
+  }
+
+  .stage[data-playing] .spark {
+    animation: spark 0.65s cubic-bezier(0.2, 0.8, 0.3, 1) 2050ms both;
+  }
+
+  .stage[data-playing] .winGlow {
+    animation: win-glow 0.9s ease-out 2050ms both;
+  }
+
+  /* Intro: the rocket fades in on its pad. */
+  .stage[data-playing][data-intro] .rocket {
+    animation:
+      appear 0.35s ease-out both,
+      liftoff 0.9s cubic-bezier(0.55, 0, 0.3, 1) 650ms both;
+  }
+
+  .stage[data-playing][data-intro] .pad {
+    animation: pad-away 0.5s ease-in 700ms both;
+  }
+
+  .stage[data-playing][data-intro] .flamePower {
+    animation: power 0.45s ease-out 350ms both;
+  }
+
+  /* Replay: the cruising rocket drops back onto the pad first. */
+  .stage[data-playing]:not([data-intro]) .rocket {
+    animation:
+      land 0.35s cubic-bezier(0.5, 0, 0.75, 0) forwards,
+      liftoff 0.9s cubic-bezier(0.55, 0, 0.3, 1) 650ms forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .pad {
+    animation:
+      pad-back 0.35s ease-out forwards,
+      pad-away 0.5s ease-in 700ms forwards;
+  }
+
+  .stage[data-playing]:not([data-intro]) .flamePower {
+    animation:
+      unpower 0.3s ease-in forwards,
+      power 0.45s ease-out 350ms forwards;
+  }
+}
+
+@keyframes fall {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  10%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(290cqw);
+  }
+}
+
+@keyframes cruise {
+  from {
+    transform: translateY(-1cqw) rotate(-1.5deg);
+  }
+  to {
+    transform: translateY(1cqw) rotate(1.5deg);
+  }
+}
+
+@keyframes flicker {
+  from {
+    transform: scale(1.06, 0.9);
+  }
+  to {
+    transform: scale(0.94, 1.08);
+  }
+}
+
+/* Ignition: the rocket rattles as the engine lights. */
+@keyframes shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  12% {
+    transform: translate(-0.7cqw, 0.2cqw);
+  }
+  25% {
+    transform: translate(0.6cqw, -0.2cqw);
+  }
+  38% {
+    transform: translate(-0.6cqw, 0);
+  }
+  50% {
+    transform: translate(0.5cqw, 0.2cqw);
+  }
+  62% {
+    transform: translate(-0.4cqw, -0.1cqw);
+  }
+  75% {
+    transform: translate(0.3cqw, 0);
+  }
+  88% {
+    transform: translate(-0.2cqw, 0.1cqw);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    scale: 0.75;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes land {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--pad-drop));
+  }
+}
+
+/* Off the pad and up to cruising height, overshooting a little. */
+@keyframes liftoff {
+  0% {
+    transform: translateY(var(--pad-drop));
+  }
+  78% {
+    transform: translateY(-3cqw);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pad-away {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(14cqw);
+  }
+}
+
+@keyframes pad-back {
+  from {
+    opacity: 0;
+    transform: translateY(14cqw);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes power {
+  from {
+    transform: scale(0.35);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes unpower {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.35);
+  }
+}
+
+@keyframes puff {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  15% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1.5);
+  }
+}
+
+/* The stars stretch out and brighten as the rocket speeds up, then settle. */
+@keyframes warp {
+  0% {
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+  60%,
+  75% {
+    opacity: 0.85;
+    transform: scaleY(2.6);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+}
+
+/* 1.00× up to 3.87×, slowly at first and faster and faster. */
+@keyframes count {
+  0% {
+    --limbo-total: 100;
+  }
+  20% {
+    --limbo-total: 108;
+  }
+  40% {
+    --limbo-total: 122;
+  }
+  55% {
+    --limbo-total: 140;
+  }
+  70% {
+    --limbo-total: 172;
+  }
+  82% {
+    --limbo-total: 215;
+  }
+  92% {
+    --limbo-total: 290;
+  }
+  100% {
+    --limbo-total: 387;
+  }
+}
+
+@keyframes num-wake {
+  from {
+    color: #8b93aa;
+    text-shadow: 0 0 4cqw rgba(255, 255, 255, 0);
+  }
+  to {
+    color: #fff;
+    text-shadow: 0 0 4cqw rgba(200, 225, 255, 0.45);
+  }
+}
+
+@keyframes num-win {
+  0% {
+    color: #fff;
+    text-shadow: 0 0 4cqw rgba(200, 225, 255, 0.45);
+    transform: scale(1);
+  }
+  35% {
+    color: #c6ffc9;
+    text-shadow: 0 0 7cqw rgba(75, 232, 83, 0.9);
+    transform: scale(1.2);
+  }
+  100% {
+    color: var(--green);
+    text-shadow: 0 0 4cqw rgba(75, 232, 83, 0.55);
+    transform: scale(1);
+  }
+}
+
+@keyframes ring {
+  0% {
+    opacity: 0;
+    transform: scale(0.55);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+@keyframes spark {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(0deg);
+  }
+  12% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1) rotate(90deg);
+  }
+}
+
+@keyframes win-glow {
+  0% {
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.35;
+  }
+}
