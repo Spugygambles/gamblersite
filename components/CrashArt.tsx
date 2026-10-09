@@ -1,11 +1,11 @@
 "use client";
 
 import { useId, type CSSProperties } from "react";
-import styles from "./LimboArt.module.css";
+import styles from "./CrashArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // Length of one launch: it must outlast the last animation in
-// LimboArt.module.css (the win glow settling, ending at 2050 + 900 = 2950ms).
+// CrashArt.module.css (the win glow settling, ending at 2050 + 900 = 2950ms).
 const PLAY_MS = 3000;
 
 // Star streaks rushing past the rocket. x and top are % of the art's stage,
@@ -59,7 +59,7 @@ const SPARKS = [
   { dx: 62, dy: -12, size: 9 },
 ];
 
-export default function LimboArt() {
+export default function CrashArt() {
   // The rocket launches as the page loads; each hover sets it back on the
   // pad and launches it again.
   const { ref, playing, replays } = useBannerPlay(PLAY_MS);

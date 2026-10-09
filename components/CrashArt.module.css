@@ -1,16 +1,16 @@
 /*
- * A rocket launch for Limbo: the rocket sits on its pad under a dim 1.00×,
+ * A rocket launch for Crash: the rocket sits on its pad under a dim 1.00×,
  * ignites and shakes in a roll of smoke, then blasts off while the multiplier
  * counts up faster and faster and star streaks stretch past. It lands on
  * 3.87×, which turns green with a ring, sparks and a wash of green light. It
- * plays as the page loads and again on hover (see LimboArt.tsx).
+ * plays as the page loads and again on hover (see CrashArt.tsx).
  *
  * data-playing is set for one launch. The intro (data-intro) fades the rocket
  * in on its pad; a replay first drops the cruising rocket back onto the pad.
  * Between launches the rocket cruises, bobbing, its flame flickering, while
  * stars stream past, timed off --cycle so they loop cleanly.
  *
- * The multiplier is drawn with CSS counters from --limbo-total, the result in
+ * The multiplier is drawn with CSS counters from --crash-total, the result in
  * hundredths, so the count is an ordinary animation that pauses and replays
  * with everything else.
  *
@@ -18,21 +18,21 @@
  * hasn't asked for reduced motion.
  */
 
-@property --limbo-total {
+@property --crash-total {
   syntax: "<integer>";
   inherits: false;
   initial-value: 387;
 }
 
-/* Whole part and hundredths of --limbo-total. Rounding (total - 50) / 100 to
+/* Whole part and hundredths of --crash-total. Rounding (total - 50) / 100 to
    the nearest integer gives the whole part. */
-@property --limbo-whole {
+@property --crash-whole {
   syntax: "<integer>";
   inherits: false;
   initial-value: 3;
 }
 
-@property --limbo-cents {
+@property --crash-cents {
   syntax: "<integer>";
   inherits: false;
   initial-value: 87;
@@ -201,14 +201,14 @@
 }
 
 .num {
-  --limbo-total: 387;
-  --limbo-whole: calc((var(--limbo-total) - 50) / 100);
-  --limbo-cents: calc(var(--limbo-total) - var(--limbo-whole) * 100);
+  --crash-total: 387;
+  --crash-whole: calc((var(--crash-total) - 50) / 100);
+  --crash-cents: calc(var(--crash-total) - var(--crash-whole) * 100);
   position: absolute;
   top: 0;
   left: 0;
   translate: -50% -50%;
-  counter-reset: whole var(--limbo-whole) cents var(--limbo-cents);
+  counter-reset: whole var(--crash-whole) cents var(--crash-cents);
   font: 700 30cqw/1 Arial, Helvetica, sans-serif;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -498,28 +498,28 @@
 /* 1.00× up to 3.87×, slowly at first and faster and faster. */
 @keyframes count {
   0% {
-    --limbo-total: 100;
+    --crash-total: 100;
   }
   20% {
-    --limbo-total: 108;
+    --crash-total: 108;
   }
   40% {
-    --limbo-total: 122;
+    --crash-total: 122;
   }
   55% {
-    --limbo-total: 140;
+    --crash-total: 140;
   }
   70% {
-    --limbo-total: 172;
+    --crash-total: 172;
   }
   82% {
-    --limbo-total: 215;
+    --crash-total: 215;
   }
   92% {
-    --limbo-total: 290;
+    --crash-total: 290;
   }
   100% {
-    --limbo-total: 387;
+    --crash-total: 387;
   }
 }
 
