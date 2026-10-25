@@ -86,11 +86,11 @@
   const timers = [];
   document.querySelectorAll("main a[href]").forEach((card) => {
     const ends = ENDS[card.getAttribute("href")];
-    const el = [...card.querySelectorAll("span")].find((s) => classOf(s, "ends"));
+    const el = [...card.querySelectorAll("span")].find((s) => classOf(s, "timer"));
     if (ends && el) timers.push({ end: ends().getTime(), el });
   });
   const tick = () => {
-    for (const t of timers) t.el.textContent = `Ends in ${formatLeft(t.end - Date.now())}`;
+    for (const t of timers) t.el.lastChild.textContent = formatLeft(t.end - Date.now());
   };
   tick();
   setInterval(tick, 30000);

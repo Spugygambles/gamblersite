@@ -16,18 +16,35 @@
   margin-top: 22px;
 }
 
-/* Section heads: the title, and a link where there's more. */
+/* Section heads: a gold mark, the title, and a count or a link. */
 .head {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 14px;
+}
+
+.mark {
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--gold);
 }
 
 .title {
   margin: 0;
   color: var(--text);
-  font: 700 19px/1 var(--font-ui), sans-serif;
+  font: italic 900 19px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.count {
+  padding: 4px 7px;
+  border: 1px solid rgba(255, 197, 49, 0.3);
+  border-radius: 5px;
+  color: var(--brand);
+  font: 700 11.5px/1 var(--font-ui), sans-serif;
 }
 
 .more {

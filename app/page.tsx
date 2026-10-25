@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { GAMES } from "@/lib/home";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
@@ -10,6 +11,7 @@ import styles from "./page.module.css";
 function SectionHead({ id, title, children }: { id: string; title: string; children?: ReactNode }) {
   return (
     <div className={styles.head}>
+      <span className={styles.mark} aria-hidden />
       <h2 id={id} className={styles.title}>
         {title}
       </h2>
@@ -28,7 +30,9 @@ export default function Home() {
 
         {/* The games come first, all of them on screen without scrolling. */}
         <section className={`${styles.section} ${styles.first}`} aria-labelledby="games">
-          <SectionHead id="games" title="Games" />
+          <SectionHead id="games" title="Games">
+            <span className={styles.count}>{GAMES.length}</span>
+          </SectionHead>
           <GameModes />
         </section>
 

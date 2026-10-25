@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./Wordmark.module.css";
 
-// The brand is the name alone: CSGO in white, NEO in the yellow.
+// The brand is the name alone: CSGO in white, NEO in gold.
 export default function Wordmark({ className = "" }: { className?: string }) {
   return (
     <Link href="/" className={`${styles.wordmark} ${className}`} aria-label="CsgoNeo home">

@@ -1,5 +1,6 @@
-/* Promotions: the player's level, then a card per promo with its art in the
-   corner. Plain dark cards like the games. */
+/* Promotions in black and gold: warm dark cards like the game tiles, bold
+   italic titles with a gold word, glossy gold buttons, and each promo's time
+   left in the corner. */
 
 .row {
   display: grid;
@@ -12,21 +13,29 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 188px;
-  padding: 20px;
+  min-height: 190px;
+  padding: 18px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: var(--surface);
+  background: linear-gradient(180deg, #1a160f, #110f0b);
   box-sizing: border-box;
-  color: var(--text);
+  color: #fff;
 }
 
 .title {
   position: relative;
   z-index: 1;
   margin: 0;
-  font: 700 18px/1.15 var(--font-ui), sans-serif;
+  font: italic 900 20px/1.05 var(--font-ui), sans-serif;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.gold {
+  background: var(--gold);
+  background-clip: text;
+  color: transparent;
 }
 
 .text {
@@ -34,64 +43,91 @@
   z-index: 1;
   max-width: 165px;
   margin: 8px 0 0;
-  color: var(--text-muted);
-  font: 400 13px/1.45 var(--font-ui), sans-serif;
+  color: var(--text-soft);
+  font: 500 13px/1.45 var(--font-ui), sans-serif;
 }
 
-.ends {
-  position: relative;
-  z-index: 1;
-  margin-top: 10px;
-  color: var(--brand);
-  font: 500 12.5px/1 var(--font-ui), sans-serif;
-}
-
+/* Glossy gold, like the deposit button. */
 .button {
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   height: 34px;
   margin-top: auto;
   padding: 0 15px;
   border-radius: 8px;
-  background: var(--brand);
+  background: var(--gold);
+  box-shadow: inset 0 -2px 0 rgba(120, 70, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--gold-glow);
   color: var(--on-brand);
-  font: 600 13px/1 var(--font-ui), sans-serif;
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 0.15s ease;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.button svg {
+  width: 16px;
+  height: 16px;
 }
 
 /* ---- Level ------------------------------------------------------------- */
 
+.rewards {
+  background:
+    radial-gradient(80% 70% at 100% 0%, rgba(255, 190, 40, 0.13), transparent 70%),
+    linear-gradient(180deg, #1a160f, #110f0b);
+}
+
 .levelHead {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  align-items: center;
+  gap: 11px;
   align-self: stretch;
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 42px;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--gold);
+  color: var(--on-brand);
+  font: 900 14px/1 var(--font-ui), sans-serif;
 }
 
 .pct {
-  color: var(--text-muted);
-  font: 500 13px/1 var(--font-ui), sans-serif;
+  margin-left: auto;
+  color: var(--brand);
+  font: 700 13px/1 var(--font-ui), sans-serif;
 }
 
-.track {
+/* The bar: a row of segments that light up, like a level meter. */
+.segments {
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 3px;
   align-self: stretch;
-  height: 6px;
+  height: 12px;
   margin-top: 16px;
-  overflow: hidden;
-  border-radius: 3px;
-  background: var(--surface-2);
 }
 
-.track span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--brand);
+.segments span {
+  border-radius: 1.5px;
+  background: #2a2419;
+}
+
+.segments .on {
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(255, 190, 40, 0.5);
+}
+
+.rewards .text {
+  margin-top: 9px;
 }
 
 .rewards .button {
@@ -99,7 +135,7 @@
 }
 
 .rewards .button:hover {
-  background: var(--brand-hi);
+  filter: brightness(1.06);
 }
 
 .rewards .button:focus-visible {
@@ -112,19 +148,20 @@
 .promo {
   text-decoration: none;
   transition:
-    transform 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .promo:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 200, 58, 0.45);
-  background-color: var(--surface-2);
+  transform: translateY(-3px);
+  border-color: rgba(255, 197, 49, 0.6);
+  box-shadow: 0 12px 30px -12px rgba(255, 180, 30, 0.4);
 }
 
 .promo:hover .button {
-  background: var(--brand-hi);
+  transform: translateY(-1px);
+  filter: brightness(1.06);
 }
 
 .promo:focus-visible {
@@ -132,7 +169,25 @@
   outline-offset: 3px;
 }
 
-/* The art, with a soft light of its own colour behind it. */
+.promo .title {
+  max-width: calc(100% - 70px);
+}
+
+/* Time left, in the top corner. */
+.timer {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 197, 49, 0.3);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--brand);
+  font: 700 11.5px/1 var(--font-ui), sans-serif;
+}
+
+/* The art, with a light of its own colour behind it. */
 .art {
   position: absolute;
   right: -6px;
@@ -140,7 +195,13 @@
   width: 170px;
   height: 130px;
   pointer-events: none;
-  background: radial-gradient(50% 50% at 60% 72%, color-mix(in srgb, var(--hue) 22%, transparent), transparent 72%);
+  background: radial-gradient(55% 55% at 60% 70%, color-mix(in srgb, var(--hue) 35%, transparent), transparent 72%);
+  transform-origin: bottom right;
+  transition: scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.promo:hover .art {
+  scale: 1.06;
 }
 
 @media (max-width: 1100px) {
@@ -157,6 +218,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .promo,
+  .art,
   .button {
     transition: none;
   }

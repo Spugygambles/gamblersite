@@ -7,12 +7,14 @@
 }
 
 .word {
-  font: 800 21px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.02em;
+  font: italic 900 22px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.01em;
 }
 
 .neo {
-  color: var(--brand);
+  background: var(--gold);
+  background-clip: text;
+  color: transparent;
 }
 
 /* Phones: the name is longer than the room the bar has, so it shrinks. */

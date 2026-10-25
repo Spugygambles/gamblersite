@@ -1,27 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  /* Black and yellow: near-black greys, one warm yellow accent. */
+  /* Black and gold: warm blacks, and a metallic gold for what matters. */
   /* Surfaces, from the page back to raised controls. */
-  --bg: #0b0b0c;
-  --bg-raised: #111113;
-  --surface: #151517;
-  --surface-2: #1b1b1e;
-  --line: #242428;
+  --bg: #0e0c09;
+  --bg-raised: #13110d;
+  --surface: #17140f;
+  --surface-2: #1f1b14;
+  --line: #2b261c;
   /* Text. */
   --text: #ffffff;
-  --text-soft: #c4c4ca;
-  --text-muted: #85858f;
-  /* The accent, and the few other colours the site uses. */
-  --brand: #ffc83a;
-  --brand-hi: #ffd970;
-  --brand-dim: #c99a1c;
-  --on-brand: #171100;
-  --deposit: #ffc83a;
-  --deposit-hi: #ffd970;
-  --level: #ffc83a;
+  --text-soft: #d9d0bf;
+  --text-muted: #948a76;
+  /* Gold, light to deep, and the few other colours the site uses. */
+  --brand: #ffc531;
+  --brand-hi: #ffe07a;
+  --brand-dim: #e39a0b;
+  --brand-deep: #9a6400;
+  --on-brand: #1c1300;
+  --gold: linear-gradient(180deg, #ffe58a 0%, #ffc531 46%, #eda20c 100%);
+  --gold-glow: 0 0 22px -6px rgba(255, 190, 40, 0.65);
+  --deposit: #ffc531;
+  --deposit-hi: #ffe07a;
+  --level: #ffc531;
   --live: #3ddc84;
-  --danger: #ff4d5e;
+  --danger: #ff4d3d;
   --coin: #f4b23c;
   --page-max: 1240px;
 }

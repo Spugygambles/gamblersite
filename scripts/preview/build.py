@@ -47,7 +47,7 @@ js = (HERE / "preview.js").read_text()
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
-    "family=Montserrat:wght@800;900&family=Rubik:wght@400..800&display=swap"
+    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap"
 )
 page = f"""<title>CsgoNeo Homepage</title>
 <meta name="claude:viewport-fit-sides" content="cover">
