@@ -49,18 +49,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* The screen itself: faint scanlines and a dark edge, over everything. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
-    radial-gradient(130% 100% at 50% 45%, transparent 65%, rgba(0, 0, 0, 0.45));
-}
-
 /* On phones with a notch, the band above the sticky header is painted in
    the page colour so nothing scrolls by under the status bar. */
 body::before {

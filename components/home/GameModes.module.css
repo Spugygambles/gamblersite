@@ -41,18 +41,17 @@
   transition: opacity 0.25s ease;
 }
 
-/* A refresh line that runs down the card while it's hovered. */
+/* Scanlines over the card, art and all, like it's on an old monitor; and
+   a refresh line, parked above the card until it's hovered. */
 .feature::after,
 .tile::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: -12%;
+  inset: 0;
   z-index: 3;
-  height: 12%;
-  background: linear-gradient(180deg, transparent, rgba(63, 240, 110, 0.16), transparent);
-  opacity: 0;
+  background:
+    linear-gradient(180deg, transparent, rgba(63, 240, 110, 0.16), transparent) 0 -20% / 100% 12% no-repeat,
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 3px);
   pointer-events: none;
 }
 
@@ -71,7 +70,6 @@
 
 .feature:hover::after,
 .tile:hover::after {
-  opacity: 1;
   animation: scan 1.2s linear infinite;
 }
 
@@ -82,8 +80,11 @@
 }
 
 @keyframes scan {
+  from {
+    background-position: 0 -20%, 0 0;
+  }
   to {
-    top: 100%;
+    background-position: 0 120%, 0 0;
   }
 }
 
