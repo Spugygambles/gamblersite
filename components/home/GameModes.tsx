@@ -47,7 +47,8 @@ function rng(seed: number) {
   };
 }
 
-// A faint mosaic of gold tiles behind each card's art.
+// A faint mosaic of tiles behind each card's art, as a mask: the CSS paints
+// it in the accent colour.
 function mosaic(seed: number) {
   const r = rng(seed);
   const cell = 14;
@@ -60,7 +61,7 @@ function mosaic(seed: number) {
       rects += `<rect x='${x * cell + 1}' y='${y * cell + 1}' width='${cell - 2}' height='${cell - 2}' rx='1.5' fill-opacity='${((a - 0.4) * 0.13).toFixed(3)}'/>`;
     }
   }
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${cell * n}' height='${cell * n}' fill='%23ffc531'>${rects}</svg>`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${cell * n}' height='${cell * n}' fill='%23000'>${rects}</svg>`;
   return `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E")}")`;
 }
 

@@ -152,6 +152,57 @@
     if (drawerOpen) setDrawer(false, true);
   });
 
+  // ---- Palette picker (preview only): try the homepage in other colours.
+  // The palettes live in preview.css; the choice is remembered on this device.
+  const PALETTES = [
+    ["gold", "Gold", "#ffc531"],
+    ["crimson", "Crimson", "#ff3b52"],
+    ["blue", "Electric blue", "#2f8cff"],
+    ["purple", "Purple", "#9b5cff"],
+    ["emerald", "Emerald", "#22d37a"],
+    ["orange", "Orange", "#ff7a1a"],
+    ["cyan", "Cyan", "#19d3e6"],
+    ["pink", "Pink", "#ff3ea5"],
+  ];
+  const picker = document.createElement("div");
+  picker.className = "palette-picker";
+  picker.setAttribute("role", "group");
+  picker.setAttribute("aria-label", "Try a colour");
+  const label = document.createElement("span");
+  label.className = "name";
+  const swatches = document.createElement("span");
+  swatches.className = "swatches";
+  picker.append(label, swatches);
+  const usePalette = (id) => {
+    const [, name] = PALETTES.find((p) => p[0] === id) || PALETTES[0];
+    document.documentElement.dataset.palette = id;
+    label.textContent = name;
+    swatches.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
+    try {
+      localStorage.setItem("csgoneo-palette", id);
+    } catch {
+      // Storage can be off; the choice just won't be remembered.
+    }
+  };
+  for (const [id, name, color] of PALETTES) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.dataset.id = id;
+    b.style.setProperty("--swatch", color);
+    b.setAttribute("aria-label", name);
+    b.title = name;
+    b.addEventListener("click", () => usePalette(id));
+    swatches.append(b);
+  }
+  document.body.append(picker);
+  let saved = "gold";
+  try {
+    saved = localStorage.getItem("csgoneo-palette") || "gold";
+  } catch {
+    // Fall back to gold.
+  }
+  usePalette(PALETTES.some((p) => p[0] === saved) ? saved : "gold");
+
   // ---- Links: only the homepage exists so far, so the rest say so
   // instead of leading nowhere.
   const toast = document.createElement("div");

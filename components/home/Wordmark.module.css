@@ -12,7 +12,7 @@
 }
 
 .neo {
-  background: var(--gold);
+  background: var(--brand-grad);
   background-clip: text;
   color: transparent;
 }

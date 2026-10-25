@@ -2,7 +2,7 @@
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 50;
-  background: rgba(14, 12, 9, 0.94);
+  background: var(--header-bg);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(10px);
 }
@@ -145,8 +145,8 @@
 }
 
 .race {
-  background: linear-gradient(90deg, #2a2108, #17130a);
-  box-shadow: inset 0 0 0 1px rgba(255, 197, 49, 0.28);
+  background: linear-gradient(90deg, var(--surface-2), var(--surface));
+  box-shadow: inset 0 0 0 1px rgba(var(--brand-rgb), 0.28);
 }
 
 .halloween {
@@ -254,8 +254,8 @@
   z-index: -1;
   border-radius: 2px;
   border-radius: 7px;
-  background: var(--gold);
-  box-shadow: inset 0 -2px 0 rgba(120, 70, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--gold-glow);
+  background: var(--brand-grad);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--brand-glow);
 }
 
 .deposit:hover {
@@ -280,9 +280,9 @@
 
 .level {
   padding: 4px 8px;
-  border: 1px solid rgba(255, 197, 49, 0.45);
+  border: 1px solid rgba(var(--brand-rgb), 0.45);
   border-radius: 4px;
-  background: rgba(255, 197, 49, 0.1);
+  background: rgba(var(--brand-rgb), 0.1);
   color: var(--brand);
   font: 800 12px/1 var(--font-ui), sans-serif;
 }
@@ -325,7 +325,7 @@
 }
 
 .ringTrack {
-  stroke: #2e2819;
+  stroke: var(--track);
 }
 
 .ringFill {

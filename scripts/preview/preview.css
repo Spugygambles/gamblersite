@@ -18,8 +18,8 @@ body {
   max-width: calc(100% - 32px);
   padding: 12px 16px;
   border-radius: 8px;
-  background: #1f1b14;
-  box-shadow: 0 0 0 1px rgba(255, 197, 49, 0.5), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
+  background: var(--surface-2);
+  box-shadow: 0 0 0 1px rgba(var(--brand-rgb), 0.5), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
   color: #fff;
   font: 600 13px/1.35 var(--font-rubik);
   opacity: 0;
@@ -31,4 +31,202 @@ body {
 .preview-toast.show {
   opacity: 1;
   translate: -50% 0;
+}
+
+/* ---- Palettes to try (preview only) ------------------------------------
+   Each swaps the page's colour tokens (app/globals.css); gold is the
+   site's own. The picker in preview.js sets data-palette on <html>. */
+
+:root[data-palette="crimson"] {
+  --bg: #0d0a0b;
+  --bg-raised: #120d0f;
+  --surface: #171113;
+  --surface-2: #1f171a;
+  --line: #2c2024;
+  --track: #2b1f23;
+  --header-bg: rgba(13, 10, 11, 0.94);
+  --card-top: #1a1215;
+  --card-bottom: #100b0d;
+  --text-soft: #d8cbcf;
+  --text-muted: #94858a;
+  --brand: #ff3b52;
+  --brand-rgb: 255, 59, 82;
+  --brand-hi: #ff8090;
+  --brand-deep: #cf1a35;
+  --on-brand: #ffffff;
+}
+
+:root[data-palette="blue"] {
+  --bg: #0a0d14;
+  --bg-raised: #0e131d;
+  --surface: #111725;
+  --surface-2: #172033;
+  --line: #212c42;
+  --track: #1f2a40;
+  --header-bg: rgba(10, 13, 20, 0.94);
+  --card-top: #121a2b;
+  --card-bottom: #0b1019;
+  --text-soft: #c5cfe0;
+  --text-muted: #7f8ba3;
+  --brand: #2f8cff;
+  --brand-rgb: 47, 140, 255;
+  --brand-hi: #7ab6ff;
+  --brand-deep: #1663e0;
+  --on-brand: #ffffff;
+}
+
+:root[data-palette="purple"] {
+  --bg: #0c0a12;
+  --bg-raised: #110e19;
+  --surface: #15111f;
+  --surface-2: #1c172a;
+  --line: #2a2340;
+  --track: #29223d;
+  --header-bg: rgba(12, 10, 18, 0.94);
+  --card-top: #18132a;
+  --card-bottom: #0e0b17;
+  --text-soft: #d0c8e3;
+  --text-muted: #8b82a3;
+  --brand: #9b5cff;
+  --brand-rgb: 155, 92, 255;
+  --brand-hi: #c39bff;
+  --brand-deep: #6d2fe0;
+  --on-brand: #ffffff;
+}
+
+:root[data-palette="emerald"] {
+  --bg: #090d0b;
+  --bg-raised: #0d1310;
+  --surface: #101714;
+  --surface-2: #16201b;
+  --line: #1f2c25;
+  --track: #1d2a23;
+  --header-bg: rgba(9, 13, 11, 0.94);
+  --card-top: #111a15;
+  --card-bottom: #0a0f0c;
+  --text-soft: #c4d6cc;
+  --text-muted: #7d9387;
+  --brand: #22d37a;
+  --brand-rgb: 34, 211, 122;
+  --brand-hi: #74f0ae;
+  --brand-deep: #10a35a;
+  --on-brand: #03200f;
+}
+
+:root[data-palette="orange"] {
+  --bg: #0e0b09;
+  --bg-raised: #130f0c;
+  --surface: #18120e;
+  --surface-2: #201812;
+  --line: #2e231a;
+  --track: #2c2118;
+  --header-bg: rgba(14, 11, 9, 0.94);
+  --card-top: #1b140f;
+  --card-bottom: #110d0a;
+  --text-soft: #ddcfc2;
+  --text-muted: #978777;
+  --brand: #ff7a1a;
+  --brand-rgb: 255, 122, 26;
+  --brand-hi: #ffad66;
+  --brand-deep: #e05a00;
+  --on-brand: #1f0d00;
+}
+
+:root[data-palette="cyan"] {
+  --bg: #081012;
+  --bg-raised: #0c1517;
+  --surface: #0f191c;
+  --surface-2: #142226;
+  --line: #1d3035;
+  --track: #1b2d32;
+  --header-bg: rgba(8, 16, 18, 0.94);
+  --card-top: #102024;
+  --card-bottom: #091316;
+  --text-soft: #c3d8db;
+  --text-muted: #7a9398;
+  --brand: #19d3e6;
+  --brand-rgb: 25, 211, 230;
+  --brand-hi: #7aebf5;
+  --brand-deep: #0aa1b3;
+  --on-brand: #00191c;
+}
+
+:root[data-palette="pink"] {
+  --bg: #0e0a0d;
+  --bg-raised: #130e12;
+  --surface: #181117;
+  --surface-2: #20171f;
+  --line: #2e202b;
+  --track: #2c1f29;
+  --header-bg: rgba(14, 10, 13, 0.94);
+  --card-top: #1b1219;
+  --card-bottom: #100b0f;
+  --text-soft: #dccbd7;
+  --text-muted: #978692;
+  --brand: #ff3ea5;
+  --brand-rgb: 255, 62, 165;
+  --brand-hi: #ff8ac9;
+  --brand-deep: #d4157c;
+  --on-brand: #ffffff;
+}
+
+/* The picker: a bar of swatches in the bottom corner. */
+.palette-picker {
+  position: fixed;
+  left: max(16px, env(safe-area-inset-left, 0px));
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px 8px 14px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.92);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font: 600 12.5px/1 var(--font-ui);
+}
+
+.palette-picker .name {
+  min-width: 92px;
+  white-space: nowrap;
+}
+
+.palette-picker .swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.palette-picker button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.palette-picker button:hover {
+  transform: scale(1.12);
+}
+
+.palette-picker button[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px rgba(20, 20, 22, 1), 0 0 0 4px #fff;
+}
+
+.palette-picker button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .palette-picker .name {
+    display: none;
+  }
 }

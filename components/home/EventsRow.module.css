@@ -18,7 +18,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: linear-gradient(180deg, #1a160f, #110f0b);
+  background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
   box-sizing: border-box;
   color: #fff;
 }
@@ -33,7 +33,7 @@
 }
 
 .gold {
-  background: var(--gold);
+  background: var(--brand-grad);
   background-clip: text;
   color: transparent;
 }
@@ -59,8 +59,8 @@
   margin-top: auto;
   padding: 0 15px;
   border-radius: 8px;
-  background: var(--gold);
-  box-shadow: inset 0 -2px 0 rgba(120, 70, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--gold-glow);
+  background: var(--brand-grad);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--brand-glow);
   color: var(--on-brand);
   font: 800 12.5px/1 var(--font-ui), sans-serif;
   text-decoration: none;
@@ -77,8 +77,8 @@
 
 .rewards {
   background:
-    radial-gradient(80% 70% at 100% 0%, rgba(255, 190, 40, 0.13), transparent 70%),
-    linear-gradient(180deg, #1a160f, #110f0b);
+    radial-gradient(80% 70% at 100% 0%, rgba(var(--brand-rgb), 0.13), transparent 70%),
+    linear-gradient(180deg, var(--card-top), var(--card-bottom));
 }
 
 .levelHead {
@@ -95,7 +95,7 @@
   height: 42px;
   flex-shrink: 0;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-  background: var(--gold);
+  background: var(--brand-grad);
   color: var(--on-brand);
   font: 900 14px/1 var(--font-ui), sans-serif;
 }
@@ -118,12 +118,12 @@
 
 .segments span {
   border-radius: 1.5px;
-  background: #2a2419;
+  background: var(--track);
 }
 
 .segments .on {
-  background: var(--gold);
-  box-shadow: 0 0 6px rgba(255, 190, 40, 0.5);
+  background: var(--brand-grad);
+  box-shadow: 0 0 6px rgba(var(--brand-rgb), 0.5);
 }
 
 .rewards .text {
@@ -155,8 +155,8 @@
 
 .promo:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 197, 49, 0.6);
-  box-shadow: 0 12px 30px -12px rgba(255, 180, 30, 0.4);
+  border-color: rgba(var(--brand-rgb), 0.6);
+  box-shadow: 0 12px 30px -12px rgba(var(--brand-rgb), 0.4);
 }
 
 .promo:hover .button {
@@ -180,7 +180,7 @@
   right: 14px;
   z-index: 1;
   padding: 5px 8px;
-  border: 1px solid rgba(255, 197, 49, 0.3);
+  border: 1px solid rgba(var(--brand-rgb), 0.3);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.35);
   color: var(--brand);

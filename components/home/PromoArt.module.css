@@ -45,7 +45,7 @@
   bottom: 30px;
   padding: 6px 9px;
   border-radius: 5px;
-  background: var(--gold);
+  background: var(--brand-grad);
   color: var(--on-brand);
   font: 800 17px/1 var(--font-ui), sans-serif;
   transform: rotate(-8deg);
