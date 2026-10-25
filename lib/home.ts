@@ -53,23 +53,6 @@ export const RARITY: Record<Rarity, { name: string; color: string }> = {
   gold: { name: "Rare Special", color: "#e4ae39" },
 };
 
-export type Drop = { weapon: string; skin: string; price: number; rarity: Rarity };
-
-export const SAMPLE_DROPS: Drop[] = [
-  { weapon: "AK-47", skin: "Redline", price: 42.1, rarity: "classified" },
-  { weapon: "AWP", skin: "Asiimov", price: 96.3, rarity: "covert" },
-  { weapon: "Glock-18", skin: "Water Elemental", price: 9.85, rarity: "classified" },
-  { weapon: "★ Karambit", skin: "Doppler", price: 1240, rarity: "gold" },
-  { weapon: "AK-47", skin: "Elite Build", price: 3.2, rarity: "milspec" },
-  { weapon: "M4A1-S", skin: "Printstream", price: 212.4, rarity: "covert" },
-  { weapon: "AK-47", skin: "Slate", price: 4.2, rarity: "restricted" },
-  { weapon: "USP-S", skin: "Kill Confirmed", price: 58.7, rarity: "covert" },
-  { weapon: "M4A4", skin: "Desolate Space", price: 14.8, rarity: "classified" },
-  { weapon: "MP9", skin: "Starlight Protector", price: 36.2, rarity: "covert" },
-  { weapon: "UMP-45", skin: "Primal Saber", price: 2.9, rarity: "classified" },
-  { weapon: "Desert Eagle", skin: "Printstream", price: 47.5, rarity: "covert" },
-];
-
 export type CaseInfo = {
   slug: string;
   name: string;
@@ -78,22 +61,76 @@ export type CaseInfo = {
   glow: string;
   /** One picture, or "toxic" for the toxic case's three layers. */
   image: { src: string; width: number; height: number } | "toxic";
+  /** A small square picture of the case, for lists. */
+  thumb: string;
+  tag?: "Hot" | "New";
 };
 
 export const CASES: CaseInfo[] = [
-  { slug: "toxic", name: "Toxic", price: 4.99, glow: "#6dff3a", image: "toxic" },
-  { slug: "new-year", name: "New Year", price: 2.49, glow: "#ff9a3c", image: { src: "/battles/new-year-case.png", width: 576, height: 582 } },
-  { slug: "music-box", name: "Music Box", price: 9.99, glow: "#46c8ff", image: { src: "/battles/music-box-case.png", width: 1088, height: 844 } },
+  { slug: "toxic", name: "Toxic", price: 4.99, glow: "#6dff3a", image: "toxic", thumb: "/cases/toxic-case-thumb.png", tag: "Hot" },
+  {
+    slug: "new-year",
+    name: "New Year",
+    price: 2.49,
+    glow: "#ff9a3c",
+    image: { src: "/battles/new-year-case.png", width: 576, height: 582 },
+    thumb: "/cases/new-year-case-thumb.png",
+  },
+  {
+    slug: "music-box",
+    name: "Music Box",
+    price: 9.99,
+    glow: "#46c8ff",
+    image: { src: "/battles/music-box-case.png", width: 1088, height: 844 },
+    thumb: "/cases/music-box-case-thumb.png",
+    tag: "New",
+  },
 ];
 
-export const FEATURED_CASE = {
-  slug: "toxic",
-  name: "Toxic",
-  price: 4.99,
-  items: 18,
-  topDrop: 1240,
-  /** Chance of the rarest tier, in %. */
-  rarest: 0.26,
+export const caseBySlug = (slug: string) => CASES.find((c) => c.slug === slug)!;
+
+export type Drop = { weapon: string; skin: string; price: number; rarity: Rarity; from: string };
+
+export const SAMPLE_DROPS: Drop[] = [
+  { weapon: "AK-47", skin: "Redline", price: 42.1, rarity: "classified", from: "toxic" },
+  { weapon: "AWP", skin: "Asiimov", price: 96.3, rarity: "covert", from: "music-box" },
+  { weapon: "Glock-18", skin: "Water Elemental", price: 9.85, rarity: "classified", from: "new-year" },
+  { weapon: "★ Karambit", skin: "Doppler", price: 1240, rarity: "gold", from: "toxic" },
+  { weapon: "AK-47", skin: "Elite Build", price: 3.2, rarity: "milspec", from: "new-year" },
+  { weapon: "M4A1-S", skin: "Printstream", price: 212.4, rarity: "covert", from: "music-box" },
+  { weapon: "AK-47", skin: "Slate", price: 4.2, rarity: "restricted", from: "new-year" },
+  { weapon: "USP-S", skin: "Kill Confirmed", price: 58.7, rarity: "covert", from: "toxic" },
+  { weapon: "M4A4", skin: "Desolate Space", price: 14.8, rarity: "classified", from: "music-box" },
+  { weapon: "MP9", skin: "Starlight Protector", price: 36.2, rarity: "covert", from: "toxic" },
+  { weapon: "UMP-45", skin: "Primal Saber", price: 2.9, rarity: "classified", from: "new-year" },
+  { weapon: "Desert Eagle", skin: "Printstream", price: 47.5, rarity: "covert", from: "music-box" },
+];
+
+// Case battles waiting for players or under way. Classic: the highest total
+// wins. Crazy: the lowest total wins. Terminal: only the last case counts.
+export type Battle = {
+  id: string;
+  mode: "1v1" | "1v1v1" | "1v1v1v1" | "2v2";
+  variant: "classic" | "crazy" | "terminal";
+  cases: { slug: string; count: number }[];
+  /** One per seat, in order; null is an open seat. In 2v2 the first two are
+      one team. */
+  players: (string | null)[];
+  /** For a battle under way, the round it's on (1-based). */
+  round?: number;
 };
+
+export const SAMPLE_BATTLES: Battle[] = [
+  { id: "b1", mode: "1v1", variant: "classic", cases: [{ slug: "toxic", count: 2 }, { slug: "new-year", count: 1 }], players: ["Kreed", null] },
+  { id: "b2", mode: "1v1v1", variant: "classic", cases: [{ slug: "new-year", count: 3 }, { slug: "music-box", count: 1 }], players: ["Rook", "Mira", "Ash"], round: 2 },
+  { id: "b3", mode: "2v2", variant: "crazy", cases: [{ slug: "music-box", count: 1 }, { slug: "toxic", count: 2 }], players: ["Nova", "Vex", "Juno", null] },
+  { id: "b4", mode: "1v1", variant: "terminal", cases: [{ slug: "music-box", count: 3 }], players: ["Zed", "Kai"], round: 1 },
+  { id: "b5", mode: "1v1v1v1", variant: "classic", cases: [{ slug: "toxic", count: 1 }, { slug: "new-year", count: 2 }, { slug: "music-box", count: 1 }], players: ["Lux", null, "Orin", null] },
+];
+
+/** What one seat costs: every case in the battle, once each. */
+export const seatCost = (b: Battle) => b.cases.reduce((sum, c) => sum + caseBySlug(c.slug).price * c.count, 0);
+
+export const roundCount = (b: Battle) => b.cases.reduce((sum, c) => sum + c.count, 0);
 
 export const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });

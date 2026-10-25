@@ -28,7 +28,7 @@
   background: var(--face);
 }
 
-/* A glint that sweeps across on hover. */
+/* A soft light that follows the pointer (see Spotlight.tsx). */
 .feature::after,
 .game::after {
   content: "";
@@ -36,21 +36,25 @@
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.07) 47%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.07) 53%, transparent 65%);
-  transform: translateX(-120%);
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.07), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 @media (hover: hover) {
+  /* On hover the hairline lights up in the game's colour, brightest
+     nearest the pointer. */
   .feature:hover,
   .game:hover {
     transform: translateY(-4px);
-    background: linear-gradient(150deg, var(--rim), color-mix(in srgb, var(--rim) 30%, transparent) 45%, color-mix(in srgb, var(--rim) 22%, transparent));
+    background:
+      radial-gradient(200px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--rim) 70%, #ffffff), transparent 70%),
+      linear-gradient(150deg, var(--rim), color-mix(in srgb, var(--rim) 30%, transparent) 45%, color-mix(in srgb, var(--rim) 22%, transparent));
   }
 
   .feature:hover::after,
   .game:hover::after {
-    transform: translateX(120%);
-    transition: transform 0.9s ease;
+    opacity: 1;
   }
 }
 
@@ -76,7 +80,7 @@
     linear-gradient(180deg, #121823, #0d1219);
   display: flex;
   align-items: center;
-  min-height: 236px;
+  min-height: 210px;
 }
 
 .featureCopy {
@@ -162,7 +166,7 @@
   --face:
     radial-gradient(75% 55% at 50% 36%, color-mix(in srgb, var(--tint) 90%, transparent), transparent 72%),
     linear-gradient(180deg, #121823, #0d1219);
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 5;
   container-type: inline-size;
 }
 
@@ -247,12 +251,20 @@
   }
 }
 
-/* Phones: the art sits above the pitch, and the originals become a row you
-   swipe through. */
-@media (max-width: 520px) {
+/* Phones: the two big cards sit side by side, art over the title, and the
+   originals become a row you swipe through, so every game shows on the
+   first screen. */
+@media (max-width: 600px) {
+  .features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
   .feature {
+    --cut: 12px;
     flex-direction: column;
     align-items: stretch;
+    min-height: 0;
   }
 
   .featureArt {
@@ -260,25 +272,32 @@
     top: auto;
     left: auto !important;
     order: -1;
-    margin: 18px auto -6px;
+    width: 112px !important;
+    margin: 14px auto 4px;
     translate: none;
-    scale: 0.85;
   }
 
   .featureCopy {
     max-width: none;
-    padding: 0 20px 22px;
+    padding: 0 14px 16px;
   }
 
   .featureTitle {
-    font-size: 22px;
+    margin-top: 6px;
+    font-size: 15px;
+  }
+
+  .featureText,
+  .featureCta {
+    display: none;
   }
 
   .originals {
     grid-template-columns: none;
-    grid-auto-columns: 44%;
+    grid-auto-columns: 40%;
     grid-auto-flow: column;
     gap: 10px;
+    margin-top: 10px;
     margin-right: -16px;
     padding-right: 16px;
     overflow-x: auto;
@@ -305,6 +324,6 @@
 
   .feature::after,
   .game::after {
-    display: none;
+    transition: none;
   }
 }

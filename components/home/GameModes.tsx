@@ -34,7 +34,7 @@ const FEATURES: Record<string, { kicker: string; title: string; text: string; ct
     title: "Case Opening",
     text: "Unbox CS2 skins from cases at every price, from pocket change to high roller.",
     cta: "Open cases",
-    artSize: 168,
+    artSize: 160,
     artX: 160,
   },
   "case-battles": {
@@ -42,7 +42,7 @@ const FEATURES: Record<string, { kicker: string; title: string; text: string; ct
     title: "Case Battles",
     text: "Open the same cases head to head. The best total takes everything unboxed.",
     cta: "Join a battle",
-    artSize: 200,
+    artSize: 190,
     artX: 142,
   },
 };
@@ -69,7 +69,7 @@ export default function GameModes() {
           const f = FEATURES[g.slug];
           return (
             // data-game-banner lets the art replay when the pointer moves on.
-            <Link key={g.slug} href={`/${g.slug}`} className={styles.feature} style={themeStyle(g)} data-game-banner>
+            <Link key={g.slug} href={`/${g.slug}`} className={styles.feature} style={themeStyle(g)} data-game-banner data-spotlight>
               <span className={styles.featureCopy}>
                 <span className={styles.kicker}>{f.kicker}</span>
                 <span className={styles.featureTitle}>{f.title}</span>
@@ -90,7 +90,7 @@ export default function GameModes() {
       <ul className={styles.originals}>
         {originals.map((g) => (
           <li key={g.slug}>
-            <Link href={`/${g.slug}`} className={styles.game} style={themeStyle(g)} data-game-banner>
+            <Link href={`/${g.slug}`} className={styles.game} style={themeStyle(g)} data-game-banner data-spotlight>
               <span className={styles.gameStage} aria-hidden>
                 <span className={styles.gameArt}>{ART[g.slug]}</span>
               </span>

@@ -159,6 +159,9 @@
 @media (hover: hover) {
   .card:hover {
     transform: translateY(-4px);
+    background:
+      radial-gradient(200px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--glow) 75%, #ffffff), transparent 70%),
+      linear-gradient(160deg, color-mix(in srgb, var(--glow) 55%, transparent), rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0.05));
   }
 
   .card:hover .case {

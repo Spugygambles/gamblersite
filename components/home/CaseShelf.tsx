@@ -24,7 +24,7 @@ export default function CaseShelf() {
     <ul className={styles.shelf}>
       {CASES.map((c) => (
         <li key={c.slug}>
-          <Link href={`/cases/${c.slug}`} className={styles.card} style={{ "--glow": c.glow } as CSSProperties}>
+          <Link href={`/cases/${c.slug}`} className={styles.card} style={{ "--glow": c.glow } as CSSProperties} data-spotlight>
             <span className={styles.stage} aria-hidden>
               <span className={styles.light} />
               <span className={styles.plinth} />
@@ -46,7 +46,7 @@ export default function CaseShelf() {
         </li>
       ))}
       <li>
-        <Link href="/cases" className={`${styles.card} ${styles.browse}`}>
+        <Link href="/cases" className={`${styles.card} ${styles.browse}`} data-spotlight>
           <span className={styles.fan} aria-hidden>
             {CASES.map((c) => (
               <span key={c.slug} className={styles.fanCase}>

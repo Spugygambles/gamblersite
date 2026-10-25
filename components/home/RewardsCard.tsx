@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PLAYER } from "@/lib/home";
 import { GiftIcon } from "./icons";
-import styles from "./SideCards.module.css";
+import styles from "./EventsRow.module.css";
 
 // The player's level and today's free case.
 export default function RewardsCard() {
