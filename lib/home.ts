@@ -3,9 +3,8 @@
 // drops for the real ones from the backend.
 
 export type GameTheme = {
-  /** The game's colour: its card's glow and tint. */
+  /** The tile's colour: dark at the bottom, light toward the top. */
   tint: string;
-  /** A lighter edge, brightened on hover. */
   rim: string;
 };
 
@@ -14,21 +13,24 @@ export type GameInfo = {
   title: string;
   subtitle: string;
   theme: GameTheme;
-  /** How big the art sits on its card (% of the card's width) and where its
+  /** How big the art sits on its tile (% of the tile's width) and where its
       middle is (% down the art area). */
   art: { size: number; y: number };
+  /** Players in the game right now. */
+  playing: number;
+  tag?: "Hot" | "New";
 };
 
 export const GAMES: GameInfo[] = [
-  { slug: "case-battles", title: "Battles", subtitle: "VS players", theme: { tint: "#5e2630", rim: "#b04a5c" }, art: { size: 62, y: 50 } },
-  { slug: "cases", title: "Cases", subtitle: "Unbox skins", theme: { tint: "#52417d", rim: "#9479dd" }, art: { size: 56, y: 50 } },
-  { slug: "upgrader", title: "Upgrader", subtitle: "Level up your skins", theme: { tint: "#273a7a", rim: "#5872d8" }, art: { size: 62, y: 52 } },
-  { slug: "mines", title: "Mines", subtitle: "Find the gems", theme: { tint: "#5b442c", rim: "#b38a5c" }, art: { size: 54, y: 52 } },
-  { slug: "keno", title: "Keno", subtitle: "Lucky numbers", theme: { tint: "#4e2462", rim: "#9d52c2" }, art: { size: 54, y: 52 } },
-  { slug: "crash", title: "Crash", subtitle: "Cash out in time", theme: { tint: "#1f2e6f", rim: "#4f68d8" }, art: { size: 64, y: 50 } },
-  { slug: "limbo", title: "Limbo", subtitle: "Aim higher", theme: { tint: "#245242", rim: "#4aa682" }, art: { size: 68, y: 52 } },
-  { slug: "coinflip", title: "Coinflip", subtitle: "Heads or tails", theme: { tint: "#604633", rim: "#bb8a5e" }, art: { size: 66, y: 52 } },
-  { slug: "blackjack", title: "Blackjack", subtitle: "Hit or stand", theme: { tint: "#57263f", rim: "#ad4f7c" }, art: { size: 62, y: 52 } },
+  { slug: "case-battles", title: "Battles", subtitle: "VS players", theme: { tint: "#2b0f0c", rim: "#a2401f" }, art: { size: 62, y: 50 }, playing: 342 },
+  { slug: "cases", title: "Cases", subtitle: "Unbox skins", theme: { tint: "#1b1240", rim: "#4a2fa0" }, art: { size: 56, y: 50 }, playing: 1284 },
+  { slug: "upgrader", title: "Upgrader", subtitle: "Level up your skins", theme: { tint: "#2c1d6e", rim: "#6c4ce0" }, art: { size: 62, y: 50 }, playing: 214, tag: "New" },
+  { slug: "mines", title: "Mines", subtitle: "Find the gems", theme: { tint: "#0d3d3f", rim: "#1f8a83" }, art: { size: 56, y: 50 }, playing: 509 },
+  { slug: "keno", title: "Keno", subtitle: "Lucky numbers", theme: { tint: "#4a1559", rim: "#a33bc4" }, art: { size: 56, y: 50 }, playing: 77 },
+  { slug: "crash", title: "Crash", subtitle: "Cash out in time", theme: { tint: "#172a6b", rim: "#3b63e0" }, art: { size: 64, y: 48 }, playing: 1032, tag: "Hot" },
+  { slug: "limbo", title: "Limbo", subtitle: "Aim higher", theme: { tint: "#123f2c", rim: "#2f9a5f" }, art: { size: 68, y: 50 }, playing: 168 },
+  { slug: "coinflip", title: "Coinflip", subtitle: "Heads or tails", theme: { tint: "#4a3112", rim: "#c0832c" }, art: { size: 66, y: 50 }, playing: 251 },
+  { slug: "blackjack", title: "Blackjack", subtitle: "Hit or stand", theme: { tint: "#4a1424", rim: "#b0344f" }, art: { size: 62, y: 50 }, playing: 133 },
 ];
 
 export const PLAYER = {
@@ -86,3 +88,5 @@ export const SAMPLE_DROPS: Drop[] = [
 ];
 
 export const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+
+export const count = new Intl.NumberFormat("en-US");

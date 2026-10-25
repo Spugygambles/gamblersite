@@ -1,34 +1,38 @@
 @import "tailwindcss";
 
 :root {
+  /* Neo: neon green on near-black, with a hint of green in the greys. */
   /* Surfaces, from the page back to raised controls. */
-  --bg: #0c1118;
-  --bg-raised: #10161e;
-  --surface: #121821;
-  --surface-2: #17202b;
-  --line: #19212b;
+  --bg: #0a0e0c;
+  --bg-raised: #0d1210;
+  --surface: #101512;
+  --surface-2: #151c18;
+  --line: #1b2520;
   /* Text. */
   --text: #ffffff;
-  --text-soft: #c9d1d8;
-  --text-muted: #72838f;
-  /* Brand and accents. */
-  --brand: #7838f0;
-  --brand-hi: #9a64ff;
-  --deposit: #e0711f;
-  --deposit-hi: #f08a33;
-  --level: #f32f3d;
+  --text-soft: #b9c7bf;
+  --text-muted: #6b7d73;
+  /* The neon, and the few other colours the site uses. */
+  --brand: #3ff06e;
+  --brand-hi: #7dff9f;
+  --brand-dim: #1fa84a;
+  --brand-deep: #0d3a1d;
+  --on-brand: #04210e;
+  --glow: 0 0 10px rgba(63, 240, 110, 0.5);
+  --deposit: #3ff06e;
+  --deposit-hi: #7dff9f;
+  --level: #3ff06e;
+  --danger: #ff3b5c;
+  --amber: #ffb000;
   --coin: #f4b23c;
-  /* Cards: the face, and the hairline round it. */
-  --card: #10161f;
-  --card-hi: #151c27;
-  --hairline: rgba(255, 255, 255, 0.07);
   --page-max: 1240px;
 }
 
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-rubik);
+  --font-sans: var(--font-ui);
+
 }
 
 html {
@@ -41,10 +45,20 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-rubik), system-ui, sans-serif;
+  font-family: var(--font-ui), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  /* Unhinted glyph positions, so tracked-out caps space evenly. */
-  text-rendering: geometricPrecision;
+}
+
+/* The screen itself: faint scanlines and a dark edge, over everything. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px),
+    radial-gradient(130% 100% at 50% 45%, transparent 65%, rgba(0, 0, 0, 0.45));
 }
 
 /* On phones with a notch, the band above the sticky header is painted in
@@ -64,11 +78,96 @@ body::before {
 }
 
 ::selection {
-  background: rgba(120, 56, 240, 0.55);
-  color: #fff;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+/* Glitch: two copies of the text, red and cyan, that jump out of line for a
+   moment every few seconds. Give the element data-text with its text, and
+   --glitch-every and --glitch-delay so glitches on one page don't fire
+   together. */
+.glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.glitch::before {
+  color: #ff2e63;
+  animation: glitch-a var(--glitch-every, 5s) steps(1) var(--glitch-delay, 0s) infinite;
+}
+
+.glitch::after {
+  color: #00e5ff;
+  animation: glitch-b var(--glitch-every, 5s) steps(1) calc(var(--glitch-delay, 0s) + 0.15s) infinite;
+}
+
+@keyframes glitch-a {
+  0%,
+  91%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  92% {
+    opacity: 0.85;
+    transform: translate(-3px, 0);
+    clip-path: inset(12% 0 58% 0);
+  }
+  94% {
+    opacity: 0.85;
+    transform: translate(2px, 0);
+    clip-path: inset(56% 0 18% 0);
+  }
+  96% {
+    opacity: 0.85;
+    transform: translate(-1px, 0);
+    clip-path: inset(32% 0 44% 0);
+  }
+}
+
+@keyframes glitch-b {
+  0%,
+  91%,
+  100% {
+    opacity: 0;
+    transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+  92% {
+    opacity: 0.8;
+    transform: translate(3px, 0);
+    clip-path: inset(60% 0 10% 0);
+  }
+  94% {
+    opacity: 0.8;
+    transform: translate(-2px, 0);
+    clip-path: inset(8% 0 70% 0);
+  }
+  96% {
+    opacity: 0.8;
+    transform: translate(1px, 0);
+    clip-path: inset(40% 0 30% 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glitch::before,
+  .glitch::after {
+    animation: none;
+  }
 }
 
 :focus-visible {
-  outline: 2px solid var(--brand-hi);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
 }

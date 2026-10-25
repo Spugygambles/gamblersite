@@ -9,8 +9,7 @@ import KenoArt from "@/components/KenoArt";
 import LimboArt from "@/components/LimboArt";
 import MinesArt from "@/components/MinesArt";
 import UpgraderArt from "@/components/UpgraderArt";
-import { GAMES, type GameInfo } from "@/lib/home";
-import { ArrowIcon } from "./icons";
+import { count, GAMES, type GameInfo } from "@/lib/home";
 import styles from "./GameModes.module.css";
 
 const ART: Record<string, ReactNode> = {
@@ -25,58 +24,91 @@ const ART: Record<string, ReactNode> = {
   blackjack: <BlackjackArt />,
 };
 
-// The two big ones get a wide card with a pitch; the rest share a row.
-// artSize is the art's square stage on the card, and artX how far right of
-// the card's middle it's centred, both in px.
-const FEATURES: Record<string, { kicker: string; title: string; text: string; cta: string; artSize: number; artX: number }> = {
-  cases: {
-    kicker: "Unbox",
-    title: "Case Opening",
-    text: "Unbox CS2 skins from cases at every price, from pocket change to high roller.",
-    cta: "Open cases",
-    artSize: 160,
-    artX: 160,
-  },
-  "case-battles": {
-    kicker: "Player vs player",
-    title: "Case Battles",
-    text: "Open the same cases head to head. The best total takes everything unboxed.",
-    cta: "Join a battle",
+// Cases and battles get a wide banner each; the originals share a row.
+// The title's second word lights up green. artSize is the art's square stage
+// on the banner, and artX how far right of the banner's middle it's centred,
+// both in px.
+const FEATURES = [
+  { slug: "cases", title: ["Case", "Opening"], text: "Unbox CS2 skins from just $0.49 a case.", cta: "Open cases", artSize: 150, artX: 160 },
+  {
+    slug: "case-battles",
+    title: ["Case", "Battles"],
+    text: "Open the same cases as other players. Best total takes it all.",
+    cta: "Start a battle",
     artSize: 190,
     artX: 142,
   },
-};
+];
 
-function themeStyle(game: GameInfo) {
+const bySlug = (slug: string) => GAMES.find((g) => g.slug === slug)!;
+
+// Small deterministic random numbers, so each card gets its own pattern but
+// renders the same on the server and the client.
+function rng(seed: number) {
+  let s = (seed * 2654435761) >>> 0 || 1;
+  return () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 10000) / 10000;
+  };
+}
+
+// A field of dim green pixels, like a dead display, behind each card's art.
+function pixels(seed: number) {
+  const r = rng(seed);
+  const cell = 14;
+  const n = 12;
+  let rects = "";
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
+      const a = r();
+      if (a < 0.35) continue;
+      rects += `<rect x='${x * cell + 1}' y='${y * cell + 1}' width='${cell - 2}' height='${cell - 2}' fill-opacity='${((a - 0.35) * 0.16).toFixed(3)}'/>`;
+    }
+  }
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${cell * n}' height='${cell * n}' fill='%233ff06e'>${rects}</svg>`;
+  return `url("data:image/svg+xml,${svg.replace(/</g, "%3C").replace(/>/g, "%3E")}")`;
+}
+
+function vars(game: GameInfo, seed: number) {
   return {
-    "--tint": game.theme.tint,
-    "--rim": game.theme.rim,
     "--art-size": `${game.art.size}%`,
     "--art-y": `${game.art.y}%`,
+    "--pixels": pixels(seed),
   } as CSSProperties;
 }
 
-export default function GameModes() {
-  const features = GAMES.filter((g) => g.slug in FEATURES).sort((a, b) =>
-    a.slug === "cases" ? -1 : b.slug === "cases" ? 1 : 0,
+function Playing({ n }: { n: number }) {
+  return (
+    <span className={styles.playing}>
+      <span className={styles.dot} aria-hidden />
+      <span className={styles.num}>{count.format(n)}</span> playing
+    </span>
   );
-  const originals = GAMES.filter((g) => !(g.slug in FEATURES));
+}
+
+export default function GameModes() {
+  const originals = GAMES.filter((g) => !FEATURES.some((f) => f.slug === g.slug));
 
   return (
     <>
       <div className={styles.features}>
-        {features.map((g) => {
-          const f = FEATURES[g.slug];
+        {FEATURES.map((f, i) => {
+          const g = bySlug(f.slug);
           return (
             // data-game-banner lets the art replay when the pointer moves on.
-            <Link key={g.slug} href={`/${g.slug}`} className={styles.feature} style={themeStyle(g)} data-game-banner data-spotlight>
+            <Link key={g.slug} href={`/${g.slug}`} className={styles.feature} style={vars(g, 40 + i)} data-game-banner>
               <span className={styles.featureCopy}>
-                <span className={styles.kicker}>{f.kicker}</span>
-                <span className={styles.featureTitle}>{f.title}</span>
+                <span className={styles.featureTitle}>
+                  <span className="glitch" data-text={f.title.join(" ")}>
+                    {f.title[0]} <span className={styles.lit}>{f.title[1]}</span>
+                  </span>
+                </span>
                 <span className={styles.featureText}>{f.text}</span>
-                <span className={styles.featureCta}>
-                  {f.cta}
-                  <ArrowIcon className={styles.ctaArrow} />
+                <span className={styles.featureFoot}>
+                  <span className={styles.button}>{f.cta}</span>
+                  <Playing n={g.playing} />
                 </span>
               </span>
               <span className={styles.featureArt} style={{ width: f.artSize, left: `calc(50% + ${f.artX}px)` }} aria-hidden>
@@ -88,18 +120,20 @@ export default function GameModes() {
       </div>
 
       <ul className={styles.originals}>
-        {originals.map((g) => (
-          <li key={g.slug}>
-            <Link href={`/${g.slug}`} className={styles.game} style={themeStyle(g)} data-game-banner data-spotlight>
-              <span className={styles.gameStage} aria-hidden>
-                <span className={styles.gameArt}>{ART[g.slug]}</span>
+        {originals.map((g, i) => (
+          <li key={g.slug} className={styles.item}>
+            <Link href={`/${g.slug}`} className={styles.tile} style={vars(g, 7 + i * 13)} data-game-banner>
+              <span className={styles.tileArt} aria-hidden>
+                {ART[g.slug]}
               </span>
-              <span className={styles.gameTitle}>{g.title}</span>
-              <span className={styles.gameSub}>{g.subtitle}</span>
-              <span className={styles.gameArrow} aria-hidden>
-                <ArrowIcon />
+              {g.tag && <span className={`${styles.tag} ${g.tag === "Hot" ? styles.hot : ""}`}>{g.tag}</span>}
+              <span className={styles.tileTitle}>
+                <span className="glitch" data-text={g.title}>
+                  {g.title}
+                </span>
               </span>
             </Link>
+            <Playing n={g.playing} />
           </li>
         ))}
       </ul>

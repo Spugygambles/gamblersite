@@ -3,8 +3,8 @@
   align-items: stretch;
   height: 62px;
   padding-right: env(safe-area-inset-right, 0px);
-  border-bottom: 1px solid #141a22;
-  background: linear-gradient(180deg, #0e1319, var(--bg));
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #0d1210, var(--bg));
 }
 
 .label {
@@ -15,15 +15,16 @@
   gap: 7px;
   padding-block: 0;
   padding-inline: max(28px, env(safe-area-inset-left, 0px)) 22px;
-  border-right: 1px solid #161d27;
+  border-right: 1px solid var(--line);
 }
 
 .live {
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #fff;
-  font: 700 11.5px/1 var(--font-rubik), sans-serif;
+  color: var(--brand);
+  font: 700 11.5px/1 var(--font-ui), sans-serif;
+  text-shadow: var(--glow);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -34,8 +35,8 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #3ddc84;
-  box-shadow: 0 0 8px rgba(61, 220, 132, 0.8);
+  background: var(--brand);
+  box-shadow: 0 0 8px rgba(63, 240, 110, 0.9);
 }
 
 .pulse::after {
@@ -43,7 +44,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid #3ddc84;
+  border: 1px solid var(--brand);
   animation: ping 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 
@@ -61,11 +62,11 @@
 .online {
   padding-left: 17px;
   color: var(--text-muted);
-  font: 600 12px/1 var(--font-rubik), sans-serif;
+  font: 600 12px/1 var(--font-ui), sans-serif;
 }
 
 .online .tabular {
-  color: #c9d1d8;
+  color: var(--text);
 }
 
 .viewport {
@@ -112,8 +113,8 @@
   border-radius: 6px;
   background:
     radial-gradient(60% 120% at 0% 100%, color-mix(in srgb, var(--rarity) 30%, transparent), transparent 70%),
-    #121821;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rarity) 18%, rgba(255, 255, 255, 0.04));
+    #111714;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rarity) 22%, rgba(255, 255, 255, 0.04));
   white-space: nowrap;
 }
 
@@ -141,21 +142,21 @@
 }
 
 .weapon {
-  color: color-mix(in srgb, var(--rarity) 35%, #9aa5b0);
-  font: 600 10.5px/1 var(--font-rubik), sans-serif;
+  color: color-mix(in srgb, var(--rarity) 40%, #93a59a);
+  font: 600 10.5px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .skin {
-  color: #fff;
-  font: 600 13px/1 var(--font-rubik), sans-serif;
+  color: var(--text);
+  font: 600 13px/1 var(--font-ui), sans-serif;
 }
 
 .price {
   margin-left: 6px;
   color: #fff;
-  font: 700 12.5px/1 var(--font-rubik), sans-serif;
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
 }
 
 @media (max-width: 720px) {

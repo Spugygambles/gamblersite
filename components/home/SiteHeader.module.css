@@ -2,8 +2,8 @@
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 50;
-  background: rgba(12, 17, 24, 0.94);
-  border-bottom: 1px solid #141a22;
+  background: rgba(13, 18, 16, 0.94);
+  border-bottom: 1px solid var(--line);
   backdrop-filter: blur(10px);
 }
 
@@ -32,7 +32,7 @@
   border: 0;
   background: none;
   color: var(--text-muted);
-  font: 600 14px/1 var(--font-rubik), sans-serif;
+  font: 600 14px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   text-decoration: none;
@@ -42,7 +42,8 @@
 
 .navLink:hover,
 .navLink[aria-expanded="true"] {
-  color: var(--text-soft);
+  color: var(--brand);
+  text-shadow: var(--glow);
 }
 
 .navIcon {
@@ -74,9 +75,9 @@
   grid-template-columns: repeat(3, 168px);
   gap: 4px;
   padding: 8px;
-  border: 1px solid #1d2632;
-  border-radius: 10px;
-  background: #121821;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #101512;
   box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.75);
   animation: drop-in 0.16s ease-out;
 }
@@ -94,7 +95,7 @@
 }
 
 .dropItem:hover {
-  background: #1a2330;
+  background: #172019;
 }
 
 .dropSwatch {
@@ -105,13 +106,13 @@
 }
 
 .dropTitle {
-  font: 700 13px/1.1 var(--font-rubik), sans-serif;
+  font: 700 13px/1.1 var(--font-ui), sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
 .dropSub {
-  font: 500 11px/1.2 var(--font-rubik), sans-serif;
+  font: 500 11px/1.2 var(--font-ui), sans-serif;
   color: var(--text-muted);
 }
 
@@ -132,7 +133,7 @@
   padding: 0 16px 0 50px;
   border-radius: 19px;
   color: #fff;
-  font: 700 13px/1 var(--font-rubik), sans-serif;
+  font: 700 13px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   text-decoration: none;
@@ -145,13 +146,13 @@
 }
 
 .race {
-  background: linear-gradient(90deg, #2d2516, #1f1c16);
-  box-shadow: inset 0 0 0 1px rgba(246, 196, 92, 0.08);
+  background: linear-gradient(90deg, #1b1606, #0d0b04);
+  box-shadow: inset 0 0 0 1px rgba(255, 190, 60, 0.3);
 }
 
 .halloween {
-  background: linear-gradient(90deg, #3a1d1b, #261719);
-  box-shadow: inset 0 0 0 1px rgba(255, 126, 60, 0.08);
+  background: linear-gradient(90deg, #1f0d06, #0f0603);
+  box-shadow: inset 0 0 0 1px rgba(255, 120, 40, 0.3);
 }
 
 .eventIcon {
@@ -181,8 +182,8 @@
 
 .withdraw {
   padding: 0 14px;
-  color: #878f9a;
-  font: 600 12.5px/1 var(--font-rubik), sans-serif;
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
@@ -202,22 +203,23 @@
   padding: 0 16px;
   border-radius: 8px;
   color: #fff;
-  font: 700 15px/1 var(--font-rubik), sans-serif;
+  font: 700 14px/1 var(--font-ui), sans-serif;
   text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .balance {
   min-width: 88px;
-  background: #111720;
+  background: #101512;
 }
 
 .gems {
-  background: #151f29;
+  background: #121a15;
   transition: background 0.15s ease;
 }
 
 .gems:hover {
-  background: #1b2734;
+  background: #18231c;
 }
 
 .coin,
@@ -227,7 +229,7 @@
   flex-shrink: 0;
 }
 
-/* A rough, painted-on edge, like a brush stroke. */
+/* Solid neon, the brightest thing in the bar. */
 .deposit {
   position: relative;
   isolation: isolate;
@@ -235,32 +237,33 @@
   align-items: center;
   height: 36px;
   padding: 0 26px;
-  color: #fff;
-  font: 700 12.5px/1 var(--font-rubik), sans-serif;
+  color: var(--on-brand);
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
-  text-shadow: 0 1px 0 rgba(120, 50, 0, 0.4);
   transition: filter 0.15s ease, transform 0.15s ease;
 }
 
-/* The paint sits on its own layer: clipping the link itself would clip its
-   focus ring too. */
+/* The paint sits on its own layer, under the label. */
 .deposit::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: 2px;
-  background: linear-gradient(180deg, var(--deposit-hi), var(--deposit) 60%, #c95d17);
-  clip-path: polygon(
-    0.5% 5%, 12% 2%, 27% 4%, 41% 0.5%, 58% 3%, 73% 0.5%, 87% 3%, 99.5% 1%,
-    100% 30%, 99.2% 62%, 100% 95%, 86% 98%, 70% 100%, 54% 97%, 38% 99.5%, 22% 97%, 9% 99.5%, 0% 96%, 0.8% 60%, 0% 28%
-  );
+  border-radius: 7px;
+  background: linear-gradient(180deg, var(--deposit-hi), var(--deposit) 55%, #26c955);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18), 0 0 18px -4px rgba(63, 240, 110, 0.6);
 }
 
 .deposit:hover {
   filter: brightness(1.1) saturate(1.05);
+}
+
+/* The page's green ring would vanish on a green button. */
+.deposit:focus-visible {
+  outline-color: #fff;
 }
 
 .deposit:active {
@@ -271,17 +274,17 @@
   width: 1px;
   height: 28px;
   margin: 0 8px;
-  background: #1d2530;
+  background: var(--line);
 }
 
 .level {
   padding: 4px 8px;
-  border: 1px solid #6b1e22;
-  border-radius: 3px;
-  background: #471516;
-  color: #ff8f96;
-  font: italic 800 12px/1 var(--font-rubik), sans-serif;
-  transform: skewX(-8deg);
+  border: 1px solid rgba(63, 240, 110, 0.5);
+  border-radius: 4px;
+  background: #0d2a17;
+  color: var(--brand);
+  font: 800 12px/1 var(--font-ui), sans-serif;
+  text-shadow: var(--glow);
 }
 
 .profile {
@@ -302,9 +305,9 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #161b21;
+  background: #121a15;
   color: #fff;
-  font: 700 19px/1 var(--font-rubik), sans-serif;
+  font: 700 18px/1 var(--font-ui), sans-serif;
 }
 
 .ring {
@@ -322,11 +325,11 @@
 }
 
 .ringTrack {
-  stroke: #2a3036;
+  stroke: #1b2a21;
 }
 
 .ringFill {
-  stroke: var(--brand-hi);
+  stroke: var(--brand);
   stroke-linecap: round;
 }
 
@@ -383,8 +386,8 @@
     max-height: calc(100vh - 52px);
     overflow-y: auto;
     padding: 12px 16px 20px;
-    border-top: 1px solid #141a22;
-    background: #0e141c;
+    border-top: 1px solid var(--line);
+    background: #0d1210;
   }
 
   .drawerNav {
@@ -399,20 +402,20 @@
     padding: 12px 10px;
     border-radius: 8px;
     color: var(--text-soft);
-    font: 600 14px/1 var(--font-rubik), sans-serif;
+    font: 600 14px/1 var(--font-ui), sans-serif;
     letter-spacing: 0.03em;
     text-transform: uppercase;
     text-decoration: none;
   }
 
   .drawerLink:hover {
-    background: #151d27;
+    background: #172019;
   }
 
   .drawerHeading {
     margin: 14px 10px 6px;
     color: var(--text-muted);
-    font: 700 11px/1 var(--font-rubik), sans-serif;
+    font: 700 11px/1 var(--font-ui), sans-serif;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }

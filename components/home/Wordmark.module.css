@@ -1,42 +1,45 @@
 .wordmark {
-  position: relative;
   display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
+  color: #fff;
   text-decoration: none;
 }
 
 .word {
-  background: linear-gradient(180deg, #ffffff 30%, #c9c2dc);
-  background-clip: text;
-  color: transparent;
-  font: 800 21px/1 var(--font-display), sans-serif;
+  font: 900 22px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.04em;
 }
 
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 1.5px;
-  background: linear-gradient(135deg, #b48cff, var(--brand));
-  box-shadow: 0 0 10px rgba(154, 100, 255, 0.9);
-  transition: transform 0.3s cubic-bezier(0.3, 1.5, 0.5, 1), box-shadow 0.3s ease;
+.cursor {
+  width: 10px;
+  height: 18px;
+  margin-top: 2px;
+  background: var(--brand);
+  box-shadow: 0 0 10px rgba(63, 240, 110, 0.8);
+  animation: blink 1s steps(1) infinite;
 }
 
-.wordmark:hover .dot {
-  transform: scale(1.35) rotate(45deg);
-  box-shadow: 0 0 14px rgba(154, 100, 255, 1);
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 @media (max-width: 400px) {
   .word {
     font-size: 18px;
   }
+
+  .cursor {
+    width: 9px;
+    height: 16px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dot {
-    transition: none;
+  .cursor {
+    animation: none;
   }
 }

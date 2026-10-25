@@ -44,12 +44,12 @@
   left: 84px;
   bottom: 30px;
   padding: 6px 9px;
-  border-radius: 5px;
-  background: #fff;
-  color: #c4561e;
-  font: 900 17px/1 var(--font-display), sans-serif;
+  border-radius: 3px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 800 17px/1 var(--font-ui), sans-serif;
   transform: rotate(-8deg);
-  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 16px rgba(63, 240, 110, 0.55);
 }
 
 /* ---- Pumpkin hunt ------------------------------------------------------ */

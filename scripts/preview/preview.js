@@ -76,7 +76,7 @@
     },
   };
   const timers = [];
-  document.querySelectorAll("a[data-spotlight]").forEach((card) => {
+  document.querySelectorAll("main a[href]").forEach((card) => {
     const ends = ENDS[card.getAttribute("href")];
     const timer = [...card.querySelectorAll("span")].find((s) => classOf(s, "timer"));
     if (!ends || !timer) return;
@@ -93,21 +93,6 @@
   };
   tick();
   setInterval(tick, 1000);
-
-  // ---- Cards light up under the pointer (components/home/Spotlight.tsx).
-  if (matchMedia("(hover: hover)").matches) {
-    document.addEventListener(
-      "pointermove",
-      (e) => {
-        const el = e.target.closest && e.target.closest("[data-spotlight]");
-        if (!el) return;
-        const r = el.getBoundingClientRect();
-        el.style.setProperty("--mx", `${e.clientX - r.left}px`);
-        el.style.setProperty("--my", `${e.clientY - r.top}px`);
-      },
-      { passive: true },
-    );
-  }
 
   // ---- Header: the games menu and the phone menu.
   const header = document.querySelector("header");
