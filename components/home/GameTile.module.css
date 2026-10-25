@@ -1,0 +1,179 @@
+/* The slot carries the shadow and the lift: the tile itself is clipped to its
+   torn outline, which would cut a shadow off. */
+.slot {
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45));
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.28s ease;
+}
+
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 150 / 192;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  clip-path: var(--edge);
+  /* The rim: the face sits a hair inside, so this shows round the edge. */
+  background: color-mix(in srgb, var(--rim) 30%, #1a1c25);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.25s ease;
+}
+
+.face {
+  position: absolute;
+  inset: 1.5px;
+  clip-path: var(--edge);
+  background:
+    radial-gradient(70% 45% at 50% 100%, color-mix(in srgb, var(--tint) 85%, #ffffff 8%), transparent 75%),
+    linear-gradient(180deg, #1f2029 0%, #21222d 16%, color-mix(in srgb, var(--tint) 55%, #21222d) 55%, var(--tint) 100%);
+}
+
+/* The faint mosaic, strongest through the middle of the tile. */
+.face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--mosaic);
+  background-position: var(--mosaic-pos);
+  background-size: 144px 144px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, #000 30%, #000 62%, transparent 92%);
+}
+
+/* A sheen that sweeps across when the tile is hovered. */
+.face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.08) 55%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+}
+
+/* The game's art: the same square stage as the banners, set in the top part
+   of the tile. Its glows are free to spill out and get clipped by the edge. */
+.art {
+  position: absolute;
+  top: var(--art-y, 36%);
+  left: 50%;
+  z-index: 1;
+  width: var(--art-size, 56%);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transition: scale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.title,
+.sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.title {
+  top: 66.5%;
+  font: 800 14.6cqw/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.005em;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.22), 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+.sub {
+  top: 80.5%;
+  color: var(--sub);
+  font: 700 7.4cqw/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.11em;
+}
+
+/* Decoration: plus-shaped sparkles and a small ring. */
+.plus,
+.ring {
+  position: absolute;
+  z-index: 1;
+  translate: -50% -50%;
+  pointer-events: none;
+}
+
+.plus {
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 1.5px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1.5px 100% no-repeat;
+  color: color-mix(in srgb, var(--rim) 70%, #fff);
+  opacity: 0.6;
+  animation: twinkle 3.2s ease-in-out infinite;
+}
+
+.ring {
+  border: 1.2px solid color-mix(in srgb, var(--rim) 60%, #fff);
+  border-radius: 50%;
+  opacity: 0.35;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    scale: 0.8;
+  }
+  50% {
+    opacity: 0.8;
+    scale: 1.1;
+  }
+}
+
+.tile:focus-visible {
+  outline: none;
+}
+
+.slot:has(.tile:focus-visible) {
+  filter: drop-shadow(0 0 2px var(--brand-hi)) drop-shadow(0 0 8px rgba(154, 100, 255, 0.8));
+}
+
+.slot:has(.tile:focus-visible) .tile {
+  background: var(--brand-hi);
+}
+
+@media (hover: hover) {
+  .slot:hover {
+    transform: translateY(-5px);
+    filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.55));
+  }
+
+  .slot:hover .tile {
+    background: color-mix(in srgb, var(--rim) 85%, #ffffff 10%);
+  }
+
+  .slot:hover .art {
+    scale: 1.06;
+  }
+
+  .slot:hover .face::after {
+    transform: translateX(120%);
+    transition: transform 0.9s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot,
+  .art {
+    transition: none;
+  }
+
+  .plus {
+    animation: none;
+  }
+
+  .face::after {
+    display: none;
+  }
+}

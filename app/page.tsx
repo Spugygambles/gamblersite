@@ -1,33 +1,57 @@
+import type { ReactNode } from "react";
 import BattleArt from "@/components/BattleArt";
 import BlackjackArt from "@/components/BlackjackArt";
 import CaseArt from "@/components/CaseArt";
 import CoinflipArt from "@/components/CoinflipArt";
-import GameBanner from "@/components/GameBanner";
+import CrashArt from "@/components/CrashArt";
+import GameTile from "@/components/home/GameTile";
+import HeroShowcase, { LevelBar } from "@/components/home/HeroShowcase";
+import PromoCarousel from "@/components/home/PromoCarousel";
+import SiteHeader from "@/components/home/SiteHeader";
 import KenoArt from "@/components/KenoArt";
 import LimboArt from "@/components/LimboArt";
-import CrashArt from "@/components/CrashArt";
 import MinesArt from "@/components/MinesArt";
 import UpgraderArt from "@/components/UpgraderArt";
+import { GAMES } from "@/lib/home";
+import styles from "./page.module.css";
+
+const ART: Record<string, ReactNode> = {
+  "case-battles": <BattleArt />,
+  cases: <CaseArt />,
+  upgrader: <UpgraderArt />,
+  mines: <MinesArt />,
+  keno: <KenoArt />,
+  crash: <CrashArt />,
+  limbo: <LimboArt />,
+  coinflip: <CoinflipArt />,
+  blackjack: <BlackjackArt />,
+};
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0f121a] px-4 py-10 sm:px-8">
-      <div className="mx-auto w-full max-w-5xl">
-        <h1 className="mb-5 text-lg font-bold uppercase tracking-wide text-white">
-          Games
-        </h1>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-          <GameBanner title="Coinflip" art={<CoinflipArt />} />
-          <GameBanner title="Blackjack" art={<BlackjackArt />} />
-          <GameBanner title="Mines" art={<MinesArt />} />
-          <GameBanner title="Keno" art={<KenoArt />} />
-          <GameBanner title="Crash" art={<CrashArt />} />
-          <GameBanner title="Limbo" art={<LimboArt />} />
-          <GameBanner title="Upgrader" art={<UpgraderArt />} />
-          <GameBanner title="Cases" art={<CaseArt />} />
-          <GameBanner title="Case Battles" art={<BattleArt />} />
-        </div>
-      </div>
-    </main>
+    <>
+      <SiteHeader />
+      <main className={styles.main}>
+        <PromoCarousel />
+
+        <section className={styles.games} aria-labelledby="our-games">
+          <div className={styles.gamesCol}>
+            <h1 id="our-games" className={styles.heading}>
+              Our Games
+            </h1>
+            <div className={styles.grid}>
+              {GAMES.map((g, i) => (
+                <GameTile key={g.slug} game={g} art={ART[g.slug]} index={i} />
+              ))}
+            </div>
+          </div>
+
+          <aside className={styles.heroCol} aria-label="Your level">
+            <LevelBar />
+            <HeroShowcase />
+          </aside>
+        </section>
+      </main>
+    </>
   );
 }

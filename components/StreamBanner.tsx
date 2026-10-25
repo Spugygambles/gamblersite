@@ -1,5 +1,6 @@
 import { Russo_One } from "next/font/google";
 import type { CSSProperties } from "react";
+import { CLAW_MARKS, lens } from "@/lib/claw";
 import Embers, { type Ember } from "./Embers";
 import styles from "./StreamBanner.module.css";
 
@@ -11,27 +12,8 @@ const russo = Russo_One({ weight: "400", subsets: ["latin"] });
 // Rustwild logo, then the deposit bonus. All timing lives in
 // StreamBanner.module.css.
 
-// A claw mark: a sliver from (x1, y1) to (x2, y2), pointed at both ends and
-// `w` thick in the middle.
-function lens(x1: number, y1: number, x2: number, y2: number, w: number) {
-  const len = Math.hypot(x2 - x1, y2 - y1);
-  const nx = (-(y2 - y1) / len) * w;
-  const ny = ((x2 - x1) / len) * w;
-  const mx = (x1 + x2) / 2;
-  const my = (y1 + y2) / 2;
-  const f = (n: number) => n.toFixed(2);
-  return (
-    `M${f(x1)} ${f(y1)}Q${f(mx + nx)} ${f(my + ny)} ${f(x2)} ${f(y2)}` +
-    `Q${f(mx - nx)} ${f(my - ny)} ${f(x1)} ${f(y1)}Z`
-  );
-}
-
-// The three marks of the logo's claw, traced from the logo.
-const CLAW = [
-  lens(0, 59, 71, 0, 7.5),
-  lens(4, 90, 97, 9, 8),
-  lens(33, 100, 100, 40, 7.5),
-];
+// The three marks of the logo's claw.
+const CLAW = CLAW_MARKS;
 
 // Purple embers drifting up across the banner; see Embers. x and y are % of
 // the banner's width and height, rise and sway % of its width.
