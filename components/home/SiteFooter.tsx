@@ -69,7 +69,7 @@ export default function SiteFooter() {
       </div>
 
       <div className={styles.bottom}>
-        <p>© {new Date().getFullYear()} Spugy. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} CsgoNeo. All rights reserved.</p>
         <p>Not affiliated with or endorsed by Valve Corporation.</p>
       </div>
     </footer>

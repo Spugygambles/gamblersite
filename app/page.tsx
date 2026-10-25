@@ -37,7 +37,7 @@ export default function Home() {
       <SiteHeader />
       <DropTicker />
       <main className={styles.main}>
-        <h1 className="sr-only">Spugy: CS2 case opening, battles and games</h1>
+        <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 
         {/* The games come first, all of them on screen without scrolling. */}
         <section className={`${styles.section} ${styles.first}`} aria-labelledby="games">

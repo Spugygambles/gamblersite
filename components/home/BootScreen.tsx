@@ -3,7 +3,7 @@ import styles from "./BootScreen.module.css";
 
 // What the firmware prints as the site starts up.
 const LINES: [string, string][] = [
-  ["SPUGY BIOS v2.6.1  (C) 2026 SPUGY SYSTEMS", ""],
+  ["NEO BIOS v2.6.1  (C) 2026 CSGONEO", ""],
   ["CPU  CASE ENGINE X9 @ 4.20GHZ", "OK"],
   ["MEM  65536K SKIN CACHE", "OK"],
   ["MOUNT /dev/wallet", "OK"],

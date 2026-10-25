@@ -468,6 +468,27 @@
   }
 }
 
+/* Small phones: tighten the wallet so the bar fits without scrolling. */
+@media (max-width: 480px) {
+  .wallet {
+    gap: 6px;
+    padding-left: 8px;
+  }
+
+  .balance {
+    gap: 6px;
+    padding: 0 10px;
+  }
+
+  .deposit {
+    padding: 0 12px;
+  }
+
+  .menuButton {
+    margin-right: 4px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dropdown {
     animation: none;

@@ -12,6 +12,11 @@
   letter-spacing: 0.04em;
 }
 
+.neo {
+  color: var(--brand);
+  text-shadow: 0 0 12px rgba(63, 240, 110, 0.55);
+}
+
 .cursor {
   width: 10px;
   height: 18px;
@@ -27,14 +32,27 @@
   }
 }
 
-@media (max-width: 400px) {
+/* Phones: the name is longer than the room the bar has, so it shrinks, and
+   on the smallest screens the cursor goes. */
+@media (max-width: 480px) {
   .word {
-    font-size: 18px;
+    font-size: 17px;
   }
 
   .cursor {
-    width: 9px;
-    height: 16px;
+    width: 8px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .word {
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+
+  .cursor {
+    display: none;
   }
 }
 

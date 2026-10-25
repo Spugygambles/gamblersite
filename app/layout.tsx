@@ -24,8 +24,8 @@ const terminal = VT323({
 });
 
 export const metadata: Metadata = {
-  title: "Spugy — CS2 Case Opening, Battles & Games",
-  description: "Open CS2 cases, battle other players and play Upgrader, Mines, Crash and more on Spugy.",
+  title: "CsgoNeo — CS2 Case Opening, Battles & Games",
+  description: "Open CS2 cases, battle other players and play Upgrader, Mines, Crash and more on CsgoNeo.",
 };
 
 export const viewport: Viewport = {

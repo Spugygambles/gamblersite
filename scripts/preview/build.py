@@ -52,7 +52,7 @@ fonts = (
     "family=JetBrains+Mono:wght@500;700&family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900"
     "&family=VT323&display=swap"
 )
-page = f"""<title>Spugy Homepage</title>
+page = f"""<title>CsgoNeo Homepage</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

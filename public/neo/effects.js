@@ -1,4 +1,4 @@
-// Spugy's screen effects: digital rain behind the page, and a way to skip the
+// CsgoNeo's screen effects: digital rain behind the page, and a way to skip the
 // boot screen. Plain script, so the site and its static preview share it.
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
