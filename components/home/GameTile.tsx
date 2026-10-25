@@ -17,15 +17,48 @@ function rng(seed: number) {
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-// A rectangle with roughly torn edges: barely ragged on top and sides, more
-// so along the bottom.
+// A clean card with a few hand-torn nicks: straight top and sides with one
+// or two small chips, and a ragged strip along the bottom.
 function tornEdge(seed: number) {
   const r = rng(seed);
   const pts: string[] = [];
-  for (let x = 2; x <= 98; x += 6 + r() * 6) pts.push(`${r1(x)}% ${r1(r() * 1.4)}%`);
-  for (let y = 3; y <= 95; y += 5 + r() * 6) pts.push(`${r1(100 - r() * 1.8)}% ${r1(y)}%`);
-  for (let x = 98; x >= 2; x -= 5 + r() * 5) pts.push(`${r1(x)}% ${r1(100 - r() * 3.6)}%`);
-  for (let y = 95; y >= 3; y -= 5 + r() * 6) pts.push(`${r1(r() * 1.8)}% ${r1(y)}%`);
+  const p = (x: number, y: number) => pts.push(`${r1(x)}% ${r1(y)}%`);
+
+  // Top, left to right, with soft corners and maybe one chip.
+  p(0, 1.6);
+  p(0.6, 0.5);
+  p(2, 0);
+  if (r() < 0.55) {
+    const x = 15 + r() * 60;
+    p(x, 0);
+    p(x + 1.5, 0.6 + r() * 0.7);
+    p(x + 3.5, 0.5 + r() * 0.7);
+    p(x + 5, 0);
+  }
+  p(98, 0);
+  p(99.4, 0.5);
+  p(100, 1.6);
+
+  // Right side, with one nick somewhere in the middle.
+  if (r() < 0.7) {
+    const y = 25 + r() * 50;
+    p(100, y);
+    p(98.4 - r() * 0.6, y + 1.2);
+    p(98.8, y + 2.8);
+    p(100, y + 4);
+  }
+
+  // Bottom, right to left: a few chunky tears.
+  p(100, 98.6 - r() * 1.2);
+  for (let x = 100 - (8 + r() * 10); x > 6; x -= 10 + r() * 12) p(x, 100 - r() * 2.4);
+  p(0, 98.6 - r() * 1.2);
+
+  // Left side, bottom to top, with a notch near the top.
+  const y = 4 + r() * 8;
+  p(0, y + 4);
+  p(1.2 + r() * 0.6, y + 2.6);
+  p(1.2, y + 1);
+  p(0, y);
   return `polygon(${pts.join(", ")})`;
 }
 
@@ -69,7 +102,6 @@ export default function GameTile({ game, art, index }: Props) {
   const style = {
     "--tint": game.theme.tint,
     "--rim": game.theme.rim,
-    "--sub": game.theme.sub,
     "--edge": tornEdge(seed),
     "--mosaic": mosaic(seed),
     "--mosaic-pos": `${Math.round(rng(seed)() * 140)}px 0`,

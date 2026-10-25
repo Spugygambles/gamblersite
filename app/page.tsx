@@ -32,13 +32,14 @@ export default function Home() {
     <>
       <SiteHeader />
       <main className={styles.main}>
+        <h1 className="sr-only">Rustwild: CS2 cases, battles and games</h1>
         <PromoCarousel />
 
         <section className={styles.games} aria-labelledby="our-games">
           <div className={styles.gamesCol}>
-            <h1 id="our-games" className={styles.heading}>
+            <h2 id="our-games" className={styles.heading}>
               Our Games
-            </h1>
+            </h2>
             <div className={styles.grid}>
               {GAMES.map((g, i) => (
                 <GameTile key={g.slug} game={g} art={ART[g.slug]} index={i} />
@@ -46,10 +47,10 @@ export default function Home() {
             </div>
           </div>
 
-          <aside className={styles.heroCol} aria-label="Your level">
+          <div className={styles.heroCol} role="group" aria-label="Your level">
             <LevelBar />
             <HeroShowcase />
-          </aside>
+          </div>
         </section>
       </main>
     </>

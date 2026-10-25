@@ -83,16 +83,16 @@
 
 .title {
   top: 66.5%;
-  font: 800 14.6cqw/1 var(--font-rubik), sans-serif;
+  font: 800 13.2cqw/1 var(--font-rubik), sans-serif;
   letter-spacing: 0.005em;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.22), 0 0 18px rgba(0, 0, 0, 0.35);
 }
 
 .sub {
   top: 80.5%;
-  color: var(--sub);
-  font: 700 7.4cqw/1 var(--font-rubik), sans-serif;
-  letter-spacing: 0.11em;
+  color: rgba(255, 255, 255, 0.94);
+  font: 700 8cqw/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.06em;
 }
 
 /* Decoration: plus-shaped sparkles and a small ring. */

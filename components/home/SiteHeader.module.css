@@ -46,8 +46,8 @@
 }
 
 .navIcon {
-  width: 17px;
-  height: 17px;
+  width: 21px;
+  height: 21px;
   flex-shrink: 0;
 }
 
@@ -127,10 +127,10 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 34px;
+  height: 38px;
   margin-left: 2px;
-  padding: 0 16px 0 46px;
-  border-radius: 17px;
+  padding: 0 16px 0 50px;
+  border-radius: 19px;
   color: #fff;
   font: 700 13px/1 var(--font-rubik), sans-serif;
   letter-spacing: 0.03em;
@@ -158,8 +158,8 @@
   position: absolute;
   left: 3px;
   bottom: 1px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
   transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.6, 1);
 }
@@ -175,11 +175,13 @@
   align-items: center;
   gap: 10px;
   margin-left: auto;
+  /* Never let the wallet butt up against the nav. */
+  padding-left: 20px;
 }
 
 .withdraw {
   padding: 0 14px;
-  color: var(--text-muted);
+  color: #878f9a;
   font: 600 12.5px/1 var(--font-rubik), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -227,23 +229,34 @@
 
 /* A rough, painted-on edge, like a brush stroke. */
 .deposit {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   height: 36px;
   padding: 0 26px;
-  background: linear-gradient(180deg, var(--deposit-hi), var(--deposit) 60%, #c95d17);
   color: #fff;
   font: 700 12.5px/1 var(--font-rubik), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-decoration: none;
   text-shadow: 0 1px 0 rgba(120, 50, 0, 0.4);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+/* The paint sits on its own layer: clipping the link itself would clip its
+   focus ring too. */
+.deposit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--deposit-hi), var(--deposit) 60%, #c95d17);
   clip-path: polygon(
     0.5% 5%, 12% 2%, 27% 4%, 41% 0.5%, 58% 3%, 73% 0.5%, 87% 3%, 99.5% 1%,
     100% 30%, 99.2% 62%, 100% 95%, 86% 98%, 70% 100%, 54% 97%, 38% 99.5%, 22% 97%, 9% 99.5%, 0% 96%, 0.8% 60%, 0% 28%
   );
-  border-radius: 2px;
-  transition: filter 0.15s ease, transform 0.15s ease;
 }
 
 .deposit:hover {
@@ -346,7 +359,7 @@
   display: none;
 }
 
-@media (max-width: 1360px) {
+@media (max-width: 1430px) {
   .nav {
     margin-left: 22px;
   }
@@ -356,7 +369,7 @@
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1300px) {
   .nav {
     display: none;
   }

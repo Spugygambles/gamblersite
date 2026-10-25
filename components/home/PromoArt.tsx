@@ -23,7 +23,7 @@ function Gem({ size, label, className }: { size: number; label?: string; classNa
       <polygon points="4,30 32,8 68,8 96,30 50,88" fill={`url(#${id}-sheen)`} />
       <polygon points="12,28 29,13 33,15 18,29" fill="#fff" opacity="0.6" />
       {label && (
-        <text x="50" y="47" textAnchor="middle" fontFamily="var(--font-rubik)" fontWeight="800" fontSize="22" fill="#0f4a17">
+        <text x="50" y="47" textAnchor="middle" fontFamily="var(--font-rubik)" fontWeight="800" fontSize={label.length === 1 ? 34 : 22} fill="#0f4a17">
           {label}
         </text>
       )}
@@ -75,29 +75,45 @@ export function BattleArt() {
   );
 }
 
+// $10 goes in, the pointer spins and lands in the 10% win zone: $100.
 export function UpgradeArt() {
-  const r = 30;
+  const id = useId();
+  const r = 40;
   const c = 2 * Math.PI * r;
   return (
     <div className={styles.artUpgrade}>
-      <svg viewBox="0 0 80 80" className={styles.dial} aria-hidden>
-        <circle cx="40" cy="40" r={r} fill="#120a24" stroke="#f2f0fa" strokeWidth="3" />
-        <circle
-          cx="40"
-          cy="40"
-          r={r}
-          fill="none"
-          stroke="#b77dff"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${c * 0.1} ${c}`}
-          transform="rotate(-90 40 40)"
-        />
-        <path d="M40 15l4 7h-8z" fill="#fff" transform="rotate(20 40 40)" />
+      <span className={styles.upChip}>
+        <CoinIcon className={styles.upCoin} />
+        $10
+      </span>
+      <svg className={styles.upArrow} viewBox="0 0 24 24" aria-hidden>
+        <path d="M4 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span className={styles.upFrom}>$10</span>
-      <span className={styles.upArrow}>→</span>
-      <span className={styles.upTo}>$100</span>
+      <div className={styles.dialWrap}>
+        <svg viewBox="0 0 100 100" className={styles.dial} aria-hidden>
+          <defs>
+            <radialGradient id={`${id}-face`} cx="0.5" cy="0.4" r="0.6">
+              <stop offset="0" stopColor="#2c1858" />
+              <stop offset="1" stopColor="#0d0820" />
+            </radialGradient>
+          </defs>
+          <circle cx="50" cy="50" r={r} fill={`url(#${id}-face)`} stroke="#f2f0fa" strokeWidth="4" />
+          <circle
+            cx="50"
+            cy="50"
+            r={r}
+            fill="none"
+            stroke="#b77dff"
+            strokeWidth="9"
+            strokeDasharray={`${c * 0.1} ${c}`}
+            transform="rotate(-90 50 50)"
+          />
+        </svg>
+        <svg viewBox="0 0 100 100" className={styles.dialPointer} aria-hidden>
+          <path d="M50 15 44.5 3h11Z" fill="#fff" />
+        </svg>
+        <span className={styles.dialValue}>$100</span>
+      </div>
     </div>
   );
 }

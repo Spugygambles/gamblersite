@@ -6,13 +6,14 @@ import { ONLINE_START, PLAYER } from "@/lib/home";
 import { PumpkinIcon } from "./icons";
 import styles from "./HeroShowcase.module.css";
 
-// The players-online count drifts a little every few seconds. It starts from
-// the same number on the server and the client, then moves once mounted.
+// The players-online count drifts a little every few seconds, pulled back
+// toward where it started so it never wanders off. It starts from the same
+// number on the server and the client, then moves once mounted.
 function useOnlineCount() {
   const [count, setCount] = useState(ONLINE_START);
   useEffect(() => {
     const t = setInterval(() => {
-      setCount((c) => Math.max(380, Math.min(720, c + Math.round((Math.random() - 0.45) * 9))));
+      setCount((c) => Math.max(380, Math.min(720, c + Math.round((Math.random() - 0.5) * 9 + (ONLINE_START - c) * 0.04))));
     }, 3800);
     return () => clearInterval(t);
   }, []);
@@ -22,11 +23,11 @@ function useOnlineCount() {
 function OnlineBadge() {
   const count = useOnlineCount();
   return (
-    <div className={styles.online} role="status" aria-label={`${count} players online`}>
+    <div className={styles.online}>
       <span className={`${styles.antenna} ${styles.antennaL}`} aria-hidden />
       <span className={`${styles.antenna} ${styles.antennaR}`} aria-hidden />
       <span className={styles.knob} aria-hidden />
-      <div className={styles.screen} aria-hidden>
+      <div className={styles.screen}>
         <span className={`${styles.count} tabular`}>{count}</span>
         <span className={styles.onlineLabel}>Online</span>
       </div>

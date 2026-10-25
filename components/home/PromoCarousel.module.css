@@ -25,7 +25,7 @@
 .controls {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   margin-right: 14px;
 }
 
@@ -52,8 +52,9 @@
 }
 
 .dot {
-  width: 11px;
-  height: 11px;
+  position: relative;
+  width: 13px;
+  height: 13px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -62,12 +63,20 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
+/* A bigger target than the dot itself, for fingers. */
+.dot::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+}
+
 .dot:hover {
   background: #47525e;
 }
 
 .dotActive {
-  background: #d6dbe0;
+  background: #8a939c;
 }
 
 /* ---- Slides ------------------------------------------------------------ */
@@ -224,7 +233,7 @@
 
 .gemSmall {
   left: 52px;
-  bottom: 70px;
+  bottom: 50px;
   transform: rotate(-18deg);
   animation: bob 2.6s ease-in-out -1s infinite alternate;
 }
@@ -248,7 +257,7 @@
 
 .p1 {
   left: 70px;
-  bottom: 104px;
+  bottom: 80px;
 }
 
 .p2 {
@@ -360,47 +369,83 @@
 
 .artUpgrade {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
-  padding-left: 30px;
+  padding: 0 0 6px 14px;
 }
 
-.dial {
-  width: 76px;
-  height: 76px;
-  margin-top: 10px;
-  filter: drop-shadow(0 0 10px rgba(183, 125, 255, 0.5));
-  animation: dial 4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+.upChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  margin-bottom: 25px;
+  padding: 0 12px 0 7px;
+  border-radius: 17px;
+  background: rgba(13, 8, 32, 0.6);
+  box-shadow: inset 0 0 0 1px rgba(183, 125, 255, 0.35);
+  color: #fff;
+  font: 800 17px/1 var(--font-rubik), sans-serif;
 }
 
-@keyframes dial {
+.upCoin {
+  width: 21px;
+  height: 21px;
+}
+
+.upArrow {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 31px;
+  color: #d8c2ff;
+  animation: nudge 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes nudge {
+  to {
+    translate: 4px 0;
+  }
+}
+
+/* The dial spills out over the top of the banner. */
+.dialWrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 0 14px rgba(183, 125, 255, 0.55)) drop-shadow(0 6px 8px rgba(0, 0, 0, 0.4));
+}
+
+.dial,
+.dialPointer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Two spins, then it settles inside the win zone. */
+.dialPointer {
+  animation: dial-spin 4.5s cubic-bezier(0.15, 0.75, 0.2, 1) infinite;
+}
+
+@keyframes dial-spin {
   0% {
     transform: rotate(0deg);
   }
-  50%,
+  55%,
   100% {
-    transform: rotate(360deg);
+    transform: rotate(738deg);
   }
 }
 
-.upFrom,
-.upTo,
-.upArrow {
-  margin-top: 10px;
-  font: 900 20px/1 var(--font-rubik), sans-serif;
-}
-
-.upFrom {
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.upArrow {
-  color: #b77dff;
-}
-
-.upTo {
+.dialValue {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   color: #fff;
-  text-shadow: 0 0 14px rgba(183, 125, 255, 0.85);
+  font: 900 19px/1 var(--font-rubik), sans-serif;
+  text-shadow: 0 0 12px rgba(183, 125, 255, 0.9);
 }
 
 .pumpkinBig,
@@ -443,18 +488,20 @@
 @media (max-width: 980px) {
   .art {
     left: auto;
-    right: 150px;
-    width: 200px;
+    right: 186px;
+    width: 240px;
     transform-origin: bottom right;
     scale: 0.8;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 940px) {
   .art {
     display: none;
   }
+}
 
+@media (max-width: 760px) {
   .stage {
     height: 112px;
   }
@@ -492,7 +539,8 @@
   .gemSmall,
   .pixel,
   .flipCoin,
-  .dial,
+  .upArrow,
+  .dialPointer,
   .pumpkinBig,
   .bat {
     animation: none;

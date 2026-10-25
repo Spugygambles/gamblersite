@@ -10,7 +10,7 @@
   /* Text. */
   --text: #ffffff;
   --text-soft: #c9d1d8;
-  --text-muted: #63727c;
+  --text-muted: #72838f;
   /* Brand and accents. */
   --brand: #7838f0;
   --brand-hi: #9a64ff;
@@ -39,6 +39,8 @@ body {
   color: var(--text);
   font-family: var(--font-rubik), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Unhinted glyph positions, so tracked-out caps space evenly. */
+  text-rendering: geometricPrecision;
 }
 
 /* Numbers that change (balances, counters) shouldn't jiggle. */

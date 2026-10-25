@@ -23,19 +23,28 @@ export default function SiteHeader() {
   const [gamesOpen, setGamesOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const gamesRef = useRef<HTMLDivElement>(null);
+  const gamesBtnRef = useRef<HTMLButtonElement>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const drawerRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const drawerId = useId();
 
-  // The games menu closes on a click anywhere else or on Escape.
+  // The games menu closes on a click anywhere else or on Escape, which also
+  // hands focus back to the button that opened it.
   useEffect(() => {
     if (!gamesOpen && !drawerOpen) return;
     const onDown = (e: PointerEvent) => {
       if (gamesOpen && !gamesRef.current?.contains(e.target as Node)) setGamesOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key !== "Escape") return;
+      if (gamesOpen) {
         setGamesOpen(false);
+        gamesBtnRef.current?.focus();
+      }
+      if (drawerOpen) {
         setDrawerOpen(false);
+        menuBtnRef.current?.focus();
       }
     };
     document.addEventListener("pointerdown", onDown);
@@ -46,6 +55,11 @@ export default function SiteHeader() {
     };
   }, [gamesOpen, drawerOpen]);
 
+  // Opening the drawer moves focus into it.
+  useEffect(() => {
+    if (drawerOpen) drawerRef.current?.querySelector<HTMLElement>("a")?.focus();
+  }, [drawerOpen]);
+
   // The ring round the avatar shows progress through the current level.
   const ring = 2 * Math.PI * 19;
 
@@ -53,6 +67,7 @@ export default function SiteHeader() {
     <header className={styles.header}>
       <div className={styles.inner}>
         <button
+          ref={menuBtnRef}
           type="button"
           className={styles.menuButton}
           aria-label={drawerOpen ? "Close menu" : "Open menu"}
@@ -66,12 +81,19 @@ export default function SiteHeader() {
         <Logo />
 
         <nav className={styles.nav} aria-label="Main">
-          <div className={styles.gamesMenu} ref={gamesRef}>
+          <div
+            className={styles.gamesMenu}
+            ref={gamesRef}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setGamesOpen(false);
+            }}
+          >
             <button
+              ref={gamesBtnRef}
               type="button"
               className={styles.navLink}
               aria-expanded={gamesOpen}
-              aria-controls={menuId}
+              aria-controls={gamesOpen ? menuId : undefined}
               onClick={() => setGamesOpen((o) => !o)}
             >
               <GamepadIcon className={styles.navIcon} />
@@ -115,7 +137,8 @@ export default function SiteHeader() {
           <Link href="/withdraw" className={styles.withdraw}>
             Withdraw
           </Link>
-          <div className={styles.balance} aria-label={`Balance ${money.format(PLAYER.balance)} coins`}>
+          <div className={styles.balance}>
+            <span className="sr-only">Balance:</span>
             <CoinIcon className={styles.coin} />
             <span className="tabular">{money.format(PLAYER.balance)}</span>
           </div>
@@ -128,6 +151,7 @@ export default function SiteHeader() {
           </Link>
           <span className={styles.divider} aria-hidden />
           <span className={styles.level} title={`Level ${PLAYER.level}`}>
+            <span className="sr-only">Level </span>
             {PLAYER.level}
           </span>
           <button type="button" className={styles.profile} aria-label="Account">
@@ -149,7 +173,12 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      <div className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`} id={drawerId} hidden={!drawerOpen}>
+      <div
+        ref={drawerRef}
+        className={`${styles.drawer} ${drawerOpen ? styles.drawerOpen : ""}`}
+        id={drawerId}
+        hidden={!drawerOpen}
+      >
         <nav className={styles.drawerNav} aria-label="Mobile">
           <Link href="/rewards" className={styles.drawerLink} onClick={() => setDrawerOpen(false)}>
             <GiftIcon className={styles.navIcon} /> Rewards

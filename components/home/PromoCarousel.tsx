@@ -70,7 +70,9 @@ const AUTOPLAY_MS = 6500;
 
 export default function PromoCarousel() {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focusWithin, setFocusWithin] = useState(false);
+  const paused = hovered || focusWithin;
   const count = SLIDES.length;
   const go = useCallback((i: number) => setIndex(((i % count) + count) % count), [count]);
 
@@ -87,10 +89,12 @@ export default function PromoCarousel() {
       className={styles.wrap}
       aria-roledescription="carousel"
       aria-label="Promotions"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocusWithin(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocusWithin(false);
+      }}
     >
       <div className={styles.topRow}>
         <p className={styles.welcome}>

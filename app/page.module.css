@@ -3,6 +3,8 @@
   max-width: calc(var(--page-max) + 32px);
   margin: 0 auto;
   padding: 0 16px 64px;
+  /* The hero's glow and wall run wide; don't let them widen the page. */
+  overflow-x: clip;
 }
 
 .games {
