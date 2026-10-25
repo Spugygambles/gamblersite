@@ -3,7 +3,7 @@
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Class names in the snapshot look like "LiveBattles-module__AbC1__row":
+  // Class names in the snapshot look like "SiteHeader-module__AbC1__navLink":
   // given one, swap its last part to get its siblings from the same module.
   const sibling = (cls, name) => cls.replace(/__[^_]+$/, `__${name}`);
   const classOf = (el, suffix) => [...el.classList].find((c) => c.endsWith(`__${suffix}`));
@@ -54,33 +54,6 @@
       count = Math.max(380, Math.min(720, count + Math.round((Math.random() - 0.5) * 9 + (start - count) * 0.04)));
       online.textContent = String(count);
     }, 3800);
-  }
-
-  // ---- Live battles: battles under way move on a round every few seconds,
-  // lighting the case being opened and fading the ones already opened.
-  if (!reduce) {
-    const live = [...document.querySelectorAll("li[data-spotlight]")].filter((li) => classOf(li, "live"));
-    const battles = live.map((row) => {
-      const rowCls = classOf(row, "row");
-      const thumbs = [...row.querySelectorAll("ol > li")];
-      const tag = row.querySelector(`.${sibling(rowCls, "liveTag")}`);
-      const bar = row.querySelector(`.${sibling(rowCls, "progress")} > span`);
-      const round = Number((tag.textContent.match(/(\d+)\s*\/\s*\d+/) || [])[1]) || 1;
-      return { rowCls, thumbs, tag, bar, round };
-    });
-    setInterval(() => {
-      for (const b of battles) {
-        const n = b.thumbs.length;
-        b.round = (b.round % n) + 1;
-        b.thumbs.forEach((li, i) => {
-          li.classList.toggle(sibling(b.rowCls, "opened"), i + 1 < b.round);
-          li.classList.toggle(sibling(b.rowCls, "opening"), i + 1 === b.round);
-        });
-        const dot = b.tag.firstElementChild;
-        b.tag.replaceChildren(dot, `Round ${b.round}/${n}`);
-        if (b.bar) b.bar.style.width = `${(b.round / n) * 100}%`;
-      }
-    }, 3200);
   }
 
   // ---- Countdowns on the event cards, ticking every second.

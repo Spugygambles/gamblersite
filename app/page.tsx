@@ -1,15 +1,12 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import CaseShelf from "@/components/home/CaseShelf";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
-import { PlusIcon } from "@/components/home/icons";
-import LiveBattles from "@/components/home/LiveBattles";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
 import Spotlight from "@/components/home/Spotlight";
-import { CASES, GAMES, SAMPLE_BATTLES } from "@/lib/home";
+import { CASES, GAMES } from "@/lib/home";
 import styles from "./page.module.css";
 
 function SectionHead({ index, id, title, children }: { index: string; id: string; title: string; children: ReactNode }) {
@@ -28,8 +25,6 @@ function SectionHead({ index, id, title, children }: { index: string; id: string
 }
 
 export default function Home() {
-  const live = SAMPLE_BATTLES.filter((b) => b.round != null).length;
-
   return (
     <>
       <SiteHeader />
@@ -45,29 +40,15 @@ export default function Home() {
           <GameModes />
         </section>
 
-        <section className={styles.section} aria-labelledby="battles">
-          <SectionHead index="02" id="battles" title="Live battles">
-            <span className={styles.liveCount}>
-              <span className={styles.liveDot} aria-hidden />
-              {live} live
-            </span>
-            <Link href="/case-battles/create" className={styles.create}>
-              <PlusIcon />
-              Create battle
-            </Link>
-          </SectionHead>
-          <LiveBattles />
-        </section>
-
         <section className={styles.section} aria-labelledby="rewards">
-          <SectionHead index="03" id="rewards" title="Rewards & events">
+          <SectionHead index="02" id="rewards" title="Rewards & events">
             <span className={styles.meta}>Updated live</span>
           </SectionHead>
           <EventsRow />
         </section>
 
         <section className={styles.section} aria-labelledby="cases">
-          <SectionHead index="04" id="cases" title="Popular cases">
+          <SectionHead index="03" id="cases" title="Popular cases">
             <span className={styles.meta}>{CASES.length} cases</span>
           </SectionHead>
           <CaseShelf />
