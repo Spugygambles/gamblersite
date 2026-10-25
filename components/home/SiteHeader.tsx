@@ -14,7 +14,7 @@ import {
   PumpkinIcon,
   TrophyIcon,
 } from "./icons";
-import Logo from "./Logo";
+import Wordmark from "./Wordmark";
 import styles from "./SiteHeader.module.css";
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -78,7 +78,7 @@ export default function SiteHeader() {
           {drawerOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
 
-        <Logo />
+        <Wordmark />
 
         <nav className={styles.nav} aria-label="Main">
           <div

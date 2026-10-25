@@ -1,23 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Russo_One, Rubik } from "next/font/google";
+import { Rubik, Unbounded } from "next/font/google";
 import "./globals.css";
 
-// Rubik for the interface; Russo One only for the Rustwild wordmark.
+// Rubik for the interface; Unbounded for the wordmark and headlines.
 const rubik = Rubik({
   variable: "--font-rubik",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-const russo = Russo_One({
-  variable: "--font-russo",
+const unbounded = Unbounded({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
-  title: "Rustwild — CS2 Cases, Battles & Games",
-  description: "Open cases, battle other players and play Mines, Crash, Upgrader and more on Rustwild.",
+  title: "Spugy — CS2 Case Opening, Battles & Games",
+  description: "Open CS2 cases, battle other players and play Upgrader, Mines, Crash and more on Spugy.",
 };
 
 export const viewport: Viewport = {
@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} ${russo.variable} antialiased`}>{children}</body>
+      <body className={`${rubik.variable} ${unbounded.variable} antialiased`}>{children}</body>
     </html>
   );
 }

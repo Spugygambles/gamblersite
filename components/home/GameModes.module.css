@@ -1,0 +1,310 @@
+/*
+ * Game modes: two wide feature cards (cases and battles), then the seven
+ * originals in a row. Same cut corners as the rest of the page: each card's
+ * own background is its hairline, ::before is the face.
+ */
+
+.feature,
+.game {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  overflow: hidden;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  background: linear-gradient(150deg, color-mix(in srgb, var(--rim) 55%, transparent), rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0.04));
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.feature::before,
+.game::before {
+  --c: calc(var(--cut) - 0.6px);
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -2;
+  clip-path: polygon(var(--c) 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 var(--c));
+  background: var(--face);
+}
+
+/* A glint that sweeps across on hover. */
+.feature::after,
+.game::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.07) 47%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.07) 53%, transparent 65%);
+  transform: translateX(-120%);
+}
+
+@media (hover: hover) {
+  .feature:hover,
+  .game:hover {
+    transform: translateY(-4px);
+    background: linear-gradient(150deg, var(--rim), color-mix(in srgb, var(--rim) 30%, transparent) 45%, color-mix(in srgb, var(--rim) 22%, transparent));
+  }
+
+  .feature:hover::after,
+  .game:hover::after {
+    transform: translateX(120%);
+    transition: transform 0.9s ease;
+  }
+}
+
+/* Focus draws inside the cut corners, where it can't be clipped. */
+.feature:focus-visible,
+.game:focus-visible {
+  outline: none;
+  background: var(--brand-hi);
+}
+
+/* ---- Feature cards ----------------------------------------------------- */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.feature {
+  --cut: 16px;
+  --face:
+    radial-gradient(50% 85% at 80% 55%, color-mix(in srgb, var(--tint) 85%, transparent), transparent 72%),
+    linear-gradient(180deg, #121823, #0d1219);
+  display: flex;
+  align-items: center;
+  min-height: 236px;
+}
+
+.featureCopy {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 300px;
+  padding: 28px 0 28px 30px;
+}
+
+.kicker {
+  color: color-mix(in srgb, var(--rim) 60%, #ffffff);
+  font: 700 10.5px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.featureTitle {
+  margin-top: 10px;
+  font: 800 26px/1.05 var(--font-display), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.featureText {
+  margin-top: 10px;
+  color: #8d99a5;
+  font: 500 13.5px/1.5 var(--font-rubik), sans-serif;
+}
+
+.featureCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  font: 700 12px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.2s ease;
+}
+
+.ctaArrow {
+  width: 15px;
+  height: 15px;
+  color: color-mix(in srgb, var(--rim) 65%, #ffffff);
+  transition: translate 0.2s ease;
+}
+
+.feature:hover .featureCta {
+  background: color-mix(in srgb, var(--rim) 35%, transparent);
+}
+
+.feature:hover .ctaArrow {
+  translate: 4px 0;
+}
+
+/* Centred in the space right of the copy (left is set per card). */
+.featureArt {
+  position: absolute;
+  top: 50%;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+}
+
+/* ---- Originals --------------------------------------------------------- */
+
+.originals {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.game {
+  --cut: 12px;
+  --face:
+    radial-gradient(75% 55% at 50% 36%, color-mix(in srgb, var(--tint) 90%, transparent), transparent 72%),
+    linear-gradient(180deg, #121823, #0d1219);
+  aspect-ratio: 3 / 4;
+  container-type: inline-size;
+}
+
+/* The art's square stage, in the top part of the card. */
+.gameStage {
+  position: absolute;
+  inset: 8px 0 31% 0;
+}
+
+.gameArt {
+  position: absolute;
+  top: var(--art-y);
+  left: 50%;
+  width: var(--art-size);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  transition: scale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.game:hover .gameArt {
+  scale: 1.06;
+}
+
+.gameTitle,
+.gameSub {
+  position: absolute;
+  left: 14px;
+  right: 34px;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+.gameTitle {
+  bottom: 38px;
+  font: 700 14px/1 var(--font-display), sans-serif;
+}
+
+.gameSub {
+  bottom: 18px;
+  overflow: hidden;
+  color: #7f8b97;
+  font: 500 11.5px/1.2 var(--font-rubik), sans-serif;
+  text-overflow: ellipsis;
+}
+
+.gameArrow {
+  position: absolute;
+  right: 12px;
+  bottom: 16px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  color: color-mix(in srgb, var(--rim) 60%, #ffffff);
+  transition: background 0.2s ease, translate 0.2s ease;
+}
+
+.gameArrow svg {
+  width: 13px;
+  height: 13px;
+}
+
+.game:hover .gameArrow {
+  background: color-mix(in srgb, var(--rim) 45%, transparent);
+  translate: 2px 0;
+}
+
+/* ---- Smaller screens --------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .originals {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Phones: the art sits above the pitch, and the originals become a row you
+   swipe through. */
+@media (max-width: 520px) {
+  .feature {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .featureArt {
+    position: relative;
+    top: auto;
+    left: auto !important;
+    order: -1;
+    margin: 18px auto -6px;
+    translate: none;
+    scale: 0.85;
+  }
+
+  .featureCopy {
+    max-width: none;
+    padding: 0 20px 22px;
+  }
+
+  .featureTitle {
+    font-size: 22px;
+  }
+
+  .originals {
+    grid-template-columns: none;
+    grid-auto-columns: 44%;
+    grid-auto-flow: column;
+    gap: 10px;
+    margin-right: -16px;
+    padding-right: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .originals::-webkit-scrollbar {
+    display: none;
+  }
+
+  .originals > li {
+    scroll-snap-align: start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feature,
+  .game,
+  .gameArt {
+    transition: none;
+  }
+
+  .feature::after,
+  .game::after {
+    display: none;
+  }
+}

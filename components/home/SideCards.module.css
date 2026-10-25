@@ -1,0 +1,358 @@
+/* The two cards beside the featured case: rewards, and the promos. Same cut
+   corners and hairline as the featured card. */
+
+.card {
+  --cut: 14px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+}
+
+.card::before {
+  --c: calc(var(--cut) - 0.6px);
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  clip-path: polygon(var(--c) 0, 100% 0, 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, 0 100%, 0 var(--c));
+  background: var(--face);
+}
+
+.kicker {
+  margin: 0;
+  color: var(--text-muted);
+  font: 700 10.5px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ---- Rewards ----------------------------------------------------------- */
+
+.rewards {
+  --face: radial-gradient(80% 90% at 100% 0%, rgba(120, 56, 240, 0.2), transparent 70%), linear-gradient(180deg, #121823, #0e131b);
+  padding: 20px 22px 18px;
+  background: linear-gradient(150deg, rgba(154, 100, 255, 0.5), rgba(255, 255, 255, 0.06) 45%, rgba(255, 255, 255, 0.05));
+}
+
+.rewardsHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The level, on a hexagonal badge. */
+.hex {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 48px;
+  flex-shrink: 0;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(160deg, #b48cff, #6a2be0 60%, #4b1aa8);
+  color: #fff;
+  font: 800 16px/1 var(--font-display), sans-serif;
+  text-shadow: 0 1px 0 rgba(30, 0, 70, 0.5);
+}
+
+.level {
+  margin: 6px 0 0;
+  color: #fff;
+  font: 700 19px/1 var(--font-display), sans-serif;
+}
+
+.pct {
+  margin-left: auto;
+  color: #cdb6ff;
+  font: 700 15px/1 var(--font-display), sans-serif;
+}
+
+.track {
+  position: relative;
+  height: 6px;
+  margin-top: 16px;
+  border-radius: 3px;
+  background: #1a2230;
+}
+
+.fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6a2be0, #b48cff);
+  box-shadow: 0 0 10px rgba(154, 100, 255, 0.7);
+}
+
+/* A bright tip on the end of the bar. */
+.fill::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 4px;
+  height: 10px;
+  translate: 0 -50%;
+  border-radius: 2px;
+  background: #fff;
+  box-shadow: 0 0 8px #fff;
+}
+
+.next {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 9px 0 0;
+  color: var(--text-muted);
+  font: 500 12px/1.2 var(--font-rubik), sans-serif;
+}
+
+.daily {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 10px 10px 10px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.daily:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.giftBox {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: linear-gradient(160deg, rgba(240, 180, 60, 0.28), rgba(240, 180, 60, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(240, 180, 60, 0.3);
+  color: #f3c15a;
+}
+
+.giftBox svg {
+  width: 19px;
+  height: 19px;
+}
+
+.dailyText {
+  display: grid;
+  gap: 4px;
+  font: 500 12px/1 var(--font-rubik), sans-serif;
+  color: var(--text-muted);
+}
+
+.dailyText strong {
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.claim {
+  margin-left: auto;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f6cd6a, #e2a330);
+  color: #2a1a00;
+  font: 800 11px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.daily:hover .claim {
+  filter: brightness(1.08);
+}
+
+/* ---- Promos ------------------------------------------------------------ */
+
+.promo {
+  --face: linear-gradient(180deg, #121823, #0e131b);
+  flex: 1;
+  min-height: 186px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.07) 55%, rgba(224, 113, 31, 0.45));
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 30px 22px 20px;
+  background: radial-gradient(70% 90% at 92% 100%, color-mix(in srgb, var(--glow) 32%, transparent), transparent 70%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0s linear 0.45s;
+}
+
+.slideActive {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s ease;
+}
+
+.slide .kicker {
+  color: color-mix(in srgb, var(--glow) 70%, #ffffff);
+}
+
+.promoTitle {
+  position: relative;
+  margin: 9px 0 0;
+  color: #fff;
+  font: 700 19px/1.1 var(--font-display), sans-serif;
+}
+
+.promoText {
+  position: relative;
+  max-width: 180px;
+  margin: 8px 0 0;
+  color: #8d99a5;
+  font: 500 12.5px/1.45 var(--font-rubik), sans-serif;
+}
+
+.promoCta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: #fff;
+  font: 700 12px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.ctaArrow {
+  width: 15px;
+  height: 15px;
+  color: var(--glow);
+  transition: translate 0.2s ease;
+}
+
+.promoCta:hover .ctaArrow {
+  translate: 4px 0;
+}
+
+.slideActive .promoTitle,
+.slideActive .promoText,
+.slideActive .promoCta {
+  animation: copy-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slideActive .promoText {
+  animation-delay: 0.05s;
+}
+
+.slideActive .promoCta {
+  animation-delay: 0.1s;
+}
+
+@keyframes copy-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.art {
+  position: absolute;
+  right: 6px;
+  bottom: 0;
+  width: 170px;
+  height: 130px;
+  pointer-events: none;
+}
+
+.slideActive .art {
+  animation: art-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes art-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.94);
+  }
+}
+
+/* One bar per promo along the top: the current one fills up as it shows. */
+.bars {
+  position: absolute;
+  top: 14px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  gap: 6px;
+}
+
+.bar {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+}
+
+/* A taller target than the bar itself. */
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: -8px 0;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+.barFill[data-state="done"] {
+  transform: scaleX(1);
+  opacity: 0.55;
+}
+
+.barFill[data-state="active"] {
+  animation: fill 6.5s linear forwards;
+}
+
+@keyframes fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.bar:focus-visible {
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide,
+  .slideActive {
+    transition: none;
+  }
+
+  .slideActive .promoTitle,
+  .slideActive .promoText,
+  .slideActive .promoCta,
+  .slideActive .art {
+    animation: none;
+  }
+
+  .barFill[data-state="active"] {
+    animation: none;
+    transform: scaleX(1);
+  }
+}

@@ -2,58 +2,84 @@
   width: 100%;
   max-width: calc(var(--page-max) + 32px);
   margin: 0 auto;
-  padding: 0 16px 64px;
-  /* The hero's glow and wall run wide; don't let them widen the page. */
+  padding: 0 16px;
+  box-sizing: border-box;
+  /* The hero's glows run wide; don't let them widen the page. */
   overflow-x: clip;
 }
 
-.games {
+.hero {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 28px;
-  margin-top: 38px;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+  margin-top: 24px;
 }
 
-.heading {
-  margin: 0 0 14px;
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section {
+  margin-top: 56px;
+}
+
+/* Section heads: a number, the title, and a rule out to a count. */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.index {
+  color: var(--brand-hi);
+  font: 600 12px/1 var(--font-display), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.title {
+  margin: 0;
   color: #fff;
-  font: 700 19px/1.2 var(--font-rubik), sans-serif;
-  letter-spacing: 0.01em;
+  font: 700 20px/1 var(--font-display), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+}
+
+.meta {
+  color: var(--text-muted);
+  font: 600 11.5px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(5, 150px);
-  gap: 10px 12px;
-}
-
-.heroCol {
-  min-width: 0;
-  padding-top: 2px;
-}
-
-@media (max-width: 1150px) {
-  .games {
+@media (max-width: 1100px) {
+  .hero {
     grid-template-columns: 1fr;
   }
 
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-
-  .heroCol {
-    display: none;
+  .side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 520px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+@media (max-width: 640px) {
+  .side {
+    grid-template-columns: 1fr;
   }
 
-  .games {
-    margin-top: 28px;
+  .section {
+    margin-top: 44px;
+  }
+
+  .title {
+    font-size: 17px;
   }
 }

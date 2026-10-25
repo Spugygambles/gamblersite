@@ -18,7 +18,11 @@
   --deposit-hi: #f08a33;
   --level: #f32f3d;
   --coin: #f4b23c;
-  --page-max: 1170px;
+  /* Cards: the face, and the hairline round it. */
+  --card: #10161f;
+  --card-hi: #151c27;
+  --hairline: rgba(255, 255, 255, 0.07);
+  --page-max: 1240px;
 }
 
 @theme inline {

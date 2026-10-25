@@ -1,0 +1,144 @@
+.ticker {
+  display: flex;
+  align-items: stretch;
+  height: 42px;
+  border-bottom: 1px solid #141a22;
+  background: linear-gradient(180deg, #0e1319, var(--bg));
+}
+
+.label {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 0 28px;
+  border-right: 1px solid #161d27;
+}
+
+/* A green light with a ring that keeps pinging out from it. */
+.pulse {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ddc84;
+  box-shadow: 0 0 8px rgba(61, 220, 132, 0.8);
+}
+
+.pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid #3ddc84;
+  animation: ping 1.8s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+@keyframes ping {
+  from {
+    opacity: 0.9;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 2.8;
+  }
+}
+
+.live {
+  color: #fff;
+  font: 700 11.5px/1 var(--font-rubik), sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.online {
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font-rubik), sans-serif;
+}
+
+.online .tabular {
+  color: #c9d1d8;
+}
+
+.viewport {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 72px), transparent);
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: run 80s linear infinite;
+}
+
+.ticker:hover .track {
+  animation-play-state: paused;
+}
+
+@keyframes run {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.drop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 22px;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  font: 500 13px/1 var(--font-rubik), sans-serif;
+  white-space: nowrap;
+}
+
+.gem {
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
+  background: var(--rarity);
+  box-shadow: 0 0 8px var(--rarity);
+  transform: rotate(45deg);
+}
+
+.weapon {
+  color: #e9edf1;
+  font-weight: 600;
+}
+
+.skin {
+  color: color-mix(in srgb, var(--rarity) 45%, #ffffff);
+}
+
+.price {
+  margin-left: 4px;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .label {
+    padding: 0 14px 0 16px;
+  }
+
+  .online {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .pulse::after {
+    animation: none;
+  }
+}
