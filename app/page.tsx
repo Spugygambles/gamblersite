@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
-import CaseShelf from "@/components/home/CaseShelf";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
 import Spotlight from "@/components/home/Spotlight";
-import { CASES, GAMES } from "@/lib/home";
+import { GAMES } from "@/lib/home";
 import styles from "./page.module.css";
 
 function SectionHead({ index, id, title, children }: { index: string; id: string; title: string; children: ReactNode }) {
@@ -45,13 +44,6 @@ export default function Home() {
             <span className={styles.meta}>Updated live</span>
           </SectionHead>
           <EventsRow />
-        </section>
-
-        <section className={styles.section} aria-labelledby="cases">
-          <SectionHead index="03" id="cases" title="Popular cases">
-            <span className={styles.meta}>{CASES.length} cases</span>
-          </SectionHead>
-          <CaseShelf />
         </section>
       </main>
       <SiteFooter />

@@ -56,35 +56,14 @@ export const RARITY: Record<Rarity, { name: string; color: string }> = {
 export type CaseInfo = {
   slug: string;
   name: string;
-  price: number;
-  /** The case's own colour, for its glow. */
-  glow: string;
-  /** One picture, or "toxic" for the toxic case's three layers. */
-  image: { src: string; width: number; height: number } | "toxic";
   /** A small square picture of the case, for lists. */
   thumb: string;
-  tag?: "Hot" | "New";
 };
 
 export const CASES: CaseInfo[] = [
-  { slug: "toxic", name: "Toxic", price: 4.99, glow: "#6dff3a", image: "toxic", thumb: "/cases/toxic-case-thumb.png", tag: "Hot" },
-  {
-    slug: "new-year",
-    name: "New Year",
-    price: 2.49,
-    glow: "#ff9a3c",
-    image: { src: "/battles/new-year-case.png", width: 576, height: 582 },
-    thumb: "/cases/new-year-case-thumb.png",
-  },
-  {
-    slug: "music-box",
-    name: "Music Box",
-    price: 9.99,
-    glow: "#46c8ff",
-    image: { src: "/battles/music-box-case.png", width: 1088, height: 844 },
-    thumb: "/cases/music-box-case-thumb.png",
-    tag: "New",
-  },
+  { slug: "toxic", name: "Toxic", thumb: "/cases/toxic-case-thumb.png" },
+  { slug: "new-year", name: "New Year", thumb: "/cases/new-year-case-thumb.png" },
+  { slug: "music-box", name: "Music Box", thumb: "/cases/music-box-case-thumb.png" },
 ];
 
 export const caseBySlug = (slug: string) => CASES.find((c) => c.slug === slug)!;

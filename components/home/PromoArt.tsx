@@ -11,7 +11,7 @@ export function BonusArt() {
         <CoinIcon key={i} className={styles.stackCoin} style={{ bottom: 8 + i * 8, left: 18 + (i % 2) * 3 }} />
       ))}
       <CoinIcon className={styles.flipCoin} />
-      <span className={styles.bonusTag}>+10%</span>
+      <span className={styles.bonusTag}>+5%</span>
     </div>
   );
 }

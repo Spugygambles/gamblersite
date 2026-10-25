@@ -23,8 +23,8 @@ type Promo = {
 const PROMOS: Promo[] = [
   {
     kicker: "Bonus",
-    title: "10% on deposits",
-    text: "Top up today and get 10% extra on top.",
+    title: "5% on deposits",
+    text: "Top up today and get 5% extra on top.",
     cta: "Deposit now",
     href: "/deposit",
     glow: "#e0711f",
