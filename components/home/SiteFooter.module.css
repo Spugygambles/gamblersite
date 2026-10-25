@@ -10,7 +10,8 @@
   gap: 48px;
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 48px 16px 36px;
+  padding-block: 48px 36px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
   box-sizing: content-box;
 }
 
@@ -83,7 +84,8 @@
   gap: 8px 24px;
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: 18px 16px 28px;
+  padding-block: 18px max(28px, env(safe-area-inset-bottom, 0px));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
   border-top: 1px solid #141a22;
   box-sizing: content-box;
   color: #56636d;

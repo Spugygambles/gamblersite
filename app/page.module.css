@@ -2,7 +2,7 @@
   width: 100%;
   max-width: calc(var(--page-max) + 32px);
   margin: 0 auto;
-  padding: 0 16px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
   box-sizing: border-box;
   /* Glows run wide; don't let them widen the page. */
   overflow-x: clip;

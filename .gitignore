@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Static preview built by scripts/preview/build.py
+/scripts/preview/out/

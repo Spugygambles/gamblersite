@@ -47,6 +47,17 @@ body {
   text-rendering: geometricPrecision;
 }
 
+/* On phones with a notch, the band above the sticky header is painted in
+   the page colour so nothing scrolls by under the status bar. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--bg);
+}
+
 /* Numbers that change (balances, counters) shouldn't jiggle. */
 .tabular {
   font-variant-numeric: tabular-nums;

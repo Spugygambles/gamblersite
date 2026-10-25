@@ -1,0 +1,35 @@
+/* Preview-only additions: the fonts come from Google Fonts here (the site
+   serves its own copies), and the page sets the size the site's body uses. */
+:root {
+  color-scheme: dark;
+  --font-rubik: "Rubik", "Rubik Fallback", system-ui, sans-serif;
+  --font-display: "Unbounded", "Unbounded Fallback", "Rubik", sans-serif;
+}
+
+body {
+  font-size: 16px;
+}
+
+/* A note for links to pages that aren't built yet. */
+.preview-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  max-width: calc(100% - 32px);
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #1a2230;
+  box-shadow: 0 0 0 1px rgba(154, 100, 255, 0.45), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font: 600 13px/1.35 var(--font-rubik);
+  opacity: 0;
+  translate: -50% 16px;
+  pointer-events: none;
+  transition: opacity 0.25s ease, translate 0.25s ease;
+}
+
+.preview-toast.show {
+  opacity: 1;
+  translate: -50% 0;
+}
