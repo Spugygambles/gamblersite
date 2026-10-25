@@ -2,17 +2,9 @@
 // the signed-in user once auth is wired up, and the cases, prices, odds and
 // drops for the real ones from the backend.
 
-export type GameTheme = {
-  /** The tile's colour: dark at the bottom, light toward the top. */
-  tint: string;
-  rim: string;
-};
-
 export type GameInfo = {
   slug: string;
   title: string;
-  subtitle: string;
-  theme: GameTheme;
   /** How big the art sits on its tile (% of the tile's width) and where its
       middle is (% down the art area). */
   art: { size: number; y: number };
@@ -22,15 +14,15 @@ export type GameInfo = {
 };
 
 export const GAMES: GameInfo[] = [
-  { slug: "case-battles", title: "Battles", subtitle: "VS players", theme: { tint: "#2b0f0c", rim: "#a2401f" }, art: { size: 62, y: 50 }, playing: 342 },
-  { slug: "cases", title: "Cases", subtitle: "Unbox skins", theme: { tint: "#1b1240", rim: "#4a2fa0" }, art: { size: 56, y: 50 }, playing: 1284 },
-  { slug: "upgrader", title: "Upgrader", subtitle: "Level up your skins", theme: { tint: "#2c1d6e", rim: "#6c4ce0" }, art: { size: 62, y: 50 }, playing: 214, tag: "New" },
-  { slug: "mines", title: "Mines", subtitle: "Find the gems", theme: { tint: "#0d3d3f", rim: "#1f8a83" }, art: { size: 56, y: 50 }, playing: 509 },
-  { slug: "keno", title: "Keno", subtitle: "Lucky numbers", theme: { tint: "#4a1559", rim: "#a33bc4" }, art: { size: 56, y: 50 }, playing: 77 },
-  { slug: "crash", title: "Crash", subtitle: "Cash out in time", theme: { tint: "#172a6b", rim: "#3b63e0" }, art: { size: 64, y: 48 }, playing: 1032, tag: "Hot" },
-  { slug: "limbo", title: "Limbo", subtitle: "Aim higher", theme: { tint: "#123f2c", rim: "#2f9a5f" }, art: { size: 68, y: 50 }, playing: 168 },
-  { slug: "coinflip", title: "Coinflip", subtitle: "Heads or tails", theme: { tint: "#4a3112", rim: "#c0832c" }, art: { size: 66, y: 50 }, playing: 251 },
-  { slug: "blackjack", title: "Blackjack", subtitle: "Hit or stand", theme: { tint: "#4a1424", rim: "#b0344f" }, art: { size: 62, y: 50 }, playing: 133 },
+  { slug: "case-battles", title: "Battles", art: { size: 62, y: 50 }, playing: 342 },
+  { slug: "cases", title: "Cases", art: { size: 56, y: 50 }, playing: 1284 },
+  { slug: "upgrader", title: "Upgrader", art: { size: 62, y: 50 }, playing: 214, tag: "New" },
+  { slug: "mines", title: "Mines", art: { size: 56, y: 50 }, playing: 509 },
+  { slug: "keno", title: "Keno", art: { size: 56, y: 50 }, playing: 77 },
+  { slug: "crash", title: "Crash", art: { size: 64, y: 48 }, playing: 1032, tag: "Hot" },
+  { slug: "limbo", title: "Limbo", art: { size: 68, y: 50 }, playing: 168 },
+  { slug: "coinflip", title: "Coinflip", art: { size: 66, y: 50 }, playing: 251 },
+  { slug: "blackjack", title: "Blackjack", art: { size: 62, y: 50 }, playing: 133 },
 ];
 
 export const PLAYER = {
@@ -43,6 +35,32 @@ export const PLAYER = {
 };
 
 export const ONLINE_START = 517;
+
+export type ChatMessage =
+  | { name: string; level: number; text: string; mine?: boolean }
+  | { system: true; text: string };
+
+// What chat shows before anyone types, until it's wired to the chat server.
+export const CHAT_SAMPLE: ChatMessage[] = [
+  { name: "vexx", level: 22, text: "morning chat" },
+  { name: "Obi", level: 88, text: "anyone tried the new year case yet" },
+  { name: "tiko", level: 14, text: "pulled a glock water elemental from it" },
+  { name: "rook", level: 56, text: "keno with 4 picks is underrated" },
+  { name: "kyro", level: 42, text: "gg on that karambit" },
+  { name: "MaxiM", level: 18, text: "anyone up for a 2v2? toxic case" },
+  { name: "nova", level: 63, text: "crash went 31x and i cashed at 2 lol" },
+  { system: true, text: "$186.20 of rain was shared by 41 players" },
+  { name: "deadeye", level: 9, text: "how do i get the daily case" },
+  { name: "Spl1t", level: 77, text: "rewards, it's in the menu on the left" },
+  { name: "frostbyte", level: 25, text: "upgrader hit three in a row for me" },
+  { name: "lunar", level: 51, text: "race is close this week" },
+  { name: "MaxiM", level: 18, text: "2v2 is up in battles, join" },
+  { name: "zenn", level: 34, text: "who found a pumpkin in mines already" },
+  { name: "Obi", level: 88, text: "good luck everyone" },
+];
+
+/** The pot in chat's rain, split between the players who join before it falls. */
+export const RAIN_POT = 248.6;
 
 // CS2 rarity colours, as the game shows them.
 export type Rarity = "milspec" | "restricted" | "classified" | "covert" | "gold";

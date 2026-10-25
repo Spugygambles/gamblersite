@@ -1,6 +1,10 @@
-/* Promotions in black and gold: warm dark cards like the game tiles, bold
-   italic titles with a gold word, glossy gold buttons, and each promo's time
+/* Promotions, matte like the lobby: flat dark cards, bold italic titles
+   with one word in the accent colour, solid buttons, and each promo's time
    left in the corner. */
+
+.events {
+  container-type: inline-size;
+}
 
 .row {
   display: grid;
@@ -16,11 +20,10 @@
   min-height: 190px;
   padding: 18px;
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--card-top), var(--card-bottom));
+  border-radius: 10px;
+  background: var(--surface);
   box-sizing: border-box;
-  color: #fff;
+  color: var(--text);
 }
 
 .title {
@@ -32,10 +35,8 @@
   text-transform: uppercase;
 }
 
-.gold {
-  background: var(--brand-grad);
-  background-clip: text;
-  color: transparent;
+.accent {
+  color: var(--brand);
 }
 
 .text {
@@ -47,7 +48,6 @@
   font: 500 13px/1.45 var(--font-ui), sans-serif;
 }
 
-/* Glossy gold, like the deposit button. */
 .button {
   position: relative;
   z-index: 1;
@@ -58,14 +58,13 @@
   height: 34px;
   margin-top: auto;
   padding: 0 15px;
-  border-radius: 8px;
-  background: var(--brand-grad);
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--brand-glow);
+  border-radius: 6px;
+  background: var(--brand);
   color: var(--on-brand);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .button svg {
@@ -74,12 +73,6 @@
 }
 
 /* ---- Level ------------------------------------------------------------- */
-
-.rewards {
-  background:
-    radial-gradient(80% 70% at 100% 0%, rgba(var(--brand-rgb), 0.13), transparent 70%),
-    linear-gradient(180deg, var(--card-top), var(--card-bottom));
-}
 
 .levelHead {
   display: flex;
@@ -95,9 +88,9 @@
   height: 42px;
   flex-shrink: 0;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-  background: var(--brand-grad);
+  background: var(--brand);
   color: var(--on-brand);
-  font: 900 14px/1 var(--font-ui), sans-serif;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
 .pct {
@@ -106,7 +99,7 @@
   font: 700 13px/1 var(--font-ui), sans-serif;
 }
 
-/* The bar: a row of segments that light up, like a level meter. */
+/* The bar: a row of segments that fill up, like a level meter. */
 .segments {
   display: grid;
   grid-template-columns: repeat(20, 1fr);
@@ -122,8 +115,7 @@
 }
 
 .segments .on {
-  background: var(--brand-grad);
-  box-shadow: 0 0 6px rgba(var(--brand-rgb), 0.5);
+  background: var(--brand);
 }
 
 .rewards .text {
@@ -135,11 +127,11 @@
 }
 
 .rewards .button:hover {
-  filter: brightness(1.06);
+  background: var(--brand-hi);
 }
 
 .rewards .button:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }
 
@@ -148,25 +140,22 @@
 .promo {
   text-decoration: none;
   transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .promo:hover {
-  transform: translateY(-3px);
-  border-color: rgba(var(--brand-rgb), 0.6);
-  box-shadow: 0 12px 30px -12px rgba(var(--brand-rgb), 0.4);
+  transform: translateY(-2px);
+  background: var(--surface-2);
 }
 
 .promo:hover .button {
-  transform: translateY(-1px);
-  filter: brightness(1.06);
+  background: var(--brand-hi);
 }
 
 .promo:focus-visible {
   outline: 2px solid var(--brand);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 .promo .title {
@@ -180,14 +169,12 @@
   right: 14px;
   z-index: 1;
   padding: 5px 8px;
-  border: 1px solid rgba(var(--brand-rgb), 0.3);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.35);
-  color: var(--brand);
-  font: 700 11.5px/1 var(--font-ui), sans-serif;
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--text-soft);
+  font: 600 11.5px/1 var(--font-ui), sans-serif;
 }
 
-/* The art, with a light of its own colour behind it. */
 .art {
   position: absolute;
   right: -6px;
@@ -195,22 +182,23 @@
   width: 170px;
   height: 130px;
   pointer-events: none;
-  background: radial-gradient(55% 55% at 60% 70%, color-mix(in srgb, var(--hue) 35%, transparent), transparent 72%);
   transform-origin: bottom right;
-  transition: scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: scale 0.3s ease;
 }
 
 .promo:hover .art {
-  scale: 1.06;
+  scale: 1.04;
 }
 
-@media (max-width: 1100px) {
+/* Four across when there's room, else two, else one. */
+@container (max-width: 1060px) {
   .row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
   }
 }
 
-@media (max-width: 560px) {
+@container (max-width: 540px) {
   .row {
     grid-template-columns: 1fr;
   }

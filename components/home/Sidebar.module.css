@@ -1,0 +1,136 @@
+/* The menu down the left. AppShell sets its width; below 120px it's a rail
+   of icons with the words kept for screen readers. */
+
+.sidebar {
+  height: 100%;
+  padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+
+.group + .group {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.groupTitle {
+  margin: 6px 10px 8px;
+  color: var(--text-muted);
+  font: 600 11px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: var(--text-soft);
+  font: 500 14px/1 var(--font-ui), sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.link:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.link[aria-current="page"] {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+}
+
+.link:hover .icon {
+  color: var(--text-soft);
+}
+
+.link[aria-current="page"] .icon {
+  color: var(--brand);
+}
+
+.tag {
+  margin-left: auto;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 10px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.hot {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* The rail: icons only. Group titles give way to the lines between groups,
+   and a tag becomes a dot on its icon. */
+@container (max-width: 120px) {
+  .sidebar {
+    padding: 12px 10px;
+  }
+
+  .groupTitle {
+    display: none;
+  }
+
+  .link {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .tag {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .icon {
+    transition: none;
+  }
+}

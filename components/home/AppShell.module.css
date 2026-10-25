@@ -1,0 +1,189 @@
+/*
+ * The frame: header across the top, menu on the left, chat on the right.
+ * --sidebar-w and --chat-w size the side columns; data-sidebar and
+ * data-chat on the shell (see AppShell.tsx) change them, and "auto" leaves
+ * it to the screen size. AppShell.tsx uses the same widths.
+ */
+
+.shell {
+  --sidebar-w: 236px;
+  --chat-w: 0px;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--chat-w);
+  grid-template-rows: var(--header-h) auto;
+  grid-template-areas:
+    "header header header"
+    "sidebar main chat";
+  min-height: 100vh;
+  background: var(--bg);
+  transition: grid-template-columns 0.22s ease;
+}
+
+.header {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  grid-area: header;
+}
+
+.sidebar,
+.chat {
+  position: sticky;
+  top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+  align-self: start;
+  height: calc(100vh - var(--header-h) - env(safe-area-inset-top, 0px));
+  overflow: hidden;
+  background: var(--bg-raised);
+}
+
+/* The menu lays itself out for the width it's given (Sidebar.module.css).
+   The edges are drawn inside, so a closed column takes no room at all. */
+.sidebar {
+  grid-area: sidebar;
+  box-shadow: inset -1px 0 var(--line);
+  container-type: inline-size;
+}
+
+.chat {
+  grid-area: chat;
+  box-shadow: inset 1px 0 var(--line);
+}
+
+.main {
+  grid-area: main;
+  min-width: 0;
+  /* Nothing in the page may widen it past its column. */
+  overflow-x: clip;
+}
+
+/* ---- Chat -------------------------------------------------------------- */
+
+/* Wide screens show chat unless it's been closed; it can be opened from
+   1200px. */
+@media (min-width: 1440px) {
+  .shell:not([data-chat="closed"]) {
+    --chat-w: 320px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .shell[data-chat="open"] {
+    --chat-w: 320px;
+  }
+
+  /* Closed chat can't be tabbed into. It goes once its column has shut. */
+  .shell[data-chat="closed"] .chat {
+    visibility: hidden;
+    transition: visibility 0s linear 0.22s;
+  }
+}
+
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .shell[data-chat="auto"] .chat {
+    visibility: hidden;
+  }
+}
+
+/* Narrower, chat slides in over the page. */
+@media (max-width: 1199px) {
+  /* Stretched between the header and the bottom of the screen (start, as
+     in a column, would size it to its messages). */
+  .chat {
+    position: fixed;
+    top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    align-self: stretch;
+    width: min(340px, 100%);
+    height: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform 0.22s ease,
+      visibility 0s linear 0.22s;
+  }
+
+  .shell[data-chat="open"] .chat {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.22s ease;
+  }
+}
+
+/* ---- Menu -------------------------------------------------------------- */
+
+/* Full width from 1280px and a rail of icons from 768px to 1279px, unless
+   toggled. */
+.shell[data-sidebar="collapsed"] {
+  --sidebar-w: 72px;
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .shell[data-sidebar="auto"] {
+    --sidebar-w: 72px;
+  }
+}
+
+/* Below 768px the menu slides in over the page. */
+@media (max-width: 767px) {
+  .shell[data-sidebar] {
+    --sidebar-w: 0px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
+    left: 0;
+    bottom: 0;
+    z-index: 70;
+    align-self: stretch;
+    width: 260px;
+    height: auto;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.22s ease,
+      visibility 0s linear 0.22s;
+  }
+
+  .shell[data-sidebar="open"] .sidebar {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.22s ease;
+  }
+}
+
+/* ---- What's behind a sliding panel ------------------------------------- */
+
+.backdrop {
+  position: fixed;
+  inset: calc(var(--header-h) + env(safe-area-inset-top, 0px)) 0 0;
+  z-index: 65;
+  display: none;
+  padding: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+@media (max-width: 1199px) {
+  .shell[data-chat="open"] .backdrop {
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .shell[data-sidebar="open"] .backdrop {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shell,
+  .chat,
+  .sidebar {
+    transition: none !important;
+  }
+}

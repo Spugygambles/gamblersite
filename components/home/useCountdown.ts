@@ -3,14 +3,19 @@ import { useEffect, useState } from "react";
 /**
  * Time left until `target()`, as "6d 2h", "2h 13m" or "13m". It updates every
  * half minute, and is null until mounted so the server and the first client
- * render agree. Pass a function that stays the same between renders.
+ * render agree. Pass a function that stays the same between renders; once
+ * the time is up it's called again for the next one.
  */
 export function useCountdown(target: () => Date) {
   const [left, setLeft] = useState<string | null>(null);
 
   useEffect(() => {
-    const end = target().getTime();
-    const tick = () => setLeft(formatLeft(end - Date.now()));
+    let end = target().getTime();
+    const tick = () => {
+      // Once it's up, count down to the next one.
+      if (end <= Date.now()) end = target().getTime();
+      setLeft(formatLeft(end - Date.now()));
+    };
     tick();
     const t = setInterval(tick, 30_000);
     return () => clearInterval(t);
@@ -47,4 +52,11 @@ export function halloween() {
   const now = new Date();
   const end = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
   return end > now ? end : new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
+}
+
+/** Chat's rain falls every quarter hour. */
+export function nextRain() {
+  const d = new Date();
+  d.setMinutes(Math.floor(d.getMinutes() / 15) * 15 + 15, 0, 0);
+  return d;
 }

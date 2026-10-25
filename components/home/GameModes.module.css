@@ -1,9 +1,13 @@
 /*
- * The game lobby in black and gold: warm dark cards with a faint mosaic of
- * gold tiles and a soft gold light behind the art, bold italic titles, and
- * glossy gold buttons. Cases and battles get a wide banner each; the
- * originals share a row. Hovering a card lifts it and lights its edge.
+ * The game lobby, matte: flat dark cards, solid buttons, and no glows. Cases
+ * and battles get a wide banner each; the originals share a row. The lobby
+ * sits between the menu and chat, so it fits the room it has rather than
+ * the screen's width.
  */
+
+.lobby {
+  container-type: inline-size;
+}
 
 .features {
   display: grid;
@@ -15,54 +19,33 @@
 .tile {
   position: relative;
   overflow: hidden;
-  border: 1px solid var(--line);
-  background:
-    radial-gradient(var(--light), rgba(var(--brand-rgb), 0.13), transparent 70%),
-    linear-gradient(180deg, var(--card-top), var(--card-bottom));
-  color: #fff;
+  background: var(--surface);
+  color: var(--text);
   text-decoration: none;
   transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-/* The mosaic: faint tiles of the accent colour, strongest round the art.
-   The pattern is a mask, so the colour comes from the palette. */
-.feature::before,
-.tile::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--brand);
-  mask-image: var(--mosaic), radial-gradient(var(--light), #000 20%, transparent 75%);
-  mask-size: auto, 100% 100%;
-  mask-repeat: repeat, no-repeat;
-  mask-composite: intersect;
-  pointer-events: none;
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .feature:hover,
 .tile:hover {
-  transform: translateY(-3px);
-  border-color: rgba(var(--brand-rgb), 0.6);
-  box-shadow: 0 12px 30px -12px rgba(var(--brand-rgb), 0.4);
+  transform: translateY(-2px);
+  background: var(--surface-2);
 }
 
 .feature:focus-visible,
 .tile:focus-visible {
   outline: 2px solid var(--brand);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 /* ---- Banners ----------------------------------------------------------- */
 
 .feature {
-  --light: 42% 75% at 76% 52%;
   display: flex;
   align-items: center;
   min-height: 196px;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .featureCopy {
@@ -71,7 +54,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 300px;
+  max-width: min(300px, 52%);
   padding: 24px 0 24px 26px;
 }
 
@@ -81,10 +64,8 @@
   text-transform: uppercase;
 }
 
-.gold {
-  background: var(--brand-grad);
-  background-clip: text;
-  color: transparent;
+.accent {
+  color: var(--brand);
 }
 
 .featureText {
@@ -101,30 +82,29 @@
   margin-top: 18px;
 }
 
-/* Glossy gold, like the deposit button. */
 .button {
   display: inline-flex;
   align-items: center;
   height: 38px;
   padding: 0 18px;
-  border-radius: 8px;
-  background: var(--brand-grad);
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--brand-glow);
+  border-radius: 6px;
+  background: var(--brand);
   color: var(--on-brand);
-  font: 800 13px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.01em;
+  font: 700 13px/1 var(--font-ui), sans-serif;
   white-space: nowrap;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
 .feature:hover .button {
-  transform: translateY(-1px);
-  filter: brightness(1.06);
+  background: var(--brand-hi);
 }
 
+/* The art's square stage, centred --x across the banner. */
 .featureArt {
   position: absolute;
   top: 50%;
+  left: var(--x);
+  width: var(--w);
   aspect-ratio: 1;
   translate: -50% -50%;
 }
@@ -145,7 +125,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--live);
-  box-shadow: 0 0 6px rgba(61, 220, 132, 0.8);
 }
 
 /* ---- Originals --------------------------------------------------------- */
@@ -164,7 +143,6 @@
 }
 
 .tile {
-  --light: 60% 50% at 50% 42%;
   display: block;
   aspect-ratio: 5 / 6;
   border-radius: 10px;
@@ -178,7 +156,7 @@
   width: var(--art-size);
   aspect-ratio: 1;
   translate: -50% -50%;
-  transition: scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: scale 0.3s ease;
 }
 
 .tile:hover .tileArt {
@@ -196,7 +174,6 @@
   letter-spacing: 0.01em;
   text-align: center;
   text-overflow: ellipsis;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -207,44 +184,71 @@
   left: 9px;
   z-index: 2;
   padding: 4px 7px;
-  border-radius: 5px;
-  background: var(--brand-grad);
+  border-radius: 4px;
+  background: var(--brand);
   color: var(--on-brand);
-  font: 800 10px/1 var(--font-ui), sans-serif;
+  font: 700 10px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .hot {
-  background: linear-gradient(180deg, #ff7a52, var(--danger));
+  background: var(--danger);
   color: #fff;
 }
 
-/* ---- Smaller screens --------------------------------------------------- */
+/* ---- Less room --------------------------------------------------------- */
 
-@media (max-width: 1180px) {
+/* Beside chat or in a smaller window: smaller titles and art. */
+@container (max-width: 1099px) {
+  .features,
   .originals {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
-  .features {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Phones: the two banners sit side by side with the art over the title,
-   and the originals become a row you swipe through, so every game shows on
-   the first screen. */
-@media (max-width: 600px) {
-  .features {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
+  .originals {
+    margin-top: 10px;
+  }
+
+  .featureCopy {
+    max-width: min(300px, 48%);
+    padding: 20px 0 20px 20px;
+  }
+
+  .featureTitle {
+    font-size: 24px;
+  }
+
+  .featureArt {
+    scale: 0.8;
+  }
+
+  .tileTitle {
+    font-size: 13px;
+  }
+
+  /* A smaller tag, clear of art that runs near the top. */
+  .tag {
+    top: 6px;
+    left: 6px;
+    padding: 3px 4px;
+    font-size: 8.5px;
+  }
+}
+
+/* The players count gives the art its room back. */
+@container (max-width: 960px) {
+  .feature .playing {
+    display: none;
+  }
+}
+
+/* Too narrow for the art beside the copy: the two banners put the art over
+   the title, and the originals become a row you swipe through, running out
+   to the edges of the page. Every game still shows on a phone's first
+   screen. */
+@container (max-width: 760px) {
   .feature {
-    --light: 70% 50% at 50% 35%;
     flex-direction: column;
     align-items: stretch;
     min-height: 0;
@@ -253,11 +257,12 @@
   .featureArt {
     position: relative;
     top: auto;
-    left: auto !important;
+    left: auto;
     order: -1;
-    width: 108px !important;
+    width: clamp(108px, 18cqi, 140px);
     margin: 12px auto 0;
     translate: none;
+    scale: none;
   }
 
   .featureCopy {
@@ -266,7 +271,7 @@
   }
 
   .featureTitle {
-    font-size: 17px;
+    font-size: clamp(17px, 2.8cqi, 21px);
   }
 
   .featureText,
@@ -278,16 +283,23 @@
     margin-top: 6px;
   }
 
+  .feature .playing {
+    display: inline-flex;
+  }
+
+  .tileTitle {
+    font-size: 14px;
+  }
+
   .originals {
     grid-template-columns: none;
-    grid-auto-columns: 40%;
+    grid-auto-columns: calc((100% - 4 * 10px) / 4.4);
     grid-auto-flow: column;
-    gap: 10px;
-    margin-top: 10px;
-    margin-right: -16px;
-    padding-right: 16px;
+    margin-inline: calc(-1 * var(--gutter, 16px));
+    padding-inline: var(--gutter, 16px);
     overflow-x: auto;
     overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter, 16px);
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
   }
@@ -298,6 +310,12 @@
 
   .item {
     scroll-snap-align: start;
+  }
+}
+
+@container (max-width: 600px) {
+  .originals {
+    grid-auto-columns: clamp(130px, 40%, 170px);
   }
 }
 

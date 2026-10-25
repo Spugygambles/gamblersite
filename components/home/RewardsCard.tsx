@@ -15,7 +15,7 @@ export default function RewardsCard() {
           {PLAYER.level}
         </span>
         <h3 id="level-title" className={styles.title}>
-          Level <span className={styles.gold}>{PLAYER.level}</span>
+          Level <span className={styles.accent}>{PLAYER.level}</span>
         </h3>
         <span className={`${styles.pct} tabular`}>{PLAYER.levelProgress}%</span>
       </div>

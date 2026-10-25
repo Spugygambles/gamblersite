@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  color: #fff;
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -12,9 +12,7 @@
 }
 
 .neo {
-  background: var(--brand-grad);
-  background-clip: text;
-  color: transparent;
+  color: var(--brand);
 }
 
 /* Phones: the name is longer than the room the bar has, so it shrinks. */
@@ -24,7 +22,7 @@
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 400px) {
   .word {
     font-size: 15px;
   }

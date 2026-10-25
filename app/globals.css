@@ -1,40 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  /* Black and gold: warm blacks, and a metallic gold for what matters. Every
-     colour on the homepage comes from these, so a palette is one block. */
+  /* Matte: flat charcoal surfaces and one solid accent, with no glows or
+     gradients. Every colour on the homepage comes from these, so a palette
+     is one block. */
   /* Surfaces, from the page back to raised controls. */
-  --bg: #0e0c09;
-  --bg-raised: #13110d;
-  --surface: #17140f;
-  --surface-2: #1f1b14;
-  --line: #2b261c;
-  --track: #2a2419;
-  --header-bg: rgba(14, 12, 9, 0.94);
-  /* Cards fade from --card-top to --card-bottom. */
-  --card-top: #1a160f;
-  --card-bottom: #110f0b;
+  --bg: #0f1115;
+  --bg-raised: #13161b;
+  --surface: #181b22;
+  --surface-2: #1f232b;
+  --surface-3: #272c36;
+  --line: #252a33;
+  --track: #2a2f39;
+  --header-bg: #13161b;
   /* Text. */
   --text: #ffffff;
-  --text-soft: #d9d0bf;
-  --text-muted: #948a76;
-  /* The accent: its colour, as channels for see-through tints, the light
-     and deep ends of its gradient, and the text that sits on it. */
-  --brand: #ffc531;
-  --brand-rgb: 255, 197, 49;
-  --brand-hi: #ffe58a;
-  --brand-deep: #eda20c;
-  --on-brand: #1c1300;
-  --brand-grad: linear-gradient(180deg, var(--brand-hi) 0%, var(--brand) 46%, var(--brand-deep) 100%);
-  --brand-glow: 0 0 22px -6px rgba(var(--brand-rgb), 0.65);
+  --text-soft: #b4bccb;
+  --text-muted: #788193;
+  /* The accent: its colour, as channels for see-through tints, its hover
+     shade, and the text that sits on it. */
+  --brand: #f5c32c;
+  --brand-rgb: 245, 195, 44;
+  --brand-hi: #ffd04d;
+  --on-brand: #16120a;
   --deposit: var(--brand);
-  --deposit-hi: var(--brand-hi);
   --level: var(--brand);
   /* Status colours, the same in every palette. */
   --live: #3ddc84;
-  --danger: #ff4d3d;
+  --danger: #f2495c;
   --coin: #f4b23c;
-  --page-max: 1240px;
+  /* Layout. */
+  --header-h: 60px;
+  --page-max: 1320px;
 }
 
 @theme inline {

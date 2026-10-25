@@ -1,5 +1,5 @@
 .footer {
-  margin-top: 80px;
+  margin-top: 64px;
   border-top: 1px solid var(--line);
   background: var(--bg-raised);
 }
@@ -11,7 +11,7 @@
   max-width: var(--page-max);
   margin: 0 auto;
   padding-block: 48px 36px;
-  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px));
   box-sizing: content-box;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .columns a:hover {
-  color: var(--brand);
+  color: var(--text);
 }
 
 .bottom {
@@ -85,7 +85,7 @@
   max-width: var(--page-max);
   margin: 0 auto;
   padding-block: 18px max(28px, env(safe-area-inset-bottom, 0px));
-  padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  padding-inline: max(24px, env(safe-area-inset-left, 0px)) max(24px, env(safe-area-inset-right, 0px));
   border-top: 1px solid var(--line);
   box-sizing: content-box;
   color: var(--text-muted);
@@ -100,6 +100,13 @@
   .inner {
     grid-template-columns: 1fr;
     gap: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .inner,
+  .bottom {
+    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
   }
 }
 

@@ -9,19 +9,11 @@
 
 .label {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-shrink: 0;
-  gap: 6px;
-  padding-block: 0;
-  padding-inline: max(28px, env(safe-area-inset-left, 0px)) 20px;
-  border-right: 1px solid var(--line);
-}
-
-.live {
-  display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 8px;
+  padding-inline: max(24px, env(safe-area-inset-left, 0px)) 18px;
+  border-right: 1px solid var(--line);
   color: var(--text);
   font: 600 13px/1 var(--font-ui), sans-serif;
 }
@@ -31,16 +23,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--live);
-}
-
-.online {
-  padding-left: 15px;
-  color: var(--text-muted);
-  font: 500 12px/1 var(--font-ui), sans-serif;
-}
-
-.online .tabular {
-  color: var(--text-soft);
 }
 
 .viewport {
@@ -126,13 +108,9 @@
   font: 600 13px/1 var(--font-ui), sans-serif;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 640px) {
   .label {
     padding-inline: max(16px, env(safe-area-inset-left, 0px)) 14px;
-  }
-
-  .online {
-    display: none;
   }
 }
 

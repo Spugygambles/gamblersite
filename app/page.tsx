@@ -1,9 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { GAMES } from "@/lib/home";
+import AppShell from "@/components/home/AppShell";
+import ChatPanel from "@/components/home/ChatPanel";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
+import Sidebar from "@/components/home/Sidebar";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
 import styles from "./page.module.css";
@@ -22,10 +25,9 @@ function SectionHead({ id, title, children }: { id: string; title: string; child
 
 export default function Home() {
   return (
-    <>
-      <SiteHeader />
+    <AppShell header={<SiteHeader />} sidebar={<Sidebar />} chat={<ChatPanel />}>
       <DropTicker />
-      <main className={styles.main}>
+      <div className={styles.content}>
         <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 
         {/* The games come first, all of them on screen without scrolling. */}
@@ -44,8 +46,8 @@ export default function Home() {
           </SectionHead>
           <EventsRow />
         </section>
-      </main>
+      </div>
       <SiteFooter />
-    </>
+    </AppShell>
   );
 }

@@ -1,28 +1,19 @@
-"use client";
-
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { caseBySlug, RARITY, SAMPLE_DROPS, usd } from "@/lib/home";
-import { useOnlineCount } from "./useOnlineCount";
 import styles from "./DropTicker.module.css";
 
 // The latest unboxings, running past like a market ticker: each drop on a
 // card lit in its rarity colour, with the case it came out of. The list is
 // drawn twice so the loop has no seam; the copy is hidden from screen readers.
 export default function DropTicker() {
-  const online = useOnlineCount();
   const drops = [...SAMPLE_DROPS, ...SAMPLE_DROPS];
 
   return (
     <section className={styles.ticker} aria-label="Live drops">
       <div className={styles.label}>
-        <span className={styles.live}>
-          <span className={styles.pulse} aria-hidden />
-          Live drops
-        </span>
-        <span className={styles.online}>
-          <span className="tabular">{online}</span> online
-        </span>
+        <span className={styles.pulse} aria-hidden />
+        Live drops
       </div>
       <div className={styles.viewport}>
         <ul className={styles.track}>

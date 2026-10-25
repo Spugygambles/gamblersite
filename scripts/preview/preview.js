@@ -3,7 +3,7 @@
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Class names in the snapshot look like "SiteHeader-module__AbC1__navLink":
+  // Class names in the snapshot look like "ChatPanel-module__AbC1__message":
   // given one, swap its last part to get its siblings from the same module.
   const sibling = (cls, name) => cls.replace(/__[^_]+$/, `__${name}`);
   const classOf = (el, suffix) => [...el.classList].find((c) => c.endsWith(`__${suffix}`));
@@ -45,14 +45,15 @@
     });
   });
 
-  // ---- Players online: drifts a little, pulled back toward where it began.
-  const online = document.querySelector('[aria-label="Live drops"] .tabular');
-  if (online) {
-    const start = Number(online.textContent) || 517;
+  // ---- Players online: one number, shown in chat, drifting a little and
+  // pulled back toward where it began (components/home/useOnlineCount.ts).
+  const onlineEls = document.querySelectorAll("[data-online]");
+  if (onlineEls.length) {
+    const start = Number(onlineEls[0].textContent) || 517;
     let count = start;
     setInterval(() => {
       count = Math.max(380, Math.min(720, count + Math.round((Math.random() - 0.5) * 9 + (start - count) * 0.04)));
-      online.textContent = String(count);
+      onlineEls.forEach((el) => (el.textContent = String(count)));
     }, 3800);
   }
 
@@ -87,82 +88,147 @@
   document.querySelectorAll("main a[href]").forEach((card) => {
     const ends = ENDS[card.getAttribute("href")];
     const el = [...card.querySelectorAll("span")].find((s) => classOf(s, "timer"));
-    if (ends && el) timers.push({ end: ends().getTime(), el });
+    if (ends && el) timers.push({ ends, end: ends().getTime(), el });
   });
   const tick = () => {
-    for (const t of timers) t.el.lastChild.textContent = formatLeft(t.end - Date.now());
+    for (const t of timers) {
+      // Once one's up, count down to the next.
+      if (t.end <= Date.now()) t.end = t.ends().getTime();
+      t.el.lastChild.textContent = formatLeft(t.end - Date.now());
+    }
   };
   tick();
   setInterval(tick, 30000);
 
-  // ---- Header: the games menu and the phone menu.
-  const header = document.querySelector("header");
-  const menuBtn = header && header.querySelector("button[aria-controls]");
-  const drawer = menuBtn && document.getElementById(menuBtn.getAttribute("aria-controls"));
-  const gamesBtn = header && [...header.querySelectorAll("nav button[aria-expanded]")][0];
-  let dropdown = null;
-
-  const closeGames = (focus) => {
-    if (!dropdown) return;
-    dropdown.remove();
-    dropdown = null;
-    gamesBtn.setAttribute("aria-expanded", "false");
-    gamesBtn.querySelector("svg:last-of-type").classList.remove(sibling(classOf(gamesBtn, "navLink"), "chevronUp"));
-    if (focus) gamesBtn.focus();
-  };
-
-  if (gamesBtn && drawer) {
-    const btnCls = classOf(gamesBtn, "navLink");
-    gamesBtn.addEventListener("click", () => {
-      if (dropdown) return closeGames(false);
-      dropdown = document.createElement("div");
-      dropdown.className = sibling(btnCls, "dropdown");
-      drawer.querySelectorAll(`.${sibling(btnCls, "drawerGames")} a`).forEach((a) => dropdown.append(a.cloneNode(true)));
-      gamesBtn.after(dropdown);
-      gamesBtn.setAttribute("aria-expanded", "true");
-      gamesBtn.querySelector("svg:last-of-type").classList.add(sibling(btnCls, "chevronUp"));
+  // ---- The frame (components/home/AppShell.tsx): the menu and chat
+  // buttons, the drawer and chat sliding over the page on smaller screens,
+  // and Escape or the dimmed page closing them.
+  const shell = document.querySelector("[data-shell]");
+  if (shell) {
+    const WIDE_CHAT = "(min-width: 1440px)";
+    const OVERLAY_CHAT = "(max-width: 1199px)";
+    const RAIL_MENU = "(min-width: 768px) and (max-width: 1279px)";
+    const DRAWER_MENU = "(max-width: 767px)";
+    const matches = (q) => matchMedia(q).matches;
+    let menu = "auto";
+    let talk = "auto";
+    const menuIsRail = () => menu === "collapsed" || (menu === "auto" && matches(RAIL_MENU));
+    const chatIsShown = () => talk === "open" || (talk === "auto" && matches(WIDE_CHAT));
+    const sync = () => {
+      shell.dataset.sidebar = menu;
+      shell.dataset.chat = talk;
+      const menuShown = matches(DRAWER_MENU) ? menu === "open" : !menuIsRail();
+      shell.querySelectorAll('[data-shell-toggle="sidebar"]').forEach((b) => b.setAttribute("aria-expanded", String(menuShown)));
+      shell.querySelectorAll('[data-shell-toggle="chat"]').forEach((b) => b.setAttribute("aria-expanded", String(chatIsShown())));
+    };
+    const dismiss = () => {
+      if (menu === "open") menu = "auto";
+      if (talk === "open" && matches(OVERLAY_CHAT)) talk = "closed";
+      sync();
+    };
+    shell.addEventListener("click", (e) => {
+      const toggle = e.target.closest("[data-shell-toggle]");
+      const which = toggle && toggle.dataset.shellToggle;
+      if (which === "sidebar") {
+        if (matches(DRAWER_MENU)) menu = menu === "open" ? "auto" : "open";
+        else menu = menuIsRail() ? "expanded" : "collapsed";
+        sync();
+        if (menu === "open") shell.querySelector('[data-shell-part="sidebar"] a').focus();
+      } else if (which === "chat") {
+        talk = chatIsShown() ? "closed" : "open";
+        sync();
+      } else if (which === "dismiss" || e.target.closest('[data-shell-part="sidebar"] a')) {
+        dismiss();
+      }
     });
-    document.addEventListener("pointerdown", (e) => {
-      if (dropdown && !gamesBtn.parentElement.contains(e.target)) closeGames(false);
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      const closing = [menu === "open" && matches(DRAWER_MENU) && "sidebar", talk === "open" && matches(OVERLAY_CHAT) && "chat"];
+      const part = document.activeElement && document.activeElement.closest("[data-shell-part]");
+      const from = part && part.dataset.shellPart;
+      dismiss();
+      if (from && closing.includes(from)) shell.querySelector(`[data-shell-toggle="${from}"]`).focus();
     });
-    gamesBtn.parentElement.addEventListener("focusout", (e) => {
-      if (!gamesBtn.parentElement.contains(e.relatedTarget)) closeGames(false);
-    });
+    addEventListener("resize", sync);
+    sync();
   }
 
-  let drawerOpen = false;
-  const menuIcon = menuBtn && menuBtn.innerHTML;
-  const closeIcon =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"></path></svg>';
-  const setDrawer = (open, focus) => {
-    drawerOpen = open;
-    drawer.hidden = !open;
-    drawer.classList.toggle(sibling(classOf(drawer, "drawer"), "drawerOpen"), open);
-    menuBtn.setAttribute("aria-expanded", String(open));
-    menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-    menuBtn.innerHTML = open ? closeIcon : menuIcon;
-    if (open) drawer.querySelector("a")?.focus();
-    else if (focus) menuBtn.focus();
-  };
-  if (menuBtn && drawer) menuBtn.addEventListener("click", () => setDrawer(!drawerOpen, false));
+  // ---- Chat (components/home/ChatPanel.tsx): the rain clock, joining the
+  // rain, and sending a message, which shows up straight away.
+  const chat = document.querySelector('aside[aria-label="Chat"]');
+  if (chat) {
+    const clock = chat.querySelector("[data-rain-clock]");
+    const nextRain = () => {
+      const d = new Date();
+      d.setMinutes(Math.floor(d.getMinutes() / 15) * 15 + 15, 0, 0);
+      return d;
+    };
+    const showClock = () => {
+      const s = Math.max(0, Math.round((nextRain().getTime() - Date.now()) / 1000));
+      clock.lastChild.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    };
+    if (clock) {
+      showClock();
+      setInterval(showClock, 1000);
+    }
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    if (dropdown) closeGames(true);
-    if (drawerOpen) setDrawer(false, true);
-  });
+    const join = [...chat.querySelectorAll("button")].find((b) => b.textContent.trim() === "Join");
+    if (join) {
+      join.addEventListener("click", () => {
+        join.disabled = true;
+        join.textContent = "Joined";
+      });
+    }
+
+    const log = chat.querySelector('[role="log"]');
+    const list = log.querySelector("ol");
+    const form = chat.querySelector("form");
+    const input = form.querySelector("input");
+    const send = form.querySelector('button[type="submit"]');
+    log.scrollTop = log.scrollHeight;
+    const AVATARS = ["#4c5fd5", "#2b8f63", "#b8653a", "#8c52b8", "#2c84a3", "#a8822e", "#b04457"];
+    const avatarOf = (name) => AVATARS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % AVATARS.length];
+    const tierOf = (level) => (level >= 80 ? "gold" : level >= 50 ? "purple" : level >= 20 ? "blue" : "");
+    // The player, as the header shows them ("Account, level 70").
+    const account = document.querySelector('header button[aria-label^="Account"]');
+    const me = { name: "Spugy", level: Number(((account && account.getAttribute("aria-label")) || "").replace(/\D/g, "")) || 70 };
+    input.addEventListener("input", () => (send.disabled = !input.value.trim()));
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      // A copy of the newest message from a player, filled in as ours.
+      const model = [...list.children].reverse().find((li) => classOf(li, "message"));
+      const li = model.cloneNode(true);
+      const msgCls = classOf(model, "message");
+      li.classList.add(sibling(msgCls, "mine"));
+      const avatar = li.firstElementChild;
+      avatar.textContent = me.name[0].toUpperCase();
+      avatar.style.background = avatarOf(me.name);
+      const level = [...li.querySelectorAll("span")].find((s) => classOf(s, "level"));
+      ["gold", "purple", "blue"].forEach((t) => level.classList.remove(sibling(msgCls, t)));
+      if (tierOf(me.level)) level.classList.add(sibling(msgCls, tierOf(me.level)));
+      level.lastChild.textContent = String(me.level);
+      [...li.querySelectorAll("span")].find((s) => classOf(s, "name")).textContent = me.name;
+      [...li.querySelectorAll("p")].find((s) => classOf(s, "text")).textContent = text;
+      list.append(li);
+      log.scrollTop = log.scrollHeight;
+      input.value = "";
+      send.disabled = true;
+    });
+  }
 
   // ---- Palette picker (preview only): try the homepage in other colours.
   // The palettes live in preview.css; the choice is remembered on this device.
   const PALETTES = [
-    ["gold", "Gold", "#ffc531"],
-    ["crimson", "Crimson", "#ff3b52"],
-    ["blue", "Electric blue", "#2f8cff"],
-    ["purple", "Purple", "#9b5cff"],
-    ["emerald", "Emerald", "#22d37a"],
-    ["orange", "Orange", "#ff7a1a"],
-    ["cyan", "Cyan", "#19d3e6"],
-    ["pink", "Pink", "#ff3ea5"],
+    ["gold", "Gold", "#f5c32c"],
+    ["crimson", "Crimson", "#e5384f"],
+    ["blue", "Blue", "#3b7cf5"],
+    ["purple", "Purple", "#8b5cf6"],
+    ["emerald", "Emerald", "#1fb86a"],
+    ["orange", "Orange", "#f2711c"],
+    ["cyan", "Cyan", "#17b8cc"],
+    ["pink", "Pink", "#e8458f"],
   ];
   const picker = document.createElement("div");
   picker.className = "palette-picker";
@@ -214,8 +280,6 @@
     const a = e.target.closest && e.target.closest('a[href^="/"]');
     if (!a) return;
     e.preventDefault();
-    if (dropdown && dropdown.contains(a)) closeGames(false);
-    if (drawerOpen && drawer.contains(a)) setDrawer(false, false);
     toast.textContent =
       a.getAttribute("href") === "/" ? "You're on the homepage." : "Preview: this page isn't built yet. Only the homepage is.";
     toast.classList.add("show");

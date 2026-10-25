@@ -1,501 +1,241 @@
+/*
+ * The bar across the top, in three parts: the menu button and the name, the
+ * wallet in the middle of the screen, and the player. Matte: flat fills and
+ * one solid accent, no glows.
+ */
+
 .header {
-  position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 50;
-  background: var(--header-bg);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  height: var(--header-h);
+  padding-inline: max(12px, env(safe-area-inset-left, 0px)) max(12px, env(safe-area-inset-right, 0px));
   border-bottom: 1px solid var(--line);
-  backdrop-filter: blur(10px);
+  background: var(--header-bg);
+  box-sizing: border-box;
 }
 
-.inner {
+.start {
   display: flex;
   align-items: center;
-  height: 52px;
-  padding-inline: max(28px, env(safe-area-inset-left, 0px)) max(28px, env(safe-area-inset-right, 0px));
+  gap: 16px;
+  min-width: 0;
 }
 
-/* ---- Navigation -------------------------------------------------------- */
-
-.nav {
+.end {
   display: flex;
   align-items: center;
-  gap: 6px;
-  margin-left: 38px;
-}
-
-.navLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  height: 52px;
-  padding: 0 14px;
-  border: 0;
-  background: none;
-  color: var(--text-muted);
-  font: 600 14px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.15s ease;
-}
-
-.navLink:hover,
-.navLink[aria-expanded="true"] {
-  color: var(--text);
-}
-
-.navIcon {
-  width: 21px;
-  height: 21px;
-  flex-shrink: 0;
-}
-
-.chevron {
-  width: 14px;
-  height: 14px;
-  margin-left: 2px;
-  transition: transform 0.2s ease;
-}
-
-.chevronUp {
-  transform: rotate(180deg);
-}
-
-.gamesMenu {
-  position: relative;
-}
-
-.dropdown {
-  position: absolute;
-  top: calc(100% - 4px);
-  left: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 168px);
-  gap: 4px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.75);
-  animation: drop-in 0.16s ease-out;
-}
-
-.dropItem {
-  display: grid;
-  grid-template-columns: 8px 1fr;
-  column-gap: 10px;
-  align-items: center;
-  padding: 9px 10px;
-  border-radius: 7px;
-  color: var(--text);
-  text-decoration: none;
-  transition: background 0.15s ease;
-}
-
-.dropItem:hover {
-  background: var(--surface-2);
-}
-
-.dropSwatch {
-  grid-row: span 2;
-  width: 8px;
-  height: 26px;
-  border-radius: 3px;
-}
-
-.dropTitle {
-  font: 700 13px/1.1 var(--font-ui), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.dropSub {
-  font: 500 11px/1.2 var(--font-ui), sans-serif;
-  color: var(--text-muted);
-}
-
-@keyframes drop-in {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-}
-
-/* Event pills: a rendered icon spills out over the top of each. */
-.event {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  height: 38px;
-  margin-left: 2px;
-  padding: 0 16px 0 50px;
-  border-radius: 19px;
-  color: #fff;
-  font: 700 13px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: filter 0.15s ease;
-}
-
-.event:hover {
-  filter: brightness(1.18);
-}
-
-.race {
-  background: linear-gradient(90deg, var(--surface-2), var(--surface));
-  box-shadow: inset 0 0 0 1px rgba(var(--brand-rgb), 0.28);
-}
-
-.halloween {
-  background: linear-gradient(90deg, #2b1408, #170c06);
-  box-shadow: inset 0 0 0 1px rgba(255, 120, 40, 0.28);
-}
-
-
-
-.eventIcon {
-  position: absolute;
-  left: 3px;
-  bottom: 1px;
-  width: 44px;
-  height: 44px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.6, 1);
-}
-
-.event:hover .eventIcon {
-  transform: translateY(-2px) rotate(-6deg) scale(1.06);
-}
-
-/* ---- Wallet and account ------------------------------------------------ */
-
-.wallet {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-  /* Never let the wallet butt up against the nav. */
-  padding-left: 20px;
-}
-
-.withdraw {
-  padding: 0 14px;
-  color: var(--text-muted);
-  font: 600 12px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.withdraw:hover {
-  color: var(--text-soft);
-}
-
-.balance,
-.gems {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  height: 36px;
-  padding: 0 16px;
-  border-radius: 8px;
-  color: #fff;
-  font: 700 14px/1 var(--font-ui), sans-serif;
-  text-decoration: none;
-  box-shadow: inset 0 0 0 1px var(--line);
-}
-
-.balance {
-  min-width: 88px;
-  background: var(--surface);
-}
-
-.gems {
-  background: var(--surface);
-  transition: background 0.15s ease;
-}
-
-.gems:hover {
-  background: var(--surface-2);
-}
-
-.coin,
-.gem {
-  width: 19px;
-  height: 19px;
-  flex-shrink: 0;
-}
-
-/* Glossy gold: the one bright thing in the bar. */
-.deposit {
-  position: relative;
-  isolation: isolate;
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  padding: 0 26px;
-  color: var(--on-brand);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: filter 0.15s ease, transform 0.15s ease;
-}
-
-/* The paint sits on its own layer, under the label. */
-.deposit::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: 2px;
-  border-radius: 7px;
-  background: var(--brand-grad);
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--brand-glow);
-}
-
-.deposit:hover {
-  filter: brightness(1.1) saturate(1.05);
-}
-
-/* The page's green ring would vanish on a green button. */
-.deposit:focus-visible {
-  outline-color: #fff;
-}
-
-.deposit:active {
-  transform: translateY(1px);
-}
-
-.divider {
-  width: 1px;
-  height: 28px;
-  margin: 0 8px;
-  background: var(--line);
-}
-
-.level {
-  padding: 4px 8px;
-  border: 1px solid rgba(var(--brand-rgb), 0.45);
-  border-radius: 4px;
-  background: rgba(var(--brand-rgb), 0.1);
-  color: var(--brand);
-  font: 800 12px/1 var(--font-ui), sans-serif;
-}
-
-.profile {
-  display: inline-flex;
-  align-items: center;
+  justify-content: flex-end;
   gap: 8px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
+  min-width: 0;
 }
 
-.avatar {
-  position: relative;
+.iconButton {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: var(--surface);
-  color: #fff;
-  font: 700 18px/1 var(--font-ui), sans-serif;
-}
-
-.ring {
-  position: absolute;
-  inset: -2px;
-  width: 44px;
-  height: 44px;
-  transform: rotate(-90deg);
-}
-
-.ringTrack,
-.ringFill {
-  fill: none;
-  stroke-width: 2.2;
-}
-
-.ringTrack {
-  stroke: var(--track);
-}
-
-.ringFill {
-  stroke: var(--brand);
-  stroke-linecap: round;
-}
-
-.profile:hover {
-  color: var(--text-soft);
-}
-
-/* ---- Small screens ----------------------------------------------------- */
-
-.menuButton {
-  display: none;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  margin: 0 8px 0 -8px;
+  flex-shrink: 0;
   padding: 0;
   border: 0;
   border-radius: 8px;
-  background: none;
+  background: var(--surface-2);
   color: var(--text-soft);
   cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
-.menuButton svg {
-  width: 22px;
-  height: 22px;
+.iconButton:hover {
+  background: var(--surface-3);
+  color: var(--text);
 }
 
-.drawer {
-  display: none;
+.iconButton svg {
+  width: 20px;
+  height: 20px;
 }
 
-@media (max-width: 1430px) {
-  .nav {
-    margin-left: 22px;
-  }
+/* The chat button shows when chat is open. */
+.chat[aria-expanded="true"] {
+  color: var(--brand);
+}
 
-  .withdraw {
+/* ---- Wallet: the balance with the deposit button joined on ------------- */
+
+.wallet {
+  display: flex;
+  align-items: stretch;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--text);
+  font: 600 14px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.coin {
+  width: 18px;
+  height: 18px;
+}
+
+.deposit {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 14px/1 var(--font-ui), sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.deposit:hover {
+  background: var(--brand-hi);
+}
+
+/* ---- The player -------------------------------------------------------- */
+
+.gems {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 600 14px/1 var(--font-ui), sans-serif;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.gems:hover {
+  background: var(--surface-3);
+}
+
+.gem {
+  width: 18px;
+  height: 18px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 12px 0 3px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.profile:hover {
+  background: var(--surface-3);
+}
+
+.avatar {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--text);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+/* The avatar's circle and the level ring round it. */
+.ring {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  rotate: -90deg;
+}
+
+.ringTrack {
+  fill: var(--surface-3);
+  stroke: var(--track);
+  stroke-width: 3;
+}
+
+.ringFill {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.level {
+  color: var(--brand);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+/* ---- Smaller screens --------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .gems {
     display: none;
   }
 }
 
-@media (max-width: 1300px) {
-  .nav {
-    display: none;
-  }
-
-  .menuButton {
-    display: grid;
-  }
-
-  .drawerOpen {
-    display: block;
-    max-height: calc(100vh - 52px);
-    overflow-y: auto;
-    padding: 12px 16px 20px;
-    border-top: 1px solid var(--line);
-    background: var(--bg-raised);
-  }
-
-  .drawerNav {
-    display: grid;
-    gap: 2px;
-  }
-
-  .drawerLink {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 10px;
-    border-radius: 8px;
-    color: var(--text-soft);
-    font: 600 14px/1 var(--font-ui), sans-serif;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    text-decoration: none;
-  }
-
-  .drawerLink:hover {
-    background: var(--surface-2);
-  }
-
-  .drawerHeading {
-    margin: 14px 10px 6px;
-    color: var(--text-muted);
-    font: 700 11px/1 var(--font-ui), sans-serif;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  .drawerGames {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 4px;
-  }
-}
-
-@media (max-width: 720px) {
-  .inner {
-    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
-  }
-
-  .gems,
-  .divider,
-  .level {
-    display: none;
-  }
-
-  .wallet {
+/* Phones: the wallet moves right, next to the player, and things tighten. */
+@media (max-width: 640px) {
+  .header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 8px;
   }
 
-  .balance {
-    min-width: 0;
-    padding: 0 12px;
-    font-size: 14px;
+  .start {
+    gap: 10px;
   }
 
-  .deposit {
-    padding: 0 16px;
+  .wallet {
+    justify-self: end;
   }
 
-  .profile .chevron {
+  .profile {
     display: none;
-  }
-
-  .avatar {
-    width: 34px;
-    height: 34px;
-    font-size: 16px;
-  }
-
-  .ring {
-    width: 38px;
-    height: 38px;
   }
 }
 
-/* Small phones: tighten the wallet so the bar fits without scrolling. */
 @media (max-width: 480px) {
+  .iconButton {
+    width: 36px;
+    height: 36px;
+  }
+
   .wallet {
-    gap: 6px;
-    padding-left: 8px;
+    height: 36px;
   }
 
   .balance {
     gap: 6px;
     padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .coin {
+    width: 16px;
+    height: 16px;
   }
 
   .deposit {
     padding: 0 12px;
-  }
-
-  .menuButton {
-    margin-right: 4px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dropdown {
-    animation: none;
-  }
-
-  .eventIcon,
-  .chevron {
-    transition: none;
+    font-size: 13px;
   }
 }
