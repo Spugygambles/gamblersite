@@ -56,8 +56,8 @@
     }, 3800);
   }
 
-  // ---- Countdowns on the event cards, ticking every second.
-  const pad = (n) => String(n).padStart(2, "0");
+  // ---- Countdowns on the promo cards, as "6d 2h", "2h 13m" or "13m"
+  // (components/home/useCountdown.ts), updated every half minute.
   const ENDS = {
     "/deposit": () => {
       const d = new Date();
@@ -75,24 +75,25 @@
       return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + days));
     },
   };
+  const formatLeft = (ms) => {
+    const m = Math.max(0, Math.floor(ms / 60000));
+    const d = Math.floor(m / 1440);
+    const h = Math.floor((m % 1440) / 60);
+    if (d > 0) return `${d}d ${h}h`;
+    if (h > 0) return `${h}h ${m % 60}m`;
+    return `${m}m`;
+  };
   const timers = [];
   document.querySelectorAll("main a[href]").forEach((card) => {
     const ends = ENDS[card.getAttribute("href")];
-    const timer = [...card.querySelectorAll("span")].find((s) => classOf(s, "timer"));
-    if (!ends || !timer) return;
-    const text = [...timer.childNodes].reverse().find((n) => n.nodeType === Node.TEXT_NODE);
-    if (text) timers.push({ end: ends().getTime(), text });
+    const el = [...card.querySelectorAll("span")].find((s) => classOf(s, "ends"));
+    if (ends && el) timers.push({ end: ends().getTime(), el });
   });
   const tick = () => {
-    for (const t of timers) {
-      const s = Math.max(0, Math.floor((t.end - Date.now()) / 1000));
-      const d = Math.floor(s / 86400);
-      const hms = `${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
-      t.text.data = d > 0 ? `${d}d ${hms}` : hms;
-    }
+    for (const t of timers) t.el.textContent = `Ends in ${formatLeft(t.end - Date.now())}`;
   };
   tick();
-  setInterval(tick, 1000);
+  setInterval(tick, 30000);
 
   // ---- Header: the games menu and the phone menu.
   const header = document.querySelector("header");

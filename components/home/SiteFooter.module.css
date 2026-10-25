@@ -1,7 +1,7 @@
 .footer {
   margin-top: 80px;
   border-top: 1px solid var(--line);
-  background: linear-gradient(180deg, rgba(13, 18, 16, 0.94), #080b0a);
+  background: var(--bg-raised);
 }
 
 .inner {
@@ -52,7 +52,7 @@
 
 .colTitle {
   margin: 0 0 14px;
-  color: var(--brand);
+  color: var(--text);
   font: 700 12px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -75,7 +75,6 @@
 
 .columns a:hover {
   color: var(--brand);
-  text-shadow: var(--glow);
 }
 
 .bottom {

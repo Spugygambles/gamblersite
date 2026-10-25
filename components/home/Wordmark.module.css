@@ -1,63 +1,29 @@
 .wordmark {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   flex-shrink: 0;
   color: #fff;
   text-decoration: none;
 }
 
 .word {
-  font: 900 22px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.04em;
+  font: 800 21px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.02em;
 }
 
 .neo {
   color: var(--brand);
-  text-shadow: 0 0 12px rgba(63, 240, 110, 0.55);
 }
 
-.cursor {
-  width: 10px;
-  height: 18px;
-  margin-top: 2px;
-  background: var(--brand);
-  box-shadow: 0 0 10px rgba(63, 240, 110, 0.8);
-  animation: blink 1s steps(1) infinite;
-}
-
-@keyframes blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-/* Phones: the name is longer than the room the bar has, so it shrinks, and
-   on the smallest screens the cursor goes. */
+/* Phones: the name is longer than the room the bar has, so it shrinks. */
 @media (max-width: 480px) {
   .word {
     font-size: 17px;
-  }
-
-  .cursor {
-    width: 8px;
-    height: 14px;
   }
 }
 
 @media (max-width: 380px) {
   .word {
     font-size: 15px;
-    letter-spacing: 0.02em;
-  }
-
-  .cursor {
-    display: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cursor {
-    animation: none;
   }
 }

@@ -1,29 +1,31 @@
 import { useEffect, useState } from "react";
 
-const pad = (n: number) => String(n).padStart(2, "0");
-
 /**
- * Time left until `target()` as "2d 04:12:09", ticking every second. It's
- * null until mounted, so the server and the first client render agree.
- * Pass a function that stays the same between renders.
+ * Time left until `target()`, as "6d 2h", "2h 13m" or "13m". It updates every
+ * half minute, and is null until mounted so the server and the first client
+ * render agree. Pass a function that stays the same between renders.
  */
 export function useCountdown(target: () => Date) {
   const [left, setLeft] = useState<string | null>(null);
 
   useEffect(() => {
     const end = target().getTime();
-    const tick = () => {
-      const s = Math.max(0, Math.floor((end - Date.now()) / 1000));
-      const d = Math.floor(s / 86400);
-      const hms = `${pad(Math.floor((s % 86400) / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
-      setLeft(d > 0 ? `${d}d ${hms}` : hms);
-    };
+    const tick = () => setLeft(formatLeft(end - Date.now()));
     tick();
-    const t = setInterval(tick, 1000);
+    const t = setInterval(tick, 30_000);
     return () => clearInterval(t);
   }, [target]);
 
   return left;
+}
+
+export function formatLeft(ms: number) {
+  const m = Math.max(0, Math.floor(ms / 60_000));
+  const d = Math.floor(m / 1440);
+  const h = Math.floor((m % 1440) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m % 60}m`;
+  return `${m}m`;
 }
 
 /** Local midnight tonight. */

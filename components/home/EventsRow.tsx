@@ -55,12 +55,9 @@ function PromoCard({ promo }: { promo: Promo }) {
       <span className={styles.art} aria-hidden>
         {promo.art}
       </span>
-      <span className={`${styles.timer} tabular`}>
-        <span className="sr-only">Ends in </span>
-        {left ?? "--:--:--"}
-      </span>
       <span className={styles.title}>{promo.title}</span>
       <span className={styles.text}>{promo.text}</span>
+      <span className={`${styles.ends} tabular`}>{left ? `Ends in ${left}` : "\u00a0"}</span>
       <span className={styles.button}>{promo.cta}</span>
     </Link>
   );

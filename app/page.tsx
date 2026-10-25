@@ -1,27 +1,16 @@
 import Link from "next/link";
-import Script from "next/script";
-import type { CSSProperties, ReactNode } from "react";
-import BootScreen from "@/components/home/BootScreen";
+import type { ReactNode } from "react";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
-import { GAMES } from "@/lib/home";
 import styles from "./page.module.css";
 
-// Section heads: a small neon mark, the title (which glitches now and then),
-// and a count or a link.
-function SectionHead({ id, title, glitch, children }: { id: string; title: string; glitch: [string, string]; children?: ReactNode }) {
+function SectionHead({ id, title, children }: { id: string; title: string; children?: ReactNode }) {
   return (
     <div className={styles.head}>
-      <span className={styles.mark} aria-hidden />
-      <h2
-        id={id}
-        className={`${styles.title} glitch`}
-        data-text={title}
-        style={{ "--glitch-every": glitch[0], "--glitch-delay": glitch[1] } as CSSProperties}
-      >
+      <h2 id={id} className={styles.title}>
         {title}
       </h2>
       {children}
@@ -31,9 +20,7 @@ function SectionHead({ id, title, glitch, children }: { id: string; title: strin
 
 export default function Home() {
   return (
-    <div className={styles.screen}>
-      {/* Digital rain behind everything; public/neo/effects.js draws it. */}
-      <canvas className={styles.rain} data-rain aria-hidden />
+    <>
       <SiteHeader />
       <DropTicker />
       <main className={styles.main}>
@@ -41,14 +28,12 @@ export default function Home() {
 
         {/* The games come first, all of them on screen without scrolling. */}
         <section className={`${styles.section} ${styles.first}`} aria-labelledby="games">
-          <SectionHead id="games" title="Games" glitch={["6s", "-1s"]}>
-            <span className={styles.count}>{GAMES.length}</span>
-          </SectionHead>
+          <SectionHead id="games" title="Games" />
           <GameModes />
         </section>
 
         <section className={styles.section} aria-labelledby="promotions">
-          <SectionHead id="promotions" title="Promotions" glitch={["8s", "-3.6s"]}>
+          <SectionHead id="promotions" title="Promotions">
             <Link href="/rewards" className={styles.more}>
               View all
             </Link>
@@ -57,8 +42,6 @@ export default function Home() {
         </section>
       </main>
       <SiteFooter />
-      <BootScreen />
-      <Script src="/neo/effects.js" strategy="afterInteractive" />
-    </div>
+    </>
   );
 }

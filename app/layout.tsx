@@ -1,26 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Rubik, VT323 } from "next/font/google";
+import { Rubik } from "next/font/google";
 import "./globals.css";
 
-// Rubik for the interface, JetBrains Mono for little readouts (timers,
-// counts), and VT323, an old terminal face, for the boot screen.
+// One face for the whole interface.
 const rubik = Rubik({
   variable: "--font-ui",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-});
-
-const mono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["500", "700"],
-});
-
-const terminal = VT323({
-  variable: "--font-pixel",
-  subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -29,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0e0c",
+  themeColor: "#0b0b0c",
 };
 
 export default function RootLayout({
@@ -39,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} ${mono.variable} ${terminal.variable} antialiased`}>{children}</body>
+      <body className={`${rubik.variable} antialiased`}>{children}</body>
     </html>
   );
 }

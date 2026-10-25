@@ -3,8 +3,6 @@
 :root {
   color-scheme: dark;
   --font-ui: "Rubik", "Rubik Fallback", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, monospace;
-  --font-pixel: "VT323", "VT323 Fallback", ui-monospace, monospace;
 }
 
 body {
@@ -20,8 +18,8 @@ body {
   max-width: calc(100% - 32px);
   padding: 12px 16px;
   border-radius: 8px;
-  background: #101512;
-  box-shadow: 0 0 0 1px rgba(63, 240, 110, 0.5), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
+  background: #1b1b1e;
+  box-shadow: 0 0 0 1px rgba(255, 200, 58, 0.5), 0 14px 30px -10px rgba(0, 0, 0, 0.8);
   color: #fff;
   font: 600 13px/1.35 var(--font-rubik);
   opacity: 0;

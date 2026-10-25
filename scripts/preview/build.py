@@ -43,14 +43,11 @@ for href in re.findall(r'<link rel="stylesheet" href="([^"]+\.css)"', html):
     assert "url(\"../media" not in text and "url(../media" not in text, "font url left behind"
     css.append(text)
 css.append((HERE / "preview.css").read_text())
-# preview.js stands in for React; effects.js is the site's own screen effects
-# script, shared as is.
-js = (HERE / "preview.js").read_text() + "\n" + (SITE / "public" / "neo" / "effects.js").read_text()
+js = (HERE / "preview.js").read_text()
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
-    "family=JetBrains+Mono:wght@500;700&family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900"
-    "&family=VT323&display=swap"
+    "family=Montserrat:wght@800;900&family=Rubik:wght@400..800&display=swap"
 )
 page = f"""<title>CsgoNeo Homepage</title>
 <meta name="claude:viewport-fit-sides" content="cover">

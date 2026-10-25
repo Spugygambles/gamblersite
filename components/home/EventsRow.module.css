@@ -1,5 +1,5 @@
-/* Promotions, Neo style: dark cards like the game tiles, bold white titles
-   with a lit word, neon buttons, and each promo's countdown in the corner. */
+/* Promotions: the player's level, then a card per promo with its art in the
+   corner. Plain dark cards like the games. */
 
 .row {
   display: grid;
@@ -12,28 +12,21 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 190px;
-  padding: 18px;
+  min-height: 188px;
+  padding: 20px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: linear-gradient(180deg, #111714, #0b0f0d);
+  border-radius: 12px;
+  background: var(--surface);
   box-sizing: border-box;
-  color: #fff;
+  color: var(--text);
 }
 
 .title {
   position: relative;
   z-index: 1;
   margin: 0;
-  font: italic 900 20px/1.05 var(--font-ui), sans-serif;
-  letter-spacing: -0.01em;
-  text-transform: uppercase;
-}
-
-.lit {
-  color: var(--brand);
-  text-shadow: 0 0 12px rgba(63, 240, 110, 0.5);
+  font: 700 18px/1.15 var(--font-ui), sans-serif;
 }
 
 .text {
@@ -41,92 +34,64 @@
   z-index: 1;
   max-width: 165px;
   margin: 8px 0 0;
-  color: var(--text-soft);
-  font: 500 13px/1.45 var(--font-ui), sans-serif;
+  color: var(--text-muted);
+  font: 400 13px/1.45 var(--font-ui), sans-serif;
 }
 
-/* Solid neon, like the deposit button. */
+.ends {
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+  color: var(--brand);
+  font: 500 12.5px/1 var(--font-ui), sans-serif;
+}
+
 .button {
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   height: 34px;
   margin-top: auto;
   padding: 0 15px;
-  border-radius: 7px;
-  background: linear-gradient(180deg, var(--brand-hi), var(--brand) 55%, #26c955);
-  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18), 0 0 16px -4px rgba(63, 240, 110, 0.6);
+  border-radius: 8px;
+  background: var(--brand);
   color: var(--on-brand);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  font: 600 13px/1 var(--font-ui), sans-serif;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.button svg {
-  width: 16px;
-  height: 16px;
+  transition: background-color 0.15s ease;
 }
 
 /* ---- Level ------------------------------------------------------------- */
 
-.rewards {
-  background:
-    radial-gradient(80% 70% at 100% 0%, rgba(63, 240, 110, 0.14), transparent 70%),
-    linear-gradient(180deg, #111714, #0b0f0d);
-}
-
 .levelHead {
   display: flex;
-  align-items: center;
-  gap: 11px;
+  align-items: baseline;
+  justify-content: space-between;
   align-self: stretch;
-}
-
-.badge {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 42px;
-  flex-shrink: 0;
-  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
-  background: linear-gradient(160deg, var(--brand-hi), var(--brand-dim));
-  color: var(--on-brand);
-  font: 900 14px/1 var(--font-ui), sans-serif;
 }
 
 .pct {
-  margin-left: auto;
-  color: var(--brand);
-  font: 700 13px/1 var(--font-mono), monospace;
-  text-shadow: var(--glow);
+  color: var(--text-muted);
+  font: 500 13px/1 var(--font-ui), sans-serif;
 }
 
-/* The bar: a row of segments that light up, like a level meter. */
-.segments {
-  display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  gap: 3px;
+.track {
   align-self: stretch;
-  height: 12px;
+  height: 6px;
   margin-top: 16px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-2);
 }
 
-.segments span {
-  border-radius: 1.5px;
-  background: #1a241e;
-}
-
-.segments .on {
+.track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
   background: var(--brand);
-  box-shadow: 0 0 6px rgba(63, 240, 110, 0.7);
-}
-
-.rewards .text {
-  margin-top: 9px;
 }
 
 .rewards .button {
@@ -134,7 +99,7 @@
 }
 
 .rewards .button:hover {
-  filter: brightness(1.06);
+  background: var(--brand-hi);
 }
 
 .rewards .button:focus-visible {
@@ -147,19 +112,19 @@
 .promo {
   text-decoration: none;
   transition:
-    transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1),
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .promo:hover {
-  transform: translateY(-3px);
-  border-color: rgba(63, 240, 110, 0.7);
-  box-shadow: 0 0 0 1px rgba(63, 240, 110, 0.2), 0 10px 30px -10px rgba(63, 240, 110, 0.45);
+  transform: translateY(-2px);
+  border-color: rgba(255, 200, 58, 0.45);
+  background-color: var(--surface-2);
 }
 
 .promo:hover .button {
-  transform: translateY(-1px);
+  background: var(--brand-hi);
 }
 
 .promo:focus-visible {
@@ -167,26 +132,7 @@
   outline-offset: 3px;
 }
 
-.promo .title {
-  max-width: calc(100% - 84px);
-}
-
-/* How long the promo has left, ticking, in the top corner. */
-.timer {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 1;
-  padding: 5px 7px;
-  border: 1px solid rgba(63, 240, 110, 0.3);
-  border-radius: 5px;
-  background: rgba(0, 0, 0, 0.35);
-  color: var(--brand);
-  font: 700 11px/1 var(--font-mono), monospace;
-  text-shadow: var(--glow);
-}
-
-/* The art, with a light of its own colour behind it. */
+/* The art, with a soft light of its own colour behind it. */
 .art {
   position: absolute;
   right: -6px;
@@ -194,13 +140,7 @@
   width: 170px;
   height: 130px;
   pointer-events: none;
-  background: radial-gradient(55% 55% at 60% 70%, color-mix(in srgb, var(--hue) 35%, transparent), transparent 72%);
-  transform-origin: bottom right;
-  transition: scale 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.promo:hover .art {
-  scale: 1.06;
+  background: radial-gradient(50% 50% at 60% 72%, color-mix(in srgb, var(--hue) 22%, transparent), transparent 72%);
 }
 
 @media (max-width: 1100px) {
@@ -217,7 +157,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .promo,
-  .art,
   .button {
     transition: none;
   }
