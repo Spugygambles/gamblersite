@@ -1,9 +1,13 @@
-/* The menu down the left. AppShell sets its width; below 120px it's a rail
-   of icons with the words kept for screen readers. */
+/* The menu down the left: compact rows grouped on panels a shade lighter
+   than the menu, like the page behind them. AppShell sets its width; below
+   100px it's a rail of icons, with the words kept for screen readers. */
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   height: 100%;
-  padding: 12px;
+  padding: 10px;
   overflow-y: auto;
   overscroll-behavior: contain;
   box-sizing: border-box;
@@ -11,25 +15,13 @@
   scrollbar-color: var(--surface-3) transparent;
 }
 
-.group + .group {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
-}
-
-.groupTitle {
-  margin: 6px 10px 8px;
-  color: var(--text-muted);
-  font: 600 11px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.list {
+.group {
   display: grid;
-  gap: 2px;
+  gap: 1px;
   margin: 0;
-  padding: 0;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--bg);
   list-style: none;
 }
 
@@ -37,12 +29,12 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 40px;
+  gap: 11px;
+  height: 34px;
   padding: 0 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   color: var(--text-soft);
-  font: 500 14px/1 var(--font-ui), sans-serif;
+  font: 600 13.5px/1 var(--font-ui), sans-serif;
   text-decoration: none;
   white-space: nowrap;
   transition:
@@ -61,8 +53,8 @@
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   color: var(--text-muted);
   transition: color 0.15s ease;
@@ -73,23 +65,18 @@
 }
 
 .link[aria-current="page"] .icon,
-.event .icon {
+.event .icon,
+.event:hover .icon {
   color: var(--brand);
-}
-
-/* The filled leaf sits a touch smaller than the line icons. */
-.event .icon {
-  padding: 1px;
-  box-sizing: border-box;
 }
 
 .tag {
   margin-left: auto;
-  padding: 3px 6px;
+  padding: 3px 5px;
   border-radius: 4px;
   background: var(--brand);
   color: var(--on-brand);
-  font: 700 10px/1 var(--font-ui), sans-serif;
+  font: 700 9.5px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -99,19 +86,19 @@
   color: #fff;
 }
 
-/* The rail: icons only. Group titles give way to the lines between groups,
-   and a tag becomes a dot on its icon. */
-@container (max-width: 120px) {
+/* The rail: icons only, and a tag becomes a dot on its icon. */
+@container (max-width: 100px) {
   .sidebar {
-    padding: 12px 10px;
+    padding: 10px 8px;
   }
 
-  .groupTitle {
-    display: none;
+  .group {
+    padding: 3px;
   }
 
   .link {
     justify-content: center;
+    height: 38px;
     padding: 0;
   }
 
@@ -125,8 +112,8 @@
 
   .tag {
     position: absolute;
-    top: 8px;
-    right: 12px;
+    top: 7px;
+    right: 9px;
     width: 7px;
     height: 7px;
     padding: 0;

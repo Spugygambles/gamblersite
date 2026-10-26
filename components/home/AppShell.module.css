@@ -6,7 +6,7 @@
  */
 
 .shell {
-  --sidebar-w: 236px;
+  --sidebar-w: 216px;
   --chat-w: 0px;
   display: grid;
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--chat-w);
@@ -117,12 +117,12 @@
 /* Full width from 1280px and a rail of icons from 768px to 1279px, unless
    toggled. */
 .shell[data-sidebar="collapsed"] {
-  --sidebar-w: 72px;
+  --sidebar-w: 64px;
 }
 
 @media (min-width: 768px) and (max-width: 1279px) {
   .shell[data-sidebar="auto"] {
-    --sidebar-w: 72px;
+    --sidebar-w: 64px;
   }
 }
 
@@ -139,7 +139,7 @@
     bottom: 0;
     z-index: 70;
     align-self: stretch;
-    width: 260px;
+    width: 240px;
     height: auto;
     padding-bottom: env(safe-area-inset-bottom, 0px);
     transform: translateX(-100%);

@@ -36,7 +36,8 @@ body {
 /* ---- Themes to try (preview only) --------------------------------------
    Each swaps the colour tokens in app/globals.css; Harvest is the site's
    own. The first three keep the warm browns and change the accent; the
-   last two are whole other looks. The picker in preview.js sets
+   last two are whole other looks, with the frame a shade darker than the
+   page as in Harvest. The picker in preview.js sets
    data-palette on <html>. */
 
 :root[data-palette="cranberry"] {
@@ -61,17 +62,17 @@ body {
 }
 
 :root[data-palette="classic"] {
-  --bg: #0f1115;
-  --bg-raised: #13161b;
-  --surface: #181b22;
-  --surface-2: #1f232b;
-  --surface-3: #272c36;
+  --bg: #171a20;
+  --bg-raised: #0f1115;
+  --surface: #1f232b;
+  --surface-2: #272c36;
+  --surface-3: #303643;
   --line: #252a33;
-  --track: #2a2f39;
-  --header-bg: #13161b;
+  --track: #343a46;
+  --header-bg: #0f1115;
   --text: #ffffff;
   --text-soft: #b4bccb;
-  --text-muted: #788193;
+  --text-muted: #8089a0;
   --brand: #f5c32c;
   --brand-rgb: 245, 195, 44;
   --brand-hi: #ffd04d;
@@ -79,17 +80,17 @@ body {
 }
 
 :root[data-palette="midnight"] {
-  --bg: #0e1620;
-  --bg-raised: #121c28;
-  --surface: #172331;
-  --surface-2: #1e2c3c;
-  --surface-3: #263648;
-  --line: #213041;
-  --track: #2a3b4e;
-  --header-bg: #121c28;
+  --bg: #1b2a37;
+  --bg-raised: #111f2b;
+  --surface: #223444;
+  --surface-2: #2a3e50;
+  --surface-3: #33495d;
+  --line: #22323f;
+  --track: #3a5065;
+  --header-bg: #111f2b;
   --text: #ffffff;
-  --text-soft: #b1c0d1;
-  --text-muted: #73869b;
+  --text-soft: #b6c5d4;
+  --text-muted: #8297aa;
   --brand: #2f7bf5;
   --brand-rgb: 47, 123, 245;
   --brand-hi: #4a8ef7;

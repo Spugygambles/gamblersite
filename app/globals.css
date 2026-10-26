@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Harvest, for the Thanksgiving launch: warm near-black browns, cream
-     text and a pumpkin accent, all matte, with no glows or gradients. Every
-     colour on the homepage comes from these, so a palette is one block. */
-  /* Surfaces, from the page back to raised controls. */
-  --bg: #13100d;
-  --bg-raised: #191511;
-  --surface: #211b16;
-  --surface-2: #2a231d;
-  --surface-3: #352c25;
-  --line: #2c251f;
-  --track: #3a3028;
-  --header-bg: #191511;
+  /* Harvest, for the Thanksgiving launch: warm browns with a touch of
+     orange, cream text and a pumpkin accent, all matte. The frame (header,
+     menu, chat) is a shade darker than the page it holds. Every colour on
+     the homepage comes from these, so a palette is one block. */
+  /* Surfaces: the page, the frame, then cards and raised controls. */
+  --bg: #2c2017;
+  --bg-raised: #20170f;
+  --surface: #382a1f;
+  --surface-2: #433226;
+  --surface-3: #4f3b2d;
+  --line: #3a2b20;
+  --track: #5a4433;
+  --header-bg: #20170f;
   /* Text. */
-  --text: #f8f0e6;
-  --text-soft: #cdbfae;
-  --text-muted: #918170;
+  --text: #fff5ec;
+  --text-soft: #e3cfbc;
+  --text-muted: #b09781;
   /* The accent: its colour, as channels for see-through tints, its hover
      shade, and the text that sits on it. */
   --brand: #ee7d31;

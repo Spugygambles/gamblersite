@@ -95,7 +95,117 @@ export function LeafIcon(props: IconProps) {
   );
 }
 
-// Line icons for the menu and chat: 24px, drawn in the current colour.
+// Solid icons for the menu: 24px, filled in the current colour, with the
+// details cut out.
+export const HomeIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path d="M11.2 3.4a1.2 1.2 0 0 1 1.6 0l8 7.2c.7.6.3 1.7-.6 1.7H19v7.2c0 .9-.7 1.5-1.5 1.5H15v-5c0-.7-.5-1.2-1.2-1.2h-3.6c-.7 0-1.2.5-1.2 1.2v5H6.5C5.7 21 5 20.4 5 19.5v-7.2h-.2c-.9 0-1.3-1.1-.6-1.7Z" />
+  </svg>
+);
+
+export const CaseIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path d="M2.8 8.2 12 3.6l9.2 4.6V10H2.8Z" />
+    <path
+      fillRule="evenodd"
+      d="M4 11.4h16V19a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19Zm6.4 1.4v2.6c0 .4.3.7.7.7h1.8c.4 0 .7-.3.7-.7v-2.6Z"
+    />
+  </svg>
+);
+
+export const SwordsIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden {...p}>
+    <path strokeWidth="2.6" d="M5 5l9.2 9.2M19 5l-9.2 9.2" />
+    <path strokeWidth="2.2" d="M11.6 17.4l5.8-5.8M12.4 17.4l-5.8-5.8" />
+    <path strokeWidth="2.6" d="M16.6 16.6l2.6 2.6M7.4 16.6l-2.6 2.6" />
+  </svg>
+);
+
+export const UpgradeIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path fillRule="evenodd" d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 4.4-4.6 4.7h3.1v4.9h3v-4.9h3.1Z" />
+  </svg>
+);
+
+export const BombIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <circle cx="10.5" cy="14" r="6.9" />
+    <path d="m13.9 8.2 2.1-2.1 2.1 2.1-2.1 2.1ZM19.4 2.6l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6Z" />
+  </svg>
+);
+
+// Keno: a board with some numbers picked.
+export const KenoIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    {[6, 12, 18].flatMap((y) =>
+      [6, 12, 18].map((x) => <circle key={`${x}${y}`} cx={x} cy={y} r="2.6" opacity={(x + y) % 12 === 0 ? 0.45 : 1} />),
+    )}
+  </svg>
+);
+
+export const RocketIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path
+      fillRule="evenodd"
+      d="M12 2.4c3.3 2.2 5 5.6 5 9.7 0 1.4-.2 2.8-.6 4H7.6A12.6 12.6 0 0 1 7 12.1c0-4.1 1.7-7.5 5-9.7Zm0 5.4a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8Z"
+    />
+    <path d="M6.9 12.6 4.4 15l.8 3.4 2.7-1.7ZM17.1 12.6l2.5 2.4-.8 3.4-2.7-1.7ZM10.2 17.2h3.6l-.6 3a1.2 1.2 0 0 1-2.4 0Z" />
+  </svg>
+);
+
+export const TargetIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path
+      fillRule="evenodd"
+      d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 3a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4Zm0 3.2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"
+    />
+  </svg>
+);
+
+export const CoinflipIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path fillRule="evenodd" d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 2.6a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2Z" />
+    <path d="M12 7.6l1.3 2.7 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4Z" />
+  </svg>
+);
+
+export const CardsIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <rect x="9.6" y="2.6" width="10.4" height="14.6" rx="2" opacity="0.45" transform="rotate(14 14.8 9.9)" />
+    <path
+      fillRule="evenodd"
+      d="M5.6 6.4h8.4c1.1 0 2 .9 2 2v11c0 1.1-.9 2-2 2H5.6c-1.1 0-2-.9-2-2v-11c0-1.1.9-2 2-2Zm4.2 4.2c-1.4 1.4-2.8 2.4-2.8 3.8 0 .9.7 1.6 1.6 1.6.4 0 .8-.2 1-.5l-.5 1.6h1.4l-.5-1.6c.2.3.6.5 1 .5.9 0 1.6-.7 1.6-1.6 0-1.4-1.4-2.4-2.8-3.8Z"
+    />
+  </svg>
+);
+
+export const TrophyIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path d="M7 3h10v6a5 5 0 0 1-10 0Z" />
+    <path fill="none" stroke="currentColor" strokeWidth="1.8" d="M7 5H4.6v1.2c0 1.9 1.3 3.4 3.1 3.8M17 5h2.4v1.2c0 1.9-1.3 3.4-3.1 3.8" />
+    <path d="M10.8 13.6h2.4v3h-2.4ZM7.6 17.2h8.8c.6 0 1 .4 1 1v2.4H6.6v-2.4c0-.6.4-1 1-1Z" />
+  </svg>
+);
+
+export const ShieldIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path
+      fillRule="evenodd"
+      d="M12 2.6 19.6 5.5v5.9c0 4.7-3.1 8.6-7.6 10-4.5-1.4-7.6-5.3-7.6-10V5.5Zm3.7 6.3-4.6 4.6-1.9-1.9-1.4 1.4 3.3 3.3 6-6Z"
+    />
+  </svg>
+);
+
+export const HeadsetIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" d="M4.6 13v-1.4a7.4 7.4 0 0 1 14.8 0V13" />
+    <rect x="3" y="12.4" width="4.6" height="7" rx="1.6" />
+    <rect x="16.4" y="12.4" width="4.6" height="7" rx="1.6" />
+    <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M18.7 19.4c0 1.3-1.6 2-4.2 2" />
+  </svg>
+);
+
+// Line icons for the header and chat: 24px, drawn in the current colour.
 function Line({ children, ...props }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...props}>
@@ -103,108 +213,6 @@ function Line({ children, ...props }: IconProps) {
     </svg>
   );
 }
-
-export const HomeIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1Z" />
-  </Line>
-);
-
-export const BoxIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M3.5 8.5 12 4.5l8.5 4v7L12 19.5l-8.5-4Z" />
-    <path d="M3.5 8.5 12 12.5l8.5-4M12 12.5v7" />
-  </Line>
-);
-
-export const SwordsIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="m4 4 9.5 9.5M4 4h3.5L15 11.5M4 4v3.5L11.5 15M20 4l-9.5 9.5M20 4h-3.5L13 7.5M20 4v3.5L16.5 11M6.5 17.5l-2 2M17.5 17.5l2 2M8 14l2 2M16 14l-2 2" />
-  </Line>
-);
-
-export const UpgradeIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="m8.5 12.5 3.5-3.5 3.5 3.5M12 9v7" />
-  </Line>
-);
-
-export const BombIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="10.5" cy="13.5" r="6.5" />
-    <path d="m15 9 2.5-2.5M17 4.5l.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5L15 6.5l1.5-.5Z" />
-  </Line>
-);
-
-export const GridIcon = (p: IconProps) => (
-  <Line {...p}>
-    <rect x="4" y="4" width="6.5" height="6.5" rx="1.5" />
-    <rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" />
-    <rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" />
-    <rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" />
-  </Line>
-);
-
-export const RocketIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M12 3.5c3 2 4.5 5 4.5 8.5L14.5 16h-5l-2-4c0-3.5 1.5-6.5 4.5-8.5Z" />
-    <circle cx="12" cy="10" r="1.6" />
-    <path d="M9.5 16 8 19.5 10.5 18M14.5 16l1.5 3.5-2.5-1.5M7.5 12 5 14l1 3M16.5 12l2.5 2-1 3" />
-  </Line>
-);
-
-export const TargetIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <circle cx="12" cy="12" r="4.5" />
-    <circle cx="12" cy="12" r="1" />
-  </Line>
-);
-
-export const FlipIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="9" cy="12" r="5.5" />
-    <path d="M13.5 7.2A5.5 5.5 0 1 1 13.5 16.8" />
-  </Line>
-);
-
-export const CardsIcon = (p: IconProps) => (
-  <Line {...p}>
-    <rect x="3.5" y="6" width="10" height="14" rx="1.8" transform="rotate(-8 8.5 13)" />
-    <path d="m13.8 5.5 5.2 1.6a1.8 1.8 0 0 1 1.2 2.2l-3 9.6" />
-  </Line>
-);
-
-export const CupIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M7.5 4.5h9v4a4.5 4.5 0 0 1-9 0Z" />
-    <path d="M7.5 6.5H4.5c0 2.5 1.2 4 3.3 4.3M16.5 6.5h3c0 2.5-1.2 4-3.3 4.3M12 13v3.5M8.5 19.5h7M9.5 19.5l.5-3h4l.5 3" />
-  </Line>
-);
-
-export const ClockIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="M12 7.5V12l3 2" />
-  </Line>
-);
-
-export const ShieldIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M12 3.5 19 6v5.5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6Z" />
-    <path d="m9 12 2.2 2.2L15.5 10" />
-  </Line>
-);
-
-export const HeadsetIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M4.5 13.5V12a7.5 7.5 0 0 1 15 0v1.5" />
-    <rect x="3.5" y="13" width="4" height="6" rx="1.5" />
-    <rect x="16.5" y="13" width="4" height="6" rx="1.5" />
-    <path d="M18.5 19c0 1.2-1.3 1.8-4 1.8" />
-  </Line>
-);
 
 export const ChatIcon = (p: IconProps) => (
   <Line {...p}>
@@ -226,9 +234,9 @@ export const RainIcon = (p: IconProps) => (
   </Line>
 );
 
-export const GiftLineIcon = (p: IconProps) => (
+export const ClockIcon = (p: IconProps) => (
   <Line {...p}>
-    <rect x="4" y="8.5" width="16" height="4" rx="1" />
-    <path d="M5.5 12.5V19a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-6.5M12 8.5V20M12 8.5c-1-2.5-2.5-4-4-4-1.3 0-2 .8-2 1.8 0 1.4 2 2.2 6 2.2Zm0 0c1-2.5 2.5-4 4-4 1.3 0 2 .8 2 1.8 0 1.4-2 2.2-6 2.2Z" />
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5V12l3 2" />
   </Line>
 );

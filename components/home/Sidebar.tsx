@@ -6,19 +6,19 @@ import type { ComponentType, SVGProps } from "react";
 import { GAMES } from "@/lib/home";
 import {
   BombIcon,
-  BoxIcon,
   CardsIcon,
-  CupIcon,
-  FlipIcon,
-  GiftLineIcon,
-  GridIcon,
+  CaseIcon,
+  CoinflipIcon,
+  GiftIcon,
   HeadsetIcon,
   HomeIcon,
+  KenoIcon,
   LeafIcon,
   RocketIcon,
   ShieldIcon,
   SwordsIcon,
   TargetIcon,
+  TrophyIcon,
   UpgradeIcon,
 } from "./icons";
 import styles from "./Sidebar.module.css";
@@ -31,35 +31,42 @@ type Item = {
   event?: boolean;
 };
 
-const GROUPS: { title: string; items: Item[] }[] = [
+// Each group sits on a panel of its own: the main games, the originals,
+// rewards, and help.
+const GROUPS: { name: string; items: Item[] }[] = [
   {
-    title: "Games",
+    name: "Games",
     items: [
       { href: "/", label: "Home", icon: HomeIcon },
-      { href: "/cases", label: "Cases", icon: BoxIcon },
+      { href: "/cases", label: "Cases", icon: CaseIcon },
       { href: "/case-battles", label: "Case Battles", icon: SwordsIcon },
       { href: "/upgrader", label: "Upgrader", icon: UpgradeIcon },
+    ],
+  },
+  {
+    name: "Originals",
+    items: [
       { href: "/mines", label: "Mines", icon: BombIcon },
-      { href: "/keno", label: "Keno", icon: GridIcon },
+      { href: "/keno", label: "Keno", icon: KenoIcon },
       { href: "/crash", label: "Crash", icon: RocketIcon },
       { href: "/limbo", label: "Limbo", icon: TargetIcon },
-      { href: "/coinflip", label: "Coinflip", icon: FlipIcon },
+      { href: "/coinflip", label: "Coinflip", icon: CoinflipIcon },
       { href: "/blackjack", label: "Blackjack", icon: CardsIcon },
     ],
   },
   {
-    title: "Rewards",
+    name: "Rewards",
     items: [
-      { href: "/rewards", label: "Rewards", icon: GiftLineIcon },
-      { href: "/race", label: "$30K Race", icon: CupIcon },
+      { href: "/rewards", label: "Rewards", icon: GiftIcon },
+      { href: "/race", label: "$30K Race", icon: TrophyIcon },
       { href: "/turkey-hunt", label: "Turkey Hunt", icon: LeafIcon, event: true },
     ],
   },
   {
-    title: "Help",
+    name: "Help",
     items: [
       { href: "/fairness", label: "Fairness", icon: ShieldIcon },
-      { href: "/support", label: "Support", icon: HeadsetIcon },
+      { href: "/support", label: "Live support", icon: HeadsetIcon },
     ],
   },
 ];
@@ -68,9 +75,9 @@ const GROUPS: { title: string; items: Item[] }[] = [
 const tagOf = (href: string) => GAMES.find((g) => `/${g.slug}` === href)?.tag;
 
 /**
- * The menu down the left: every game, then rewards and help. It fits
- * whatever width AppShell gives it, and when that's only a rail it shows
- * just the icons.
+ * The menu down the left: compact rows with solid icons, grouped on
+ * panels. It fits whatever width AppShell gives it, and when that's only a
+ * rail it shows just the icons.
  */
 export default function Sidebar() {
   const path = usePathname();
@@ -78,28 +85,25 @@ export default function Sidebar() {
   return (
     <nav className={styles.sidebar} aria-label="Main">
       {GROUPS.map((group) => (
-        <div key={group.title} className={styles.group}>
-          <p className={styles.groupTitle}>{group.title}</p>
-          <ul className={styles.list}>
-            {group.items.map(({ href, label, icon: Icon, event }) => {
-              const tag = tagOf(href);
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`${styles.link} ${event ? styles.event : ""}`}
-                    aria-current={path === href ? "page" : undefined}
-                    title={label}
-                  >
-                    <Icon className={styles.icon} />
-                    <span className={styles.label}>{label}</span>
-                    {tag && <span className={`${styles.tag} ${tag === "Hot" ? styles.hot : ""}`}>{tag}</span>}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        <ul key={group.name} className={styles.group} aria-label={group.name}>
+          {group.items.map(({ href, label, icon: Icon, event }) => {
+            const tag = tagOf(href);
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={`${styles.link} ${event ? styles.event : ""}`}
+                  aria-current={path === href ? "page" : undefined}
+                  title={label}
+                >
+                  <Icon className={styles.icon} />
+                  <span className={styles.label}>{label}</span>
+                  {tag && <span className={`${styles.tag} ${tag === "Hot" ? styles.hot : ""}`}>{tag}</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       ))}
     </nav>
   );
