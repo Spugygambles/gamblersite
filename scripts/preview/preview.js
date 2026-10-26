@@ -225,10 +225,10 @@
   }
 
   // ---- Theme picker (preview only): try the homepage in other colours.
-  // The themes live in preview.css; Harvest is the site's own. The choice is
+  // The themes live in preview.css; Pumpkin is the site's own. The choice is
   // remembered on this device.
   const THEMES = [
-    ["harvest", "Harvest", "#ee7d31"],
+    ["pumpkin", "Pumpkin", "#ee7d31"],
     ["cranberry", "Cranberry", "#d4473f"],
     ["maple", "Maple gold", "#e9a93a"],
     ["sage", "Sage", "#8fae5a"],
@@ -267,13 +267,13 @@
     swatches.append(b);
   }
   document.body.append(picker);
-  let saved = "harvest";
+  let saved = "pumpkin";
   try {
-    saved = localStorage.getItem(STORE) || "harvest";
+    saved = localStorage.getItem(STORE) || "pumpkin";
   } catch {
-    // Fall back to Harvest.
+    // Fall back to Pumpkin.
   }
-  useTheme(THEMES.some((t) => t[0] === saved) ? saved : "harvest");
+  useTheme(THEMES.some((t) => t[0] === saved) ? saved : "pumpkin");
 
   // ---- Links: only the homepage exists so far, so the rest say so
   // instead of leading nowhere.

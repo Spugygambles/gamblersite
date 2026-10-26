@@ -34,10 +34,10 @@ body {
 }
 
 /* ---- Themes to try (preview only) --------------------------------------
-   Each swaps the colour tokens in app/globals.css; Harvest is the site's
-   own. The first three keep the warm browns and change the accent; the
-   last two are whole other looks, with the frame a shade darker than the
-   page as in Harvest. The picker in preview.js sets
+   Each swaps the colour tokens in app/globals.css; Pumpkin (grey with an
+   orange accent) is the site's own. The first three keep the greys and
+   change the accent; the last two are whole other looks, with the frame a
+   shade darker than the page as on the site. The picker in preview.js sets
    data-palette on <html>. */
 
 :root[data-palette="cranberry"] {
