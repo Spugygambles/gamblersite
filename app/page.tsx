@@ -9,12 +9,15 @@ import GameModes from "@/components/home/GameModes";
 import Sidebar from "@/components/home/Sidebar";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
+import { GamepadIcon, LeafIcon } from "@/components/home/icons";
 import styles from "./page.module.css";
 
-function SectionHead({ id, title, children }: { id: string; title: string; children?: ReactNode }) {
+function SectionHead({ id, title, icon, children }: { id: string; title: string; icon: ReactNode; children?: ReactNode }) {
   return (
     <div className={styles.head}>
-      <span className={styles.mark} aria-hidden />
+      <span className={styles.icon} aria-hidden>
+        {icon}
+      </span>
       <h2 id={id} className={styles.title}>
         {title}
       </h2>
@@ -32,14 +35,14 @@ export default function Home() {
 
         {/* The games come first, all of them on screen without scrolling. */}
         <section className={`${styles.section} ${styles.first}`} aria-labelledby="games">
-          <SectionHead id="games" title="Games">
+          <SectionHead id="games" title="Games" icon={<GamepadIcon />}>
             <span className={styles.count}>{GAMES.length}</span>
           </SectionHead>
           <GameModes />
         </section>
 
         <section className={styles.section} aria-labelledby="promotions">
-          <SectionHead id="promotions" title="Promotions">
+          <SectionHead id="promotions" title="Thanksgiving promotions" icon={<LeafIcon />}>
             <Link href="/rewards" className={styles.more}>
               View all
             </Link>

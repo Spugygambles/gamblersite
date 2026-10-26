@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CHAT_SAMPLE, PLAYER, RAIN_POT, usd, type ChatMessage } from "@/lib/home";
-import { CloseIcon, RainIcon, SendIcon } from "./icons";
+import { CloseIcon, LeafIcon, RainIcon, SendIcon } from "./icons";
 import { nextRain } from "./useCountdown";
 import { useOnlineCount } from "./useOnlineCount";
 import styles from "./ChatPanel.module.css";
@@ -94,7 +94,7 @@ export default function ChatPanel() {
           {messages.map((m, i) =>
             "system" in m ? (
               <li key={i} className={styles.system}>
-                <RainIcon aria-hidden />
+                {m.system === "rain" ? <RainIcon /> : <LeafIcon />}
                 {m.text}
               </li>
             ) : (

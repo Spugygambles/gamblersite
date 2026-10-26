@@ -47,11 +47,17 @@ export function nextMondayUtc() {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + days));
 }
 
-/** The end of Halloween, local time; next year's once this one's gone. */
-export function halloween() {
+/** Thanksgiving week runs to the end of the Monday after Thanksgiving (the
+    fourth Thursday in November), local time; next year's once it's over. */
+export function thanksgivingWeekEnd() {
   const now = new Date();
-  const end = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
-  return end > now ? end : new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
+  const endOf = (year: number) => {
+    const first = new Date(year, 10, 1).getDay();
+    const thursday = 1 + ((4 - first + 7) % 7) + 21;
+    return new Date(year, 10, thursday + 4, 23, 59, 59);
+  };
+  const end = endOf(now.getFullYear());
+  return end > now ? end : endOf(now.getFullYear() + 1);
 }
 
 /** Chat's rain falls every quarter hour. */

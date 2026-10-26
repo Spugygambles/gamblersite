@@ -25,12 +25,11 @@ const ART: Record<string, ReactNode> = {
 };
 
 // Cases and battles get a wide banner each; the originals share a row.
-// The title's second word is in the accent colour. art.size is the art's
-// square stage on the banner in px, and art.x where its middle sits, as a
-// share of the banner's width.
+// art.size is the art's square stage on the banner in px, and art.x where
+// its middle sits, as a share of the banner's width.
 const FEATURES = [
-  { slug: "cases", title: ["Case", "Opening"], text: "Unbox CS2 skins from $0.49 a case.", cta: "Open cases", art: { size: 150, x: 74.5 } },
-  { slug: "case-battles", title: ["Case", "Battles"], text: "Go head to head. The best unbox wins.", cta: "Start a battle", art: { size: 190, x: 71.7 } },
+  { slug: "cases", title: "Case Opening", text: "Unbox CS2 skins from $0.49 a case.", cta: "Open cases", art: { size: 150, x: 74.5 } },
+  { slug: "case-battles", title: "Case Battles", text: "Go head to head. The best unbox wins.", cta: "Start a battle", art: { size: 190, x: 71.7 } },
 ];
 
 const bySlug = (slug: string) => GAMES.find((g) => g.slug === slug)!;
@@ -58,9 +57,7 @@ export default function GameModes() {
             // data-game-banner lets the art replay when the pointer moves on.
             <Link key={g.slug} href={`/${g.slug}`} className={styles.feature} data-game-banner>
               <span className={styles.featureCopy}>
-                <span className={styles.featureTitle}>
-                  {f.title[0]} <span className={styles.accent}>{f.title[1]}</span>
-                </span>
+                <span className={styles.featureTitle}>{f.title}</span>
                 <span className={styles.featureText}>{f.text}</span>
                 <span className={styles.featureFoot}>
                   <span className={styles.button}>{f.cta}</span>

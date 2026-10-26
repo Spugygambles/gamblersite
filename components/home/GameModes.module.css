@@ -1,6 +1,7 @@
 /*
- * The game lobby, matte: flat dark cards, solid buttons, and no glows. Cases
- * and battles get a wide banner each; the originals share a row. The lobby
+ * The game lobby, matte: flat dark cards and no glows. Cases and battles
+ * get a wide banner each, with a button that takes the accent colour when
+ * the banner is under the pointer; the originals share a row. The lobby
  * sits between the menu and chat, so it fits the room it has rather than
  * the screen's width.
  */
@@ -64,10 +65,6 @@
   text-transform: uppercase;
 }
 
-.accent {
-  color: var(--brand);
-}
-
 .featureText {
   margin-top: 10px;
   color: var(--text-soft);
@@ -88,15 +85,18 @@
   height: 38px;
   padding: 0 18px;
   border-radius: 6px;
-  background: var(--brand);
-  color: var(--on-brand);
+  background: var(--surface-3);
+  color: var(--text);
   font: 700 13px/1 var(--font-ui), sans-serif;
   white-space: nowrap;
-  transition: background-color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .feature:hover .button {
-  background: var(--brand-hi);
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 /* The art's square stage, centred --x across the banner. */

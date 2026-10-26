@@ -1,6 +1,9 @@
-/* Promotions, matte like the lobby: flat dark cards, bold italic titles
-   with one word in the accent colour, solid buttons, and each promo's time
-   left in the corner. */
+/*
+ * Promotions: the player's rewards on a dark card, then the Thanksgiving
+ * line-up, each on a flat tile of its own autumn colour with a drawing in
+ * the corner. A small label over each title says what kind of promotion it
+ * is, and the time left sits opposite.
+ */
 
 .events {
   container-type: inline-size;
@@ -17,7 +20,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 190px;
+  min-height: 210px;
   padding: 18px;
   overflow: hidden;
   border-radius: 10px;
@@ -26,23 +29,39 @@
   color: var(--text);
 }
 
+.top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  align-self: stretch;
+  min-height: 23px;
+}
+
+.kicker {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .title {
   position: relative;
   z-index: 1;
-  margin: 0;
-  font: italic 900 20px/1.05 var(--font-ui), sans-serif;
+  margin: 12px 0 0;
+  font: 800 23px/1.1 var(--font-ui), sans-serif;
   letter-spacing: -0.01em;
-  text-transform: uppercase;
-}
-
-.accent {
-  color: var(--brand);
 }
 
 .text {
   position: relative;
   z-index: 1;
-  max-width: 165px;
   margin: 8px 0 0;
   color: var(--text-soft);
   font: 500 13px/1.45 var(--font-ui), sans-serif;
@@ -55,13 +74,13 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  height: 34px;
+  height: 36px;
   margin-top: auto;
-  padding: 0 15px;
+  padding: 0 16px;
   border-radius: 6px;
   background: var(--brand);
   color: var(--on-brand);
-  font: 700 12.5px/1 var(--font-ui), sans-serif;
+  font: 700 13px/1 var(--font-ui), sans-serif;
   text-decoration: none;
   white-space: nowrap;
   transition: background-color 0.15s ease;
@@ -72,31 +91,36 @@
   height: 16px;
 }
 
-/* ---- Level ------------------------------------------------------------- */
+/* ---- Rewards ----------------------------------------------------------- */
+
+.pct {
+  color: var(--brand);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
 
 .levelHead {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 11px;
-  align-self: stretch;
+  margin-top: 10px;
+}
+
+.levelHead .title {
+  margin: 0;
 }
 
 .badge {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 42px;
+  width: 36px;
+  height: 40px;
   flex-shrink: 0;
   clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
   background: var(--brand);
   color: var(--on-brand);
-  font: 800 14px/1 var(--font-ui), sans-serif;
-}
-
-.pct {
-  margin-left: auto;
-  color: var(--brand);
-  font: 700 13px/1 var(--font-ui), sans-serif;
+  font: 800 13px/1 var(--font-ui), sans-serif;
 }
 
 /* The bar: a row of segments that fill up, like a level meter. */
@@ -105,7 +129,7 @@
   grid-template-columns: repeat(20, 1fr);
   gap: 3px;
   align-self: stretch;
-  height: 12px;
+  height: 10px;
   margin-top: 16px;
 }
 
@@ -122,10 +146,6 @@
   margin-top: 9px;
 }
 
-.rewards .button {
-  align-self: stretch;
-}
-
 .rewards .button:hover {
   background: var(--brand-hi);
 }
@@ -135,52 +155,85 @@
   outline-offset: 2px;
 }
 
-/* ---- Promos ------------------------------------------------------------ */
+/* Today's free case, in the corner. */
+.daily {
+  position: absolute;
+  right: 8px;
+  bottom: 4px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* ---- Promotions -------------------------------------------------------- */
 
 .promo {
+  background: var(--tile);
+  color: #fff8ef;
   text-decoration: none;
   transition:
     transform 0.2s ease,
-    background-color 0.2s ease;
+    filter 0.2s ease;
 }
 
 .promo:hover {
   transform: translateY(-2px);
-  background: var(--surface-2);
-}
-
-.promo:hover .button {
-  background: var(--brand-hi);
+  filter: brightness(1.06);
 }
 
 .promo:focus-visible {
-  outline: 2px solid var(--brand);
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }
 
-.promo .title {
-  max-width: calc(100% - 70px);
+.promo .kicker {
+  color: rgba(255, 241, 223, 0.75);
 }
 
-/* Time left, in the top corner. */
+.promo .title {
+  max-width: 64%;
+}
+
+.promo .text {
+  max-width: 52%;
+  color: rgba(255, 241, 223, 0.88);
+}
+
+/* Cream on the coloured tiles. */
+.promo .button {
+  background: #fff1df;
+  color: #2b1a0f;
+}
+
+.promo:hover .button {
+  background: #ffffff;
+}
+
+/* Time left, opposite the label. */
 .timer {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 1;
-  padding: 5px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
   border-radius: 5px;
-  background: var(--bg);
-  color: var(--text-soft);
+  background: rgba(0, 0, 0, 0.22);
+  color: #fff8ef;
   font: 600 11.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.timer svg {
+  width: 13px;
+  height: 13px;
 }
 
 .art {
   position: absolute;
   right: -6px;
-  bottom: 0;
-  width: 170px;
-  height: 130px;
+  bottom: -4px;
+  width: 162px;
+  height: 144px;
   pointer-events: none;
   transform-origin: bottom right;
   transition: scale 0.3s ease;
@@ -190,11 +243,15 @@
   scale: 1.04;
 }
 
-/* Four across when there's room, else two, else one. */
-@container (max-width: 1060px) {
+/* Four across when each gets 290px or so, else two, else one. */
+@container (max-width: 1199px) {
   .row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .promo .text {
+    max-width: 56%;
   }
 }
 

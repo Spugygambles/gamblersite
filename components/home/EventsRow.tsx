@@ -1,48 +1,55 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { BonusArt, PumpkinArt, RaceArt } from "./PromoArt";
+import type { CSSProperties, ReactNode } from "react";
+import { ClockIcon } from "./icons";
+import { BonusArt, RaceArt, TurkeyArt } from "./PromoArt";
 import RewardsCard from "./RewardsCard";
-import { halloween, midnight, nextMondayUtc, useCountdown } from "./useCountdown";
+import { midnight, nextMondayUtc, thanksgivingWeekEnd, useCountdown } from "./useCountdown";
 import styles from "./EventsRow.module.css";
 
 type Promo = {
-  /** The title in two parts; the part named by `accent` is in the accent colour. */
-  title: [string, string];
-  accent: 0 | 1;
+  /** What kind of promotion it is, over the title. */
+  kicker: string;
+  title: string;
   text: string;
   cta: string;
   href: string;
+  /** The tile's flat colour. */
+  tile: string;
   ends: () => Date;
   art: ReactNode;
 };
 
+// The Thanksgiving line-up, each on its own autumn colour.
 const PROMOS: Promo[] = [
   {
-    title: ["5%", "bonus"],
-    accent: 0,
-    text: "Get 5% extra on every deposit today.",
+    kicker: "Thanksgiving bonus",
+    title: "5% on every deposit",
+    text: "Top up today and get 5% extra on top.",
     cta: "Deposit",
     href: "/deposit",
+    tile: "#b84f1a",
     ends: midnight,
     art: <BonusArt />,
   },
   {
-    title: ["Pumpkin", "Hunt"],
-    accent: 1,
-    text: "Find pumpkins in any game for spooky drops.",
+    kicker: "Thanksgiving event",
+    title: "Turkey Hunt",
+    text: "Find turkeys hidden in any game for festive drops.",
     cta: "Start hunting",
-    href: "/pumpkin-hunt",
-    ends: halloween,
-    art: <PumpkinArt />,
+    href: "/turkey-hunt",
+    tile: "#8e2b25",
+    ends: thanksgivingWeekEnd,
+    art: <TurkeyArt />,
   },
   {
-    title: ["$30K", "Race"],
-    accent: 0,
-    text: "Play to climb the board before it resets.",
+    kicker: "Weekly race",
+    title: "$30K Harvest Race",
+    text: "Every bet climbs the board. It resets on Monday.",
     cta: "View race",
     href: "/race",
+    tile: "#3d5a2e",
     ends: nextMondayUtc,
     art: <RaceArt />,
   },
@@ -50,22 +57,22 @@ const PROMOS: Promo[] = [
 
 function PromoCard({ promo }: { promo: Promo }) {
   const left = useCountdown(promo.ends);
-  const [a, b] = promo.title;
   return (
-    <Link href={promo.href} className={`${styles.card} ${styles.promo}`}>
+    <Link href={promo.href} className={`${styles.card} ${styles.promo}`} style={{ "--tile": promo.tile } as CSSProperties}>
+      <span className={styles.top}>
+        <span className={styles.kicker}>{promo.kicker}</span>
+        <span className={`${styles.timer} tabular`}>
+          <ClockIcon />
+          <span className="sr-only">Ends in </span>
+          {left ?? "\u00a0"}
+        </span>
+      </span>
+      <span className={styles.title}>{promo.title}</span>
+      <span className={styles.text}>{promo.text}</span>
+      <span className={styles.button}>{promo.cta}</span>
       <span className={styles.art} aria-hidden>
         {promo.art}
       </span>
-      <span className={`${styles.timer} tabular`}>
-        <span className="sr-only">Ends in </span>
-        {left ?? "\u00a0"}
-      </span>
-      <span className={styles.title}>
-        <span className={promo.accent === 0 ? styles.accent : undefined}>{a}</span>{" "}
-        <span className={promo.accent === 1 ? styles.accent : undefined}>{b}</span>
-      </span>
-      <span className={styles.text}>{promo.text}</span>
-      <span className={styles.button}>{promo.cta}</span>
     </Link>
   );
 }

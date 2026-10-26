@@ -1,170 +1,57 @@
 .scene {
-  position: absolute;
-  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-/* ---- Deposit bonus ----------------------------------------------------- */
-
-.stackCoin,
-.flipCoin {
-  position: absolute;
-  width: 44px;
-  height: 44px;
-  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.45));
+/* Leaves rock on their stems. */
+.sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: sway 3.2s ease-in-out infinite alternate;
 }
 
-.stackCoin {
-  transform: scaleY(0.45);
-  transform-origin: bottom;
-}
-
-.flipCoin {
-  left: 62px;
-  bottom: 46px;
-  width: 56px;
-  height: 56px;
-  animation: coin-spin 3s ease-in-out infinite;
-}
-
-@keyframes coin-spin {
-  0%,
-  60% {
-    transform: rotateY(0deg) translateY(0);
+@keyframes sway {
+  from {
+    rotate: -5deg;
   }
-  80% {
-    transform: rotateY(180deg) translateY(-6px);
-  }
-  100% {
-    transform: rotateY(360deg) translateY(0);
-  }
-}
-
-.bonusTag {
-  position: absolute;
-  left: 84px;
-  bottom: 30px;
-  padding: 6px 9px;
-  border-radius: 5px;
-  background: var(--brand);
-  color: var(--on-brand);
-  font: 800 17px/1 var(--font-ui), sans-serif;
-  transform: rotate(-8deg);
-}
-
-/* ---- Pumpkin hunt ------------------------------------------------------ */
-
-.pumpkinBig,
-.pumpkinSmall {
-  position: absolute;
-  bottom: 6px;
-}
-
-.pumpkinBig {
-  left: 52px;
-  width: 96px;
-  height: 96px;
-  animation: bob 2.8s ease-in-out infinite alternate;
-}
-
-.pumpkinSmall {
-  left: 12px;
-  width: 54px;
-  height: 54px;
-  transform: rotate(-10deg);
-}
-
-.bat {
-  position: absolute;
-  left: 128px;
-  bottom: 96px;
-  width: 36px;
-  animation: flap 0.5s ease-in-out infinite alternate;
-}
-
-@keyframes flap {
   to {
-    transform: scaleY(0.6) translateY(-3px);
+    rotate: 5deg;
   }
+}
+
+.bob {
+  animation: bob 2.8s ease-in-out infinite alternate;
 }
 
 @keyframes bob {
   from {
-    translate: 0 2px;
+    translate: 0 1px;
   }
   to {
-    translate: 0 -5px;
+    translate: 0 -4px;
   }
 }
 
-/* ---- Race -------------------------------------------------------------- */
-
-/* The trophy's shadow on the ground. */
-.podium {
-  position: absolute;
-  left: 44px;
-  bottom: 10px;
-  width: 90px;
-  height: 14px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
+/* The turkey's tail opens and closes a touch. */
+.fan {
+  animation: fan 2.8s ease-in-out infinite alternate;
 }
 
-.trophy {
-  position: absolute;
-  left: 42px;
-  bottom: 14px;
-  width: 96px;
-  height: 96px;
-  animation: bob 3s ease-in-out infinite alternate;
-}
-
-.spark {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background:
-    linear-gradient(#ffe7a0, #ffe7a0) center / 100% 2px no-repeat,
-    linear-gradient(#ffe7a0, #ffe7a0) center / 2px 100% no-repeat;
-  animation: twinkle 2.4s ease-in-out infinite;
-}
-
-.s1 {
-  left: 30px;
-  bottom: 88px;
-}
-
-.s2 {
-  left: 140px;
-  bottom: 70px;
-  animation-delay: -0.8s;
-}
-
-.s3 {
-  left: 128px;
-  bottom: 112px;
-  width: 7px;
-  height: 7px;
-  animation-delay: -1.6s;
-}
-
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-    scale: 0.7;
+@keyframes fan {
+  from {
+    scale: 0.96;
   }
-  50% {
-    opacity: 1;
-    scale: 1.15;
+  to {
+    scale: 1.03;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flipCoin,
-  .pumpkinBig,
-  .bat,
-  .trophy,
-  .spark {
+  .sway,
+  .bob,
+  .fan {
     animation: none;
   }
 }

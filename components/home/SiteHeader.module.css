@@ -105,6 +105,22 @@
   background: var(--brand-hi);
 }
 
+/* The Thanksgiving bonus, pinned to the button's corner. */
+.deposit {
+  position: relative;
+}
+
+.bonus {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: #fff1df;
+  color: #2b1a0f;
+  font: 800 10px/1 var(--font-ui), sans-serif;
+}
+
 /* ---- The player -------------------------------------------------------- */
 
 .gems {
@@ -217,6 +233,10 @@
   .iconButton {
     width: 36px;
     height: 36px;
+  }
+
+  .bonus {
+    display: none;
   }
 
   .wallet {

@@ -38,7 +38,8 @@ export const ONLINE_START = 517;
 
 export type ChatMessage =
   | { name: string; level: number; text: string; mine?: boolean }
-  | { system: true; text: string };
+  /** A note from the site: rain that fell, or an event. */
+  | { system: "rain" | "event"; text: string };
 
 // What chat shows before anyone types, until it's wired to the chat server.
 export const CHAT_SAMPLE: ChatMessage[] = [
@@ -49,14 +50,15 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "kyro", level: 42, text: "gg on that karambit" },
   { name: "MaxiM", level: 18, text: "anyone up for a 2v2? toxic case" },
   { name: "nova", level: 63, text: "crash went 31x and i cashed at 2 lol" },
-  { system: true, text: "$186.20 of rain was shared by 41 players" },
+  { system: "rain", text: "$186.20 of rain was shared by 41 players" },
   { name: "deadeye", level: 9, text: "how do i get the daily case" },
   { name: "Spl1t", level: 77, text: "rewards, it's in the menu on the left" },
   { name: "frostbyte", level: 25, text: "upgrader hit three in a row for me" },
   { name: "lunar", level: 51, text: "race is close this week" },
   { name: "MaxiM", level: 18, text: "2v2 is up in battles, join" },
-  { name: "zenn", level: 34, text: "who found a pumpkin in mines already" },
-  { name: "Obi", level: 88, text: "good luck everyone" },
+  { name: "zenn", level: 34, text: "found a turkey in mines lol" },
+  { system: "event", text: "Happy Thanksgiving! The Turkey Hunt is on until Monday." },
+  { name: "Obi", level: 88, text: "happy thanksgiving all, good luck" },
 ];
 
 /** The pot in chat's rain, split between the players who join before it falls. */

@@ -30,6 +30,7 @@ export default function SiteHeader() {
         </span>
         <Link href="/deposit" className={styles.deposit}>
           Deposit
+          <span className={styles.bonus}>+5%</span>
         </Link>
       </div>
 

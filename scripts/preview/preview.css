@@ -33,57 +33,66 @@ body {
   translate: -50% 0;
 }
 
-/* ---- Palettes to try (preview only) ------------------------------------
-   Each swaps the accent (app/globals.css); the matte charcoal stays, and
-   gold is the site's own. The picker in preview.js sets data-palette on
-   <html>. */
+/* ---- Themes to try (preview only) --------------------------------------
+   Each swaps the colour tokens in app/globals.css; Harvest is the site's
+   own. The first three keep the warm browns and change the accent; the
+   last two are whole other looks. The picker in preview.js sets
+   data-palette on <html>. */
 
-:root[data-palette="crimson"] {
-  --brand: #e5384f;
-  --brand-rgb: 229, 56, 79;
-  --brand-hi: #ec5468;
+:root[data-palette="cranberry"] {
+  --brand: #d4473f;
+  --brand-rgb: 212, 71, 63;
+  --brand-hi: #dc5d55;
   --on-brand: #ffffff;
 }
 
-:root[data-palette="blue"] {
-  --brand: #3b7cf5;
-  --brand-rgb: 59, 124, 245;
-  --brand-hi: #5590f7;
-  --on-brand: #ffffff;
+:root[data-palette="maple"] {
+  --brand: #e9a93a;
+  --brand-rgb: 233, 169, 58;
+  --brand-hi: #efb955;
+  --on-brand: #1f1406;
 }
 
-:root[data-palette="purple"] {
-  --brand: #8b5cf6;
-  --brand-rgb: 139, 92, 246;
-  --brand-hi: #9d75f7;
-  --on-brand: #ffffff;
+:root[data-palette="sage"] {
+  --brand: #8fae5a;
+  --brand-rgb: 143, 174, 90;
+  --brand-hi: #a0bd6c;
+  --on-brand: #121a08;
 }
 
-:root[data-palette="emerald"] {
-  --brand: #1fb86a;
-  --brand-rgb: 31, 184, 106;
-  --brand-hi: #2bcb79;
-  --on-brand: #04170c;
+:root[data-palette="classic"] {
+  --bg: #0f1115;
+  --bg-raised: #13161b;
+  --surface: #181b22;
+  --surface-2: #1f232b;
+  --surface-3: #272c36;
+  --line: #252a33;
+  --track: #2a2f39;
+  --header-bg: #13161b;
+  --text: #ffffff;
+  --text-soft: #b4bccb;
+  --text-muted: #788193;
+  --brand: #f5c32c;
+  --brand-rgb: 245, 195, 44;
+  --brand-hi: #ffd04d;
+  --on-brand: #16120a;
 }
 
-:root[data-palette="orange"] {
-  --brand: #f2711c;
-  --brand-rgb: 242, 113, 28;
-  --brand-hi: #f4853b;
-  --on-brand: #1a0b00;
-}
-
-:root[data-palette="cyan"] {
-  --brand: #17b8cc;
-  --brand-rgb: 23, 184, 204;
-  --brand-hi: #2ccadd;
-  --on-brand: #00181b;
-}
-
-:root[data-palette="pink"] {
-  --brand: #e8458f;
-  --brand-rgb: 232, 69, 143;
-  --brand-hi: #ed5f9f;
+:root[data-palette="midnight"] {
+  --bg: #0e1620;
+  --bg-raised: #121c28;
+  --surface: #172331;
+  --surface-2: #1e2c3c;
+  --surface-3: #263648;
+  --line: #213041;
+  --track: #2a3b4e;
+  --header-bg: #121c28;
+  --text: #ffffff;
+  --text-soft: #b1c0d1;
+  --text-muted: #73869b;
+  --brand: #2f7bf5;
+  --brand-rgb: 47, 123, 245;
+  --brand-hi: #4a8ef7;
   --on-brand: #ffffff;
 }
 

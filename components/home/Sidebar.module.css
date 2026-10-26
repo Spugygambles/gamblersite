@@ -72,8 +72,15 @@
   color: var(--text-soft);
 }
 
-.link[aria-current="page"] .icon {
+.link[aria-current="page"] .icon,
+.event .icon {
   color: var(--brand);
+}
+
+/* The filled leaf sits a touch smaller than the line icons. */
+.event .icon {
+  padding: 1px;
+  box-sizing: border-box;
 }
 
 .tag {

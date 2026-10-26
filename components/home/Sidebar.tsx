@@ -10,11 +10,11 @@ import {
   CardsIcon,
   CupIcon,
   FlipIcon,
-  GhostIcon,
   GiftLineIcon,
   GridIcon,
   HeadsetIcon,
   HomeIcon,
+  LeafIcon,
   RocketIcon,
   ShieldIcon,
   SwordsIcon,
@@ -23,7 +23,13 @@ import {
 } from "./icons";
 import styles from "./Sidebar.module.css";
 
-type Item = { href: string; label: string; icon: ComponentType<SVGProps<SVGSVGElement>> };
+type Item = {
+  href: string;
+  label: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  /** A seasonal event, picked out in the accent colour. */
+  event?: boolean;
+};
 
 const GROUPS: { title: string; items: Item[] }[] = [
   {
@@ -46,7 +52,7 @@ const GROUPS: { title: string; items: Item[] }[] = [
     items: [
       { href: "/rewards", label: "Rewards", icon: GiftLineIcon },
       { href: "/race", label: "$30K Race", icon: CupIcon },
-      { href: "/pumpkin-hunt", label: "Pumpkin Hunt", icon: GhostIcon },
+      { href: "/turkey-hunt", label: "Turkey Hunt", icon: LeafIcon, event: true },
     ],
   },
   {
@@ -75,11 +81,16 @@ export default function Sidebar() {
         <div key={group.title} className={styles.group}>
           <p className={styles.groupTitle}>{group.title}</p>
           <ul className={styles.list}>
-            {group.items.map(({ href, label, icon: Icon }) => {
+            {group.items.map(({ href, label, icon: Icon, event }) => {
               const tag = tagOf(href);
               return (
                 <li key={href}>
-                  <Link href={href} className={styles.link} aria-current={path === href ? "page" : undefined} title={label}>
+                  <Link
+                    href={href}
+                    className={`${styles.link} ${event ? styles.event : ""}`}
+                    aria-current={path === href ? "page" : undefined}
+                    title={label}
+                  >
                     <Icon className={styles.icon} />
                     <span className={styles.label}>{label}</span>
                     {tag && <span className={`${styles.tag} ${tag === "Hot" ? styles.hot : ""}`}>{tag}</span>}

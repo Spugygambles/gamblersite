@@ -15,28 +15,30 @@
   margin-top: 20px;
 }
 
-/* Section heads: a bar in the accent colour, the title, and a count or a
+/* Section heads: an icon in the accent colour, the title, and a count or a
    link. */
 .head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   margin-bottom: 14px;
 }
 
-.mark {
-  width: 4px;
-  height: 18px;
-  border-radius: 2px;
-  background: var(--brand);
+.icon {
+  display: grid;
+  place-items: center;
+  color: var(--brand);
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .title {
   margin: 0;
   color: var(--text);
-  font: italic 900 19px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
+  font: 700 18px/1 var(--font-ui), sans-serif;
 }
 
 .count {
@@ -73,6 +75,6 @@
   }
 
   .title {
-    font-size: 17px;
+    font-size: 16.5px;
   }
 }

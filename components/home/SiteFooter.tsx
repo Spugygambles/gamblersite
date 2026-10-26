@@ -18,7 +18,7 @@ const COLUMNS = [
     links: [
       ["Rewards", "/rewards"],
       ["$30K Race", "/race"],
-      ["Pumpkin Hunt", "/pumpkin-hunt"],
+      ["Turkey Hunt", "/turkey-hunt"],
     ],
   },
   {

@@ -65,10 +65,16 @@
       d.setHours(24, 0, 0, 0);
       return d;
     },
-    "/pumpkin-hunt": () => {
+    "/turkey-hunt": () => {
+      // The end of the Monday after Thanksgiving (the fourth Thursday in
+      // November); next year's once it's over.
+      const endOf = (year) => {
+        const first = new Date(year, 10, 1).getDay();
+        return new Date(year, 10, 1 + ((4 - first + 7) % 7) + 25, 23, 59, 59);
+      };
       const now = new Date();
-      const end = new Date(now.getFullYear(), 9, 31, 23, 59, 59);
-      return end > now ? end : new Date(now.getFullYear() + 1, 9, 31, 23, 59, 59);
+      const end = endOf(now.getFullYear());
+      return end > now ? end : endOf(now.getFullYear() + 1);
     },
     "/race": () => {
       const d = new Date();
@@ -218,18 +224,18 @@
     });
   }
 
-  // ---- Palette picker (preview only): try the homepage in other colours.
-  // The palettes live in preview.css; the choice is remembered on this device.
-  const PALETTES = [
-    ["gold", "Gold", "#f5c32c"],
-    ["crimson", "Crimson", "#e5384f"],
-    ["blue", "Blue", "#3b7cf5"],
-    ["purple", "Purple", "#8b5cf6"],
-    ["emerald", "Emerald", "#1fb86a"],
-    ["orange", "Orange", "#f2711c"],
-    ["cyan", "Cyan", "#17b8cc"],
-    ["pink", "Pink", "#e8458f"],
+  // ---- Theme picker (preview only): try the homepage in other colours.
+  // The themes live in preview.css; Harvest is the site's own. The choice is
+  // remembered on this device.
+  const THEMES = [
+    ["harvest", "Harvest", "#ee7d31"],
+    ["cranberry", "Cranberry", "#d4473f"],
+    ["maple", "Maple gold", "#e9a93a"],
+    ["sage", "Sage", "#8fae5a"],
+    ["classic", "Classic gold", "#f5c32c"],
+    ["midnight", "Midnight blue", "#2f7bf5"],
   ];
+  const STORE = "csgoneo-theme";
   const picker = document.createElement("div");
   picker.className = "palette-picker";
   picker.setAttribute("role", "group");
@@ -239,35 +245,35 @@
   const swatches = document.createElement("span");
   swatches.className = "swatches";
   picker.append(label, swatches);
-  const usePalette = (id) => {
-    const [, name] = PALETTES.find((p) => p[0] === id) || PALETTES[0];
+  const useTheme = (id) => {
+    const [, name] = THEMES.find((t) => t[0] === id) || THEMES[0];
     document.documentElement.dataset.palette = id;
     label.textContent = name;
     swatches.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
     try {
-      localStorage.setItem("csgoneo-palette", id);
+      localStorage.setItem(STORE, id);
     } catch {
       // Storage can be off; the choice just won't be remembered.
     }
   };
-  for (const [id, name, color] of PALETTES) {
+  for (const [id, name, color] of THEMES) {
     const b = document.createElement("button");
     b.type = "button";
     b.dataset.id = id;
     b.style.setProperty("--swatch", color);
     b.setAttribute("aria-label", name);
     b.title = name;
-    b.addEventListener("click", () => usePalette(id));
+    b.addEventListener("click", () => useTheme(id));
     swatches.append(b);
   }
   document.body.append(picker);
-  let saved = "gold";
+  let saved = "harvest";
   try {
-    saved = localStorage.getItem("csgoneo-palette") || "gold";
+    saved = localStorage.getItem(STORE) || "harvest";
   } catch {
-    // Fall back to gold.
+    // Fall back to Harvest.
   }
-  usePalette(PALETTES.some((p) => p[0] === saved) ? saved : "gold");
+  useTheme(THEMES.some((t) => t[0] === saved) ? saved : "harvest");
 
   // ---- Links: only the homepage exists so far, so the rest say so
   // instead of leading nowhere.
