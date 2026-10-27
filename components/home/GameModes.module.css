@@ -21,6 +21,7 @@
   position: relative;
   overflow: hidden;
   background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
   color: var(--text);
   text-decoration: none;
   transition:
@@ -316,6 +317,13 @@
 @container (max-width: 600px) {
   .originals {
     grid-auto-columns: clamp(130px, 40%, 170px);
+  }
+}
+
+/* Short screens: slimmer banners, so every game still fits. */
+@media (max-height: 720px) {
+  .feature {
+    min-height: 172px;
   }
 }
 

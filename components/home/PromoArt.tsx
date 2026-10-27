@@ -1,19 +1,19 @@
 import { MAPLE_LEAF } from "./icons";
 import styles from "./PromoArt.module.css";
 
-// Flat autumn scenes for the promo tiles, drawn in a 180 x 160 box that sits
-// in the tile's bottom right corner. Matte: solid shapes, no gradients or
-// glows. Leaves sway, and the turkey and the trophy bob a little.
+// Flat autumn scenes for the promo cards, drawn in a 180 x 160 box. Matte:
+// solid shapes in muted colours, no gradients or glows. Leaves sway, and the
+// turkey and the trophy bob a little.
 
-const GOLD = "#f2b544";
-const GOLD_DARK = "#d99a34";
-const GOLD_SIDE = "#c98b2b";
-const ORANGE = "#ef7d2d";
-const RED = "#d9442f";
-const CREAM = "#fff1df";
-const BROWN = "#8a5232";
-const BROWN_LIGHT = "#a96a3e";
-const BROWN_DARK = "#6e3f25";
+const GOLD = "#dba64a";
+const GOLD_DARK = "#c28f3a";
+const GOLD_SIDE = "#ad7e33";
+const ORANGE = "#d9773f";
+const RED = "#c2503e";
+const CREAM = "#f3e6d4";
+const BROWN = "#80553a";
+const BROWN_LIGHT = "#9c6d4b";
+const BROWN_DARK = "#644130";
 
 /** A maple leaf with its veins, centred on (x, y), turned and scaled. */
 function Leaf({ x, y, size = 1, turn = 0, fill, delay = 0 }: { x: number; y: number; size?: number; turn?: number; fill: string; delay?: number }) {
@@ -23,7 +23,7 @@ function Leaf({ x, y, size = 1, turn = 0, fill, delay = 0 }: { x: number; y: num
         <path d={MAPLE_LEAF} fill={fill} stroke={fill} strokeWidth="2" strokeLinejoin="round" />
         <path
           d="M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66"
-          stroke="rgba(0,0,0,0.18)"
+          stroke="rgba(0,0,0,0.16)"
           strokeWidth="2.4"
           strokeLinecap="round"
           fill="none"
@@ -114,23 +114,23 @@ export function RaceArt() {
       <Leaf x={28} y={40} size={0.42} turn={-30} fill={ORANGE} />
       <Leaf x={152} y={58} size={0.5} turn={25} fill={RED} delay={-1.4} />
       <Leaf x={140} y={18} size={0.3} turn={60} fill={GOLD} delay={-0.7} />
-      <rect x="8" y="112" width="54" height="50" rx="3" fill="#e9d6bb" />
-      <rect x="118" y="122" width="54" height="40" rx="3" fill="#dcc6a6" />
+      <rect x="8" y="112" width="54" height="50" rx="3" fill="#ddcdb6" />
+      <rect x="118" y="122" width="54" height="40" rx="3" fill="#cfbea3" />
       <rect x="60" y="94" width="60" height="68" rx="3" fill={CREAM} />
-      <text x="90" y="134" textAnchor="middle" fontSize="26" fill="#3d5a2e" style={step}>
+      <text x="90" y="134" textAnchor="middle" fontSize="26" fill="#3b4733" style={step}>
         1
       </text>
-      <text x="35" y="144" textAnchor="middle" fontSize="20" fill="#3d5a2e" opacity="0.75" style={step}>
+      <text x="35" y="144" textAnchor="middle" fontSize="20" fill="#3b4733" opacity="0.75" style={step}>
         2
       </text>
-      <text x="145" y="150" textAnchor="middle" fontSize="18" fill="#3d5a2e" opacity="0.75" style={step}>
+      <text x="145" y="150" textAnchor="middle" fontSize="18" fill="#3b4733" opacity="0.75" style={step}>
         3
       </text>
       <g className={styles.bob}>
         <path d="M72 34h-7a8 8 0 0 0 0 16h7M108 34h7a8 8 0 0 1 0 16h-7" stroke={GOLD_DARK} strokeWidth="4.5" fill="none" strokeLinecap="round" />
         <path d="M70 26h40v16a20 20 0 0 1-40 0Z" fill={GOLD} />
         <path d="M98 26h12v16a20 20 0 0 1-17 19.8c3.5-6 5-17 5-35.8Z" fill={GOLD_DARK} />
-        <rect x="76" y="30" width="5" height="16" rx="2.5" fill="#ffd98a" />
+        <rect x="76" y="30" width="5" height="16" rx="2.5" fill="#ecc57a" />
         <rect x="86" y="61" width="8" height="12" fill={GOLD_DARK} />
         <rect x="76" y="72" width="28" height="10" rx="2" fill={BROWN_DARK} />
         <path d="m90 33 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z" fill={CREAM} />

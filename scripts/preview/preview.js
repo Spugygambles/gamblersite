@@ -192,7 +192,7 @@
     const input = form.querySelector("input");
     const send = form.querySelector('button[type="submit"]');
     log.scrollTop = log.scrollHeight;
-    const AVATARS = ["#4c5fd5", "#2b8f63", "#b8653a", "#8c52b8", "#2c84a3", "#a8822e", "#b04457"];
+    const AVATARS = ["#56649e", "#4c8068", "#a06a4a", "#7a5d96", "#4a7a8c", "#937c46", "#9a5060"];
     const avatarOf = (name) => AVATARS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % AVATARS.length];
     const tierOf = (level) => (level >= 80 ? "gold" : level >= 50 ? "purple" : level >= 20 ? "blue" : "");
     // The player, as the header shows them ("Account, level 70").
@@ -228,10 +228,10 @@
   // The themes live in preview.css; Pumpkin is the site's own. The choice is
   // remembered on this device.
   const THEMES = [
-    ["pumpkin", "Pumpkin", "#ee7d31"],
-    ["cranberry", "Cranberry", "#d4473f"],
-    ["maple", "Maple gold", "#e9a93a"],
-    ["sage", "Sage", "#8fae5a"],
+    ["pumpkin", "Pumpkin", "#dc7a3e"],
+    ["cranberry", "Cranberry", "#c24a43"],
+    ["maple", "Maple gold", "#d6a043"],
+    ["sage", "Sage", "#8ba35e"],
     ["classic", "Classic gold", "#f5c32c"],
     ["midnight", "Midnight blue", "#2f7bf5"],
   ];

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { ClockIcon } from "./icons";
+import { ChevronIcon, ClockIcon } from "./icons";
 import { BonusArt, RaceArt, TurkeyArt } from "./PromoArt";
 import RewardsCard from "./RewardsCard";
 import { midnight, nextMondayUtc, thanksgivingWeekEnd, useCountdown } from "./useCountdown";
@@ -12,45 +12,42 @@ type Promo = {
   /** What kind of promotion it is, over the title. */
   kicker: string;
   title: string;
-  text: string;
-  cta: string;
   href: string;
-  /** The tile's flat colour. */
-  tile: string;
+  /** How the time left reads: "Ends in", "Resets in". */
+  until: string;
   ends: () => Date;
+  /** The muted colour behind the drawing. */
+  well: string;
   art: ReactNode;
 };
 
-// The Thanksgiving line-up, each on its own autumn colour.
+// The Thanksgiving line-up.
 const PROMOS: Promo[] = [
-  {
-    kicker: "Thanksgiving bonus",
-    title: "5% on every deposit",
-    text: "Top up today and get 5% extra on top.",
-    cta: "Deposit",
-    href: "/deposit",
-    tile: "#b84f1a",
-    ends: midnight,
-    art: <BonusArt />,
-  },
   {
     kicker: "Thanksgiving event",
     title: "Turkey Hunt",
-    text: "Find turkeys hidden in any game for festive drops.",
-    cta: "Start hunting",
     href: "/turkey-hunt",
-    tile: "#8e2b25",
+    until: "Ends in",
     ends: thanksgivingWeekEnd,
+    well: "#5e2b27",
     art: <TurkeyArt />,
+  },
+  {
+    kicker: "Thanksgiving bonus",
+    title: "5% deposit bonus",
+    href: "/deposit",
+    until: "Ends in",
+    ends: midnight,
+    well: "#6f3f26",
+    art: <BonusArt />,
   },
   {
     kicker: "Weekly race",
     title: "$30K Harvest Race",
-    text: "Every bet climbs the board. It resets on Monday.",
-    cta: "View race",
     href: "/race",
-    tile: "#3d5a2e",
+    until: "Resets in",
     ends: nextMondayUtc,
+    well: "#3b4733",
     art: <RaceArt />,
   },
 ];
@@ -58,34 +55,34 @@ const PROMOS: Promo[] = [
 function PromoCard({ promo }: { promo: Promo }) {
   const left = useCountdown(promo.ends);
   return (
-    <Link href={promo.href} className={`${styles.card} ${styles.promo}`} style={{ "--tile": promo.tile } as CSSProperties}>
-      <span className={styles.top}>
+    <Link href={promo.href} className={styles.card}>
+      <span className={styles.well} style={{ "--well": promo.well } as CSSProperties} aria-hidden>
+        {promo.art}
+      </span>
+      <span className={styles.body}>
         <span className={styles.kicker}>{promo.kicker}</span>
+        <span className={styles.title}>{promo.title}</span>
         <span className={`${styles.timer} tabular`}>
           <ClockIcon />
-          <span className="sr-only">Ends in </span>
+          <span>{promo.until} </span>
           {left ?? "\u00a0"}
         </span>
       </span>
-      <span className={styles.title}>{promo.title}</span>
-      <span className={styles.text}>{promo.text}</span>
-      <span className={styles.button}>{promo.cta}</span>
-      <span className={styles.art} aria-hidden>
-        {promo.art}
-      </span>
+      <ChevronIcon direction="right" className={styles.go} />
     </Link>
   );
 }
 
-// The player's level and today's free case, then what's on.
+// A compact strip over the games: what's on for Thanksgiving, then the
+// player's daily case.
 export default function EventsRow() {
   return (
-    <div className={styles.events}>
+    <div className={styles.strip}>
       <div className={styles.row}>
-        <RewardsCard />
         {PROMOS.map((p) => (
           <PromoCard key={p.href} promo={p} />
         ))}
+        <RewardsCard />
       </div>
     </div>
   );

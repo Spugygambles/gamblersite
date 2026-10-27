@@ -8,7 +8,7 @@ import { useOnlineCount } from "./useOnlineCount";
 import styles from "./ChatPanel.module.css";
 
 // Each player gets one of these behind their initial, picked by name.
-const AVATARS = ["#4c5fd5", "#2b8f63", "#b8653a", "#8c52b8", "#2c84a3", "#a8822e", "#b04457"];
+const AVATARS = ["#56649e", "#4c8068", "#a06a4a", "#7a5d96", "#4a7a8c", "#937c46", "#9a5060"];
 const avatarOf = (name: string) => AVATARS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % AVATARS.length];
 
 // Time to the next rain as "4:07", ticking every second. Blank until

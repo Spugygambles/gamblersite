@@ -1,4 +1,4 @@
-import { useId, type SVGProps } from "react";
+import type { SVGProps } from "react";
 import { CLAW_MARKS } from "@/lib/claw";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -44,22 +44,14 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
-// The site currency: a gold coin with the claw stamped in it.
+// The site currency: a flat gold coin with the claw stamped in it.
 export function CoinIcon(props: IconProps) {
-  const id = useId();
   return (
     <svg viewBox="0 0 24 24" aria-hidden {...props}>
-      <defs>
-        <radialGradient id={`${id}-face`} cx="0.38" cy="0.32" r="0.75">
-          <stop offset="0" stopColor="#ffe08a" />
-          <stop offset="0.55" stopColor="#f6b23a" />
-          <stop offset="1" stopColor="#d9831c" />
-        </radialGradient>
-      </defs>
-      <circle cx="12" cy="12" r="10.5" fill="#b8650f" />
-      <circle cx="12" cy="11.4" r="10" fill={`url(#${id}-face)`} />
-      <circle cx="12" cy="11.4" r="7.1" fill="none" stroke="#c9741a" strokeWidth="1.1" opacity="0.7" />
-      <g fill="#b8650f" transform="translate(7.4 6.8) scale(0.092)">
+      <circle cx="12" cy="12" r="10.5" fill="#a9712c" />
+      <circle cx="12" cy="11.4" r="10" fill="#dba64a" />
+      <circle cx="12" cy="11.4" r="7.1" fill="none" stroke="#b9853a" strokeWidth="1.1" />
+      <g fill="#a9712c" transform="translate(7.4 6.8) scale(0.092)">
         {CLAW_MARKS.map((d) => (
           <path key={d} d={d} />
         ))}

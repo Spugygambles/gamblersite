@@ -41,23 +41,23 @@ body {
    data-palette on <html>. */
 
 :root[data-palette="cranberry"] {
-  --brand: #d4473f;
-  --brand-rgb: 212, 71, 63;
-  --brand-hi: #dc5d55;
+  --brand: #c24a43;
+  --brand-rgb: 194, 74, 67;
+  --brand-hi: #cc5f58;
   --on-brand: #ffffff;
 }
 
 :root[data-palette="maple"] {
-  --brand: #e9a93a;
-  --brand-rgb: 233, 169, 58;
-  --brand-hi: #efb955;
+  --brand: #d6a043;
+  --brand-rgb: 214, 160, 67;
+  --brand-hi: #ddae5c;
   --on-brand: #1f1406;
 }
 
 :root[data-palette="sage"] {
-  --brand: #8fae5a;
-  --brand-rgb: 143, 174, 90;
-  --brand-hi: #a0bd6c;
+  --brand: #8ba35e;
+  --brand-rgb: 139, 163, 94;
+  --brand-hi: #9ab06f;
   --on-brand: #121a08;
 }
 

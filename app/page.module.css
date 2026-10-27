@@ -7,12 +7,12 @@
   padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
-.section {
-  margin-top: 36px;
+.promos {
+  margin-top: 20px;
 }
 
-.first {
-  margin-top: 20px;
+.section {
+  margin-top: 28px;
 }
 
 /* Section heads: an icon in the accent colour, the title, and a count or a
@@ -49,32 +49,35 @@
   font: 700 11.5px/1 var(--font-ui), sans-serif;
 }
 
-.more {
-  margin-left: auto;
-  color: var(--text-muted);
-  font: 500 13.5px/1 var(--font-ui), sans-serif;
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.more:hover {
-  color: var(--text);
-}
-
 @media (max-width: 640px) {
   .content {
     --gutter: 16px;
   }
 
-  .section {
-    margin-top: 32px;
+  .promos {
+    margin-top: 16px;
   }
 
-  .first {
-    margin-top: 18px;
+  .section {
+    margin-top: 24px;
   }
 
   .title {
     font-size: 16.5px;
+  }
+}
+
+/* Short screens: tighter spacing, so the games still all fit. */
+@media (max-height: 720px) {
+  .promos {
+    margin-top: 14px;
+  }
+
+  .section {
+    margin-top: 18px;
+  }
+
+  .head {
+    margin-bottom: 10px;
   }
 }

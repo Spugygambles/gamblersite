@@ -1,36 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  /* Matte grey with a pumpkin accent for the Thanksgiving launch: plain
-     neutral greys with no tint, white text, and no glows or gradients. The
-     frame (header, menu, chat) is a shade darker than the page it holds.
-     Every colour on the homepage comes from these, so a palette is one
-     block. */
+  /* Matte graphite with a burnt-orange accent, for the Thanksgiving launch:
+     neutral greys with no tint, muted colours, a hairline edge on cards,
+     and no glows or gradients. The frame (header, menu, chat) is a shade
+     darker than the page it holds. Every colour on the homepage comes from
+     these, so a palette is one block. */
   /* Surfaces: the page, the frame, then cards and raised controls. */
-  --bg: #2e2e2e;
-  --bg-raised: #222222;
-  --surface: #393939;
-  --surface-2: #434343;
-  --surface-3: #4d4d4d;
-  --line: #353535;
-  --track: #555555;
-  --header-bg: #222222;
+  --bg: #2b2b2b;
+  --bg-raised: #202020;
+  --surface: #343434;
+  --surface-2: #3d3d3d;
+  --surface-3: #474747;
+  --line: #333333;
+  /* The fine line round a card, drawn inside it. */
+  --edge: rgba(255, 255, 255, 0.05);
+  --track: #4f4f4f;
+  --header-bg: #202020;
   /* Text. */
-  --text: #ffffff;
-  --text-soft: #d5d5d5;
-  --text-muted: #a6a6a6;
+  --text: #f4f4f4;
+  --text-soft: #cecece;
+  --text-muted: #9d9d9d;
   /* The accent: its colour, as channels for see-through tints, its hover
      shade, and the text that sits on it. */
-  --brand: #ee7d31;
-  --brand-rgb: 238, 125, 49;
-  --brand-hi: #f39352;
-  --on-brand: #1f1006;
+  --brand: #dc7a3e;
+  --brand-rgb: 220, 122, 62;
+  --brand-hi: #e48b55;
+  --on-brand: #1d0f06;
   --deposit: var(--brand);
   --level: var(--brand);
-  /* Status colours, the same in every palette. */
-  --live: #57c46e;
-  --danger: #d9473c;
-  --coin: #f2b544;
+  /* Status colours, muted to match, the same in every palette. */
+  --live: #6fb07a;
+  --danger: #c9544a;
+  --coin: #dba64a;
   /* Layout. */
   --header-h: 60px;
   --page-max: 1320px;
