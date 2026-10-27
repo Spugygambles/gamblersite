@@ -1,7 +1,8 @@
-/* At the foot of the page: pushed to the bottom of the screen when the page
-   is short, and at least 48px under the games. */
+/* At the foot of the page. When the page is shorter than the screen, the
+   footer takes the rest of it, so the bottom is the frame's dark grey all
+   the way across, like the menu and chat beside it. */
 .footer {
-  margin-top: auto;
+  flex: 1 0 auto;
   border-top: 1px solid var(--line);
   background: var(--bg-raised);
 }

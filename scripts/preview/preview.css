@@ -10,9 +10,11 @@ body {
 }
 
 /* A note for links to pages that aren't built yet, placed under the link
-   by preview.js. */
+   by preview.js. It waits at the top so it never lengthens the page. */
 .preview-toast {
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 100;
   max-width: min(340px, calc(100% - 32px));
   padding: 10px 14px;
@@ -33,46 +35,4 @@ body {
 .preview-toast.show {
   opacity: 1;
   translate: -50% 0;
-}
-
-/* ---- Fitting the Claude app ---------------------------------------------
-   The app makes this page's window as tall as the page itself, so heights
-   tied to the screen (100vh) would hold the window open and leave empty
-   space under the footer. Here everything takes its height from the page:
-   the menu and chat columns stretch to the page's length without adding to
-   it, and chat sliding over the page is a screen's height at most. */
-body,
-[data-shell],
-[data-shell] > main {
-  min-height: 0 !important;
-}
-
-@media (min-width: 768px) {
-  [data-shell-part="sidebar"] {
-    height: auto !important;
-    align-self: stretch !important;
-    contain: size;
-  }
-}
-
-@media (min-width: 1200px) {
-  [data-shell-part="chat"] {
-    height: auto !important;
-    align-self: stretch !important;
-    contain: size;
-  }
-}
-
-@media (max-width: 1199px) {
-  [data-shell-part="chat"] {
-    bottom: auto !important;
-    height: min(760px, calc(100vh - var(--header-h))) !important;
-  }
-}
-
-@media (max-width: 767px) {
-  [data-shell-part="sidebar"] {
-    bottom: auto !important;
-    height: auto !important;
-  }
 }
