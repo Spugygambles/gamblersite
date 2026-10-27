@@ -50,6 +50,9 @@ export default function SiteFooter() {
             <span className={styles.ageBadge}>18+</span>
             Play responsibly. Only play with what you can afford to lose.
           </p>
+          <p className={styles.legal}>
+            © {new Date().getFullYear()} CsgoNeo. Not affiliated with or endorsed by Valve Corporation.
+          </p>
         </div>
 
         <nav className={styles.columns} aria-label="Footer">
@@ -66,11 +69,6 @@ export default function SiteFooter() {
             </div>
           ))}
         </nav>
-      </div>
-
-      <div className={styles.bottom}>
-        <p>© {new Date().getFullYear()} CsgoNeo. All rights reserved.</p>
-        <p>Not affiliated with or endorsed by Valve Corporation.</p>
       </div>
     </footer>
   );

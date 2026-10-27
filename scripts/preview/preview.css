@@ -9,23 +9,25 @@ body {
   font-size: 16px;
 }
 
-/* A note for links to pages that aren't built yet. */
+/* A note for links to pages that aren't built yet, placed under the link
+   by preview.js. */
 .preview-toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  position: absolute;
   z-index: 100;
-  max-width: calc(100% - 32px);
-  padding: 12px 16px;
+  max-width: min(340px, calc(100% - 32px));
+  padding: 10px 14px;
   border-radius: 8px;
   background: var(--surface-3);
-  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.8);
-  color: #fff;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.8);
+  color: var(--text);
   font: 600 13px/1.35 var(--font-ui);
+  text-align: center;
   opacity: 0;
-  translate: -50% 16px;
+  translate: -50% 6px;
   pointer-events: none;
-  transition: opacity 0.25s ease, translate 0.25s ease;
+  transition:
+    opacity 0.2s ease,
+    translate 0.2s ease;
 }
 
 .preview-toast.show {
@@ -33,139 +35,44 @@ body {
   translate: -50% 0;
 }
 
-/* ---- Themes to try (preview only) --------------------------------------
-   Each swaps the colour tokens in app/globals.css; Pumpkin (grey with an
-   orange accent) is the site's own. The first three keep the greys and
-   change the accent; the last two are whole other looks, with the frame a
-   shade darker than the page as on the site. The picker in preview.js sets
-   data-palette on <html>. */
-
-:root[data-palette="cranberry"] {
-  --brand: #c24a43;
-  --brand-rgb: 194, 74, 67;
-  --brand-hi: #cc5f58;
-  --on-brand: #ffffff;
+/* ---- Fitting the Claude app ---------------------------------------------
+   The app makes this page's window as tall as the page itself, so heights
+   tied to the screen (100vh) would hold the window open and leave empty
+   space under the footer. Here everything takes its height from the page:
+   the menu and chat columns stretch to the page's length without adding to
+   it, and chat sliding over the page is a screen's height at most. */
+body,
+[data-shell],
+[data-shell] > main {
+  min-height: 0 !important;
 }
 
-:root[data-palette="maple"] {
-  --brand: #d6a043;
-  --brand-rgb: 214, 160, 67;
-  --brand-hi: #ddae5c;
-  --on-brand: #1f1406;
-}
-
-:root[data-palette="sage"] {
-  --brand: #8ba35e;
-  --brand-rgb: 139, 163, 94;
-  --brand-hi: #9ab06f;
-  --on-brand: #121a08;
-}
-
-:root[data-palette="classic"] {
-  --bg: #171a20;
-  --bg-raised: #0f1115;
-  --surface: #1f232b;
-  --surface-2: #272c36;
-  --surface-3: #303643;
-  --line: #252a33;
-  --track: #343a46;
-  --header-bg: #0f1115;
-  --text: #ffffff;
-  --text-soft: #b4bccb;
-  --text-muted: #8089a0;
-  --brand: #f5c32c;
-  --brand-rgb: 245, 195, 44;
-  --brand-hi: #ffd04d;
-  --on-brand: #16120a;
-}
-
-:root[data-palette="midnight"] {
-  --bg: #1b2a37;
-  --bg-raised: #111f2b;
-  --surface: #223444;
-  --surface-2: #2a3e50;
-  --surface-3: #33495d;
-  --line: #22323f;
-  --track: #3a5065;
-  --header-bg: #111f2b;
-  --text: #ffffff;
-  --text-soft: #b6c5d4;
-  --text-muted: #8297aa;
-  --brand: #2f7bf5;
-  --brand-rgb: 47, 123, 245;
-  --brand-hi: #4a8ef7;
-  --on-brand: #ffffff;
-}
-
-/* The picker: a bar of swatches at the bottom, clear of the menu and chat. */
-.palette-picker {
-  position: fixed;
-  left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  translate: -50% 0;
-  z-index: 95;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  max-width: calc(100% - 32px);
-  padding: 8px 12px 8px 14px;
-  border-radius: 999px;
-  background: var(--surface-3);
-  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.8);
-  color: #fff;
-  font: 600 12.5px/1 var(--font-ui);
-}
-
-.palette-picker .name {
-  min-width: 92px;
-  white-space: nowrap;
-}
-
-.palette-picker .swatches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.palette-picker button {
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--swatch);
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.palette-picker button:hover {
-  transform: scale(1.12);
-}
-
-.palette-picker button[aria-pressed="true"] {
-  box-shadow: 0 0 0 2px var(--surface-3), 0 0 0 4px #fff;
-}
-
-.palette-picker button:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-}
-
-@media (max-width: 520px) {
-  .palette-picker .name {
-    display: none;
+@media (min-width: 768px) {
+  [data-shell-part="sidebar"] {
+    height: auto !important;
+    align-self: stretch !important;
+    contain: size;
   }
 }
 
-/* Out of the way of chat or the menu sliding over the page. */
+@media (min-width: 1200px) {
+  [data-shell-part="chat"] {
+    height: auto !important;
+    align-self: stretch !important;
+    contain: size;
+  }
+}
+
 @media (max-width: 1199px) {
-  :root:has([data-shell][data-chat="open"]) .palette-picker {
-    display: none;
+  [data-shell-part="chat"] {
+    bottom: auto !important;
+    height: min(760px, calc(100vh - var(--header-h))) !important;
   }
 }
 
 @media (max-width: 767px) {
-  :root:has([data-shell][data-sidebar="open"]) .palette-picker {
-    display: none;
+  [data-shell-part="sidebar"] {
+    bottom: auto !important;
+    height: auto !important;
   }
 }

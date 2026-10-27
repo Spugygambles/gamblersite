@@ -224,59 +224,9 @@
     });
   }
 
-  // ---- Theme picker (preview only): try the homepage in other colours.
-  // The themes live in preview.css; Pumpkin is the site's own. The choice is
-  // remembered on this device.
-  const THEMES = [
-    ["pumpkin", "Pumpkin", "#dc7a3e"],
-    ["cranberry", "Cranberry", "#c24a43"],
-    ["maple", "Maple gold", "#d6a043"],
-    ["sage", "Sage", "#8ba35e"],
-    ["classic", "Classic gold", "#f5c32c"],
-    ["midnight", "Midnight blue", "#2f7bf5"],
-  ];
-  const STORE = "csgoneo-theme";
-  const picker = document.createElement("div");
-  picker.className = "palette-picker";
-  picker.setAttribute("role", "group");
-  picker.setAttribute("aria-label", "Try a colour");
-  const label = document.createElement("span");
-  label.className = "name";
-  const swatches = document.createElement("span");
-  swatches.className = "swatches";
-  picker.append(label, swatches);
-  const useTheme = (id) => {
-    const [, name] = THEMES.find((t) => t[0] === id) || THEMES[0];
-    document.documentElement.dataset.palette = id;
-    label.textContent = name;
-    swatches.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.id === id)));
-    try {
-      localStorage.setItem(STORE, id);
-    } catch {
-      // Storage can be off; the choice just won't be remembered.
-    }
-  };
-  for (const [id, name, color] of THEMES) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.dataset.id = id;
-    b.style.setProperty("--swatch", color);
-    b.setAttribute("aria-label", name);
-    b.title = name;
-    b.addEventListener("click", () => useTheme(id));
-    swatches.append(b);
-  }
-  document.body.append(picker);
-  let saved = "pumpkin";
-  try {
-    saved = localStorage.getItem(STORE) || "pumpkin";
-  } catch {
-    // Fall back to Pumpkin.
-  }
-  useTheme(THEMES.some((t) => t[0] === saved) ? saved : "pumpkin");
-
   // ---- Links: only the homepage exists so far, so the rest say so
-  // instead of leading nowhere.
+  // instead of leading nowhere. The note shows just under the link, since
+  // the Claude app can make the page's window taller than the screen.
   const toast = document.createElement("div");
   toast.className = "preview-toast";
   toast.setAttribute("role", "status");
@@ -286,6 +236,11 @@
     const a = e.target.closest && e.target.closest('a[href^="/"]');
     if (!a) return;
     e.preventDefault();
+    const r = a.getBoundingClientRect();
+    const half = Math.min(170, document.documentElement.clientWidth / 2 - 16);
+    const x = Math.min(Math.max(r.left + r.width / 2, half + 16), document.documentElement.clientWidth - half - 16);
+    toast.style.left = `${x + scrollX}px`;
+    toast.style.top = `${r.bottom + scrollY + 8}px`;
     toast.textContent =
       a.getAttribute("href") === "/" ? "You're on the homepage." : "Preview: this page isn't built yet. Only the homepage is.";
     toast.classList.add("show");

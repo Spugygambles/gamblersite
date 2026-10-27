@@ -2,8 +2,10 @@
    with --gutter either side. */
 .content {
   --gutter: 24px;
+  width: 100%;
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
+  padding-bottom: 48px;
   padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
