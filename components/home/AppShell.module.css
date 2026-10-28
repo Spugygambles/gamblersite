@@ -15,7 +15,9 @@
     "header header header"
     "sidebar main chat";
   min-height: 100vh;
-  background: var(--bg);
+  /* The wallpaper shows on the page between the menu and chat, which have
+     backgrounds of their own. */
+  background: var(--bg) var(--wallpaper) 0 0 / 800px 800px repeat;
   transition: grid-template-columns 0.22s ease;
 }
 

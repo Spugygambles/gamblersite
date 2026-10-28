@@ -1,26 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  /* Matte graphite with a burnt-orange accent, for the Thanksgiving launch:
-     neutral greys with no tint, muted colours, a hairline edge on cards,
-     and no glows or gradients. The frame (header, menu, chat) is a shade
-     darker than the page it holds. Every colour on the homepage comes from
-     these, so a palette is one block. */
+  /* Midnight navy with a burnt-orange accent, for the Thanksgiving launch:
+     matte surfaces, a hairline edge on cards, and an autumn wallpaper on the
+     page behind them. The frame (header, menu, chat) is a shade darker than
+     the page it holds. Every colour on the homepage comes from these, so a
+     palette is one block. */
   /* Surfaces: the page, the frame, then cards and raised controls. */
-  --bg: #2b2b2b;
-  --bg-raised: #202020;
-  --surface: #343434;
-  --surface-2: #3d3d3d;
-  --surface-3: #474747;
-  --line: #333333;
+  --bg: #14152b;
+  --bg-raised: #0f1022;
+  --surface: #1c1d38;
+  --surface-2: #24254a;
+  --surface-3: #2e3058;
+  --line: #1e1f3b;
   /* The fine line round a card, drawn inside it. */
   --edge: rgba(255, 255, 255, 0.05);
-  --track: #4f4f4f;
-  --header-bg: #202020;
+  --track: #34365f;
+  --header-bg: #0f1022;
   /* Text. */
-  --text: #f4f4f4;
-  --text-soft: #cecece;
-  --text-muted: #9d9d9d;
+  --text: #f3f3fa;
+  --text-soft: #c6c8de;
+  --text-muted: #8d90b3;
   /* The accent: its colour, as channels for see-through tints, its hover
      shade, and the text that sits on it. */
   --brand: #dc7a3e;
@@ -33,6 +33,10 @@
   --live: #6fb07a;
   --danger: #c9544a;
   --coin: #dba64a;
+  /* The page's wallpaper: an 800px tile of maple leaves, pumpkins, acorns
+     and wheat a shade lighter than --bg, drawn by
+     scripts/autumn-wallpaper.py (run it again if --bg changes). */
+  --wallpaper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cg fill='%231e1f40'%3E%3Cg transform='translate(97 104) rotate(34) scale(0.91) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(300 105) rotate(-8) scale(1.6)'%3E%3Cellipse cx='-17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='0' cy='-1' rx='19' ry='23'/%3E%3Cpath d='M-2 -22c0-6 2-10 7-12l2 3c-3 2-4 5-4 9Z'/%3E%3Cpath d='M-9 -19c-4 6-5 12-5 19s1 13 5 19M9 -19c4 6 5 12 5 19s-1 13-5 19' fill='none' stroke='%2314152b' stroke-width='2.4' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(508 118) rotate(-32) scale(1.42)'%3E%3Cpath d='M-13 -2c0 12 6 22 13 26 7-4 13-14 13-26Z'/%3E%3Cpath d='M-16 -2c0-9 7-15 16-15s16 6 16 15Z'/%3E%3Cpath d='M-1 -17c0-4 1-7 4-9l2 2c-2 2-3 4-3 7Z'/%3E%3Cpath d='M-15 -4h30' stroke='%2314152b' stroke-width='2.2'/%3E%3C/g%3E%3Cg transform='translate(675 119) rotate(15) scale(0.72) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(129 328) rotate(12) scale(1.15)'%3E%3Cpath d='M0 34V-60' fill='none' stroke='%231e1f40' stroke-width='2.6' stroke-linecap='round'/%3E%3Cellipse cx='-5' cy='-12' rx='4' ry='8' transform='rotate(-28 -5 -12)'/%3E%3Cellipse cx='5' cy='-12' rx='4' ry='8' transform='rotate(28 5 -12)'/%3E%3Cellipse cx='-5' cy='-21' rx='4' ry='8' transform='rotate(-28 -5 -21)'/%3E%3Cellipse cx='5' cy='-21' rx='4' ry='8' transform='rotate(28 5 -21)'/%3E%3Cellipse cx='-5' cy='-30' rx='4' ry='8' transform='rotate(-28 -5 -30)'/%3E%3Cellipse cx='5' cy='-30' rx='4' ry='8' transform='rotate(28 5 -30)'/%3E%3Cellipse cx='-5' cy='-39' rx='4' ry='8' transform='rotate(-28 -5 -39)'/%3E%3Cellipse cx='5' cy='-39' rx='4' ry='8' transform='rotate(28 5 -39)'/%3E%3Cellipse cx='-5' cy='-48' rx='4' ry='8' transform='rotate(-28 -5 -48)'/%3E%3Cellipse cx='5' cy='-48' rx='4' ry='8' transform='rotate(28 5 -48)'/%3E%3Cellipse cx='0' cy='-60' rx='3.6' ry='8'/%3E%3C/g%3E%3Cg transform='translate(279 271) rotate(2) scale(0.73) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(481 285) rotate(-13) scale(1.59)'%3E%3Cellipse cx='-17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='0' cy='-1' rx='19' ry='23'/%3E%3Cpath d='M-2 -22c0-6 2-10 7-12l2 3c-3 2-4 5-4 9Z'/%3E%3Cpath d='M-9 -19c-4 6-5 12-5 19s1 13 5 19M9 -19c4 6 5 12 5 19s-1 13-5 19' fill='none' stroke='%2314152b' stroke-width='2.4' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(696 321) rotate(2) scale(1.56)'%3E%3Cpath d='M-13 -2c0 12 6 22 13 26 7-4 13-14 13-26Z'/%3E%3Cpath d='M-16 -2c0-9 7-15 16-15s16 6 16 15Z'/%3E%3Cpath d='M-1 -17c0-4 1-7 4-9l2 2c-2 2-3 4-3 7Z'/%3E%3Cpath d='M-15 -4h30' stroke='%2314152b' stroke-width='2.2'/%3E%3C/g%3E%3Cg transform='translate(100 510) rotate(-3) scale(1.41)'%3E%3Cpath d='M-13 -2c0 12 6 22 13 26 7-4 13-14 13-26Z'/%3E%3Cpath d='M-16 -2c0-9 7-15 16-15s16 6 16 15Z'/%3E%3Cpath d='M-1 -17c0-4 1-7 4-9l2 2c-2 2-3 4-3 7Z'/%3E%3Cpath d='M-15 -4h30' stroke='%2314152b' stroke-width='2.2'/%3E%3C/g%3E%3Cg transform='translate(330 530) rotate(27) scale(1.02) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(489 484) rotate(-17) scale(1.02)'%3E%3Cpath d='M0 34V-60' fill='none' stroke='%231e1f40' stroke-width='2.6' stroke-linecap='round'/%3E%3Cellipse cx='-5' cy='-12' rx='4' ry='8' transform='rotate(-28 -5 -12)'/%3E%3Cellipse cx='5' cy='-12' rx='4' ry='8' transform='rotate(28 5 -12)'/%3E%3Cellipse cx='-5' cy='-21' rx='4' ry='8' transform='rotate(-28 -5 -21)'/%3E%3Cellipse cx='5' cy='-21' rx='4' ry='8' transform='rotate(28 5 -21)'/%3E%3Cellipse cx='-5' cy='-30' rx='4' ry='8' transform='rotate(-28 -5 -30)'/%3E%3Cellipse cx='5' cy='-30' rx='4' ry='8' transform='rotate(28 5 -30)'/%3E%3Cellipse cx='-5' cy='-39' rx='4' ry='8' transform='rotate(-28 -5 -39)'/%3E%3Cellipse cx='5' cy='-39' rx='4' ry='8' transform='rotate(28 5 -39)'/%3E%3Cellipse cx='-5' cy='-48' rx='4' ry='8' transform='rotate(-28 -5 -48)'/%3E%3Cellipse cx='5' cy='-48' rx='4' ry='8' transform='rotate(28 5 -48)'/%3E%3Cellipse cx='0' cy='-60' rx='3.6' ry='8'/%3E%3C/g%3E%3Cg transform='translate(716 494) rotate(9) scale(1.55)'%3E%3Cellipse cx='-17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='0' cy='-1' rx='19' ry='23'/%3E%3Cpath d='M-2 -22c0-6 2-10 7-12l2 3c-3 2-4 5-4 9Z'/%3E%3Cpath d='M-9 -19c-4 6-5 12-5 19s1 13 5 19M9 -19c4 6 5 12 5 19s-1 13-5 19' fill='none' stroke='%2314152b' stroke-width='2.4' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(127 721) rotate(-40) scale(0.79) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(325 698) rotate(13) scale(1.56)'%3E%3Cellipse cx='-17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='17' cy='0' rx='17' ry='21'/%3E%3Cellipse cx='0' cy='-1' rx='19' ry='23'/%3E%3Cpath d='M-2 -22c0-6 2-10 7-12l2 3c-3 2-4 5-4 9Z'/%3E%3Cpath d='M-9 -19c-4 6-5 12-5 19s1 13 5 19M9 -19c4 6 5 12 5 19s-1 13-5 19' fill='none' stroke='%2314152b' stroke-width='2.4' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(474 708) rotate(22) scale(0.82) translate(-50 -54)'%3E%3Cpath d='M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z'/%3E%3Cpath d='M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66' fill='none' stroke='%2314152b' stroke-width='3' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(675 690) rotate(37) scale(1.6)'%3E%3Cpath d='M-13 -2c0 12 6 22 13 26 7-4 13-14 13-26Z'/%3E%3Cpath d='M-16 -2c0-9 7-15 16-15s16 6 16 15Z'/%3E%3Cpath d='M-1 -17c0-4 1-7 4-9l2 2c-2 2-3 4-3 7Z'/%3E%3Cpath d='M-15 -4h30' stroke='%2314152b' stroke-width='2.2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   /* Layout. */
   --header-h: 60px;
   --page-max: 1320px;
