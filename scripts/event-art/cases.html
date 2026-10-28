@@ -1,0 +1,67 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head><body>
+<script type="module">
+// The Thanksgiving cases (designs.js), each shut and turned three-quarters
+// to the camera, lit from the upper left, on a see-through floor that
+// keeps only their shadow.
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { DESIGNS } from "./designs.js";
+import { buildCase } from "./objects.js";
+import { pack } from "./pack.js";
+
+const W = 900, H = 720;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const envTex = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+
+function render(id) {
+  const scene = new THREE.Scene();
+  scene.environment = envTex;
+  const g = buildCase(id);
+  g.rotation.y = -0.52;
+  scene.add(g);
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.42 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  scene.add(new THREE.HemisphereLight(0xfff2e2, 0x1e1626, 0.55));
+  const key = new THREE.DirectionalLight(0xfff0dc, 2.4);
+  key.position.set(-3.5, 9, 6);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -5, right: 5, top: 5, bottom: -5 });
+  key.shadow.radius = 8;
+  key.shadow.bias = -0.0004;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffc98f, 1.2);
+  rim.position.set(6, 3, -5);
+  scene.add(rim);
+
+  const camera = new THREE.PerspectiveCamera(28, W / H, 0.1, 100);
+  camera.position.set(3.2, 4.9, 8.6);
+  camera.lookAt(0, 0.95, 0);
+  renderer.render(scene, camera);
+  return pack(renderer.domElement, { crop: true, fit: [480, 325], margin: 15 });
+}
+
+window.pictures = async () => {
+  // the name plates are lettered in Saira Condensed
+  document.fonts.add(await new FontFace("Saira Condensed", "url(saira-cond-800.woff2)", { weight: "800" }).load());
+  return DESIGNS.map((d) => ({ file: `event/cases/${d.id}.webp`, data: render(d.id) }));
+};
+</script>
+</body></html>

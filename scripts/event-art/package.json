@@ -1,0 +1,9 @@
+{
+  "name": "event-art",
+  "private": true,
+  "description": "Renders the Turkey Hunt's 3D pictures into public/event: node render.mjs",
+  "dependencies": {
+    "playwright": "1.56.1",
+    "three": "0.160.0"
+  }
+}

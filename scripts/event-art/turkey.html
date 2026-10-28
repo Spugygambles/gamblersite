@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head><body>
+<script type="module">
+// The hunt's turkey: a round clay bird in a pilgrim's hat, his tail fanned
+// out behind, lit from the front left with a warm rim from behind, on a
+// see-through floor that keeps only his shadow.
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { pack } from "./pack.js";
+
+const W = 1300, H = 1000;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H);
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const pmrem = new THREE.PMREMGenerator(renderer);
+
+const scene = new THREE.Scene();
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const M = (color, rough = 0.62, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: rough, metalness: 0, envMapIntensity: 0.6, ...extra });
+const BROWN = M(0x7a4628), BREAST = M(0xa36b40), WING = M(0x5a331c), GOLD = M(0xe3a845, 0.45), RED = M(0xc0412f, 0.5),
+  ORANGE = M(0xd9772f), YELLOW = M(0xe8b04a), CREAM = M(0xf3e3c8), WHITE = M(0xffffff, 0.3), BLACK = M(0x16101a, 0.25);
+
+function blob(r, mat, pos, scale = [1, 1, 1], rot = [0, 0, 0], seg = 48) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, seg, seg / 2 + 8), mat);
+  m.position.set(...pos); m.scale.set(...scale); m.rotation.set(...rot);
+  m.castShadow = true; m.receiveShadow = true;
+  return m;
+}
+const bird = new THREE.Group();
+
+// the tail: three rows of feathers fanned out behind
+const fan = new THREE.Group();
+fan.position.set(0, 1.45, -0.55);
+fan.rotation.x = -0.32;
+const rows = [
+  { n: 11, spread: 80, len: 1.25, w: 0.34, z: 0, mats: [RED, ORANGE, YELLOW] },
+  { n: 9, spread: 66, len: 0.95, w: 0.29, z: 0.07, mats: [ORANGE, YELLOW, RED] },
+  { n: 7, spread: 52, len: 0.62, w: 0.22, z: 0.14, mats: [CREAM] },
+];
+for (const row of rows) {
+  for (let i = 0; i < row.n; i++) {
+    const a = THREE.MathUtils.degToRad(-row.spread + (2 * row.spread * i) / (row.n - 1));
+    const f = blob(1, row.mats[i % row.mats.length], [0, 0, 0], [row.w, row.len, 0.07]);
+    const holder = new THREE.Group();
+    holder.rotation.z = a;
+    f.position.set(0, row.len * 0.98 + 0.25, row.z);
+    holder.add(f);
+    fan.add(holder);
+  }
+}
+bird.add(fan);
+
+bird.add(blob(1, BROWN, [0, 1.55, 0], [1.0, 1.06, 0.92]));
+bird.add(blob(0.66, BREAST, [0, 1.5, 0.62], [1, 1.1, 0.55]));
+bird.add(blob(0.56, WING, [-0.9, 1.5, 0.08], [0.42, 0.95, 0.78], [0, 0.2, 0.28]));
+bird.add(blob(0.56, WING, [0.9, 1.5, 0.08], [0.42, 0.95, 0.78], [0, -0.2, -0.28]));
+bird.add(blob(0.38, BROWN, [0, 2.3, 0.28]));
+bird.add(blob(0.5, BROWN, [0, 2.78, 0.36]));
+for (const s of [-1, 1]) {
+  bird.add(blob(0.15, WHITE, [s * 0.18, 2.9, 0.76]));
+  bird.add(blob(0.08, BLACK, [s * 0.18, 2.9, 0.89]));
+  bird.add(blob(0.025, WHITE, [s * 0.18 + 0.03, 2.94, 0.96]));
+}
+const beak = new THREE.Mesh(new THREE.ConeGeometry(0.13, 0.32, 24), GOLD);
+beak.position.set(0, 2.72, 0.9); beak.rotation.x = Math.PI / 2 + 0.25; beak.castShadow = true;
+bird.add(beak);
+const snood = new THREE.Mesh(new THREE.CapsuleGeometry(0.052, 0.2, 8, 16), RED);
+snood.position.set(0.1, 2.56, 0.84); snood.rotation.set(0.25, 0, 0.3); snood.castShadow = true;
+bird.add(snood);
+// a pilgrim's hat with a gold buckle, tipped back a little
+const HAT = M(0x1d1a22, 0.55), BAND = M(0x3a2c26, 0.6), BUCKLE = M(0xe3b34a, 0.3, { metalness: 0.85 });
+const hat = new THREE.Group();
+const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.66, 0.06, 48), HAT);
+const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, 0.62, 48), HAT);
+crown.position.y = 0.33;
+const band = new THREE.Mesh(new THREE.CylinderGeometry(0.407, 0.427, 0.14, 48), BAND);
+band.position.y = 0.1;
+const buckle = new THREE.Group();
+const bar = (w, h, x, y) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.04), BUCKLE); b.position.set(x, y, 0); return b; };
+buckle.add(bar(0.22, 0.045, 0, 0.085), bar(0.22, 0.045, 0, -0.085), bar(0.045, 0.215, -0.0875, 0), bar(0.045, 0.215, 0.0875, 0));
+buckle.position.set(0, 0.1, 0.43);
+buckle.rotation.x = -0.13;
+hat.add(brim, crown, band, buckle);
+hat.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+hat.position.set(0.02, 3.17, 0.3);
+hat.rotation.set(-0.16, 0, -0.1);
+bird.add(hat);
+for (const s of [-1, 1]) {
+  const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.55, 16), GOLD);
+  leg.position.set(s * 0.34, 0.42, 0.12); leg.castShadow = true;
+  bird.add(leg);
+  for (const t of [-0.5, 0, 0.5]) {
+    const toe = new THREE.Mesh(new THREE.CapsuleGeometry(0.055, 0.24, 6, 12), GOLD);
+    toe.position.set(s * 0.34 + Math.sin(t) * 0.13, 0.1, 0.22 + Math.cos(t) * 0.12);
+    toe.rotation.set(Math.PI / 2, 0, -t);
+    toe.castShadow = true;
+    bird.add(toe);
+  }
+}
+bird.rotation.y = -0.26;
+scene.add(bird);
+
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(30, 30), new THREE.ShadowMaterial({ opacity: 0.4 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+scene.add(ground);
+
+scene.add(new THREE.HemisphereLight(0xfff0dd, 0x221726, 0.6));
+const key = new THREE.DirectionalLight(0xfff1de, 2.3);
+key.position.set(-4, 8, 7); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+Object.assign(key.shadow.camera, { left: -5, right: 5, top: 6, bottom: -4 });
+key.shadow.radius = 10; key.shadow.bias = -0.0004;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0xffb36b, 2.2);
+rim.position.set(5, 5, -6);
+scene.add(rim);
+const fill = new THREE.DirectionalLight(0x9db4ff, 0.35);
+fill.position.set(6, 2, 6);
+scene.add(fill);
+
+const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+camera.position.set(1.6, 3.4, 10.6);
+camera.lookAt(0.25, 1.85, 0);
+renderer.render(scene, camera);
+const picture = pack(renderer.domElement, { crop: true, pad: 8 });
+window.pictures = async () => [{ file: "event/turkey.webp", data: picture }];
+</script>
+</body></html>

@@ -1,0 +1,114 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head><body>
+<script type="module">
+// The pictures on the hunt's three tab cards: a gift popping open for the
+// calendar, a pile of cases for the leaf shop, and a gold cup for the
+// hunters' board, each on a see-through floor that keeps its shadow.
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { buildCase, leaf, coin, giftBox, trophy, LEAF_COLORS, seeded } from "./objects.js";
+import { pack } from "./pack.js";
+
+const W = 1100, H = 900;
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const envTex = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+
+function stage() {
+  const scene = new THREE.Scene();
+  scene.environment = envTex;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.42 }));
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true;
+  scene.add(ground);
+  scene.add(new THREE.HemisphereLight(0xfff2e2, 0x1e1626, 0.55));
+  const key = new THREE.DirectionalLight(0xfff0dc, 2.4);
+  key.position.set(-3.5, 9, 6); key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 });
+  key.shadow.radius = 8; key.shadow.bias = -0.0004;
+  scene.add(key);
+  const rim = new THREE.DirectionalLight(0xffc98f, 1.3);
+  rim.position.set(6, 3, -5);
+  scene.add(rim);
+  return scene;
+}
+
+const SCENES = {
+  shop(scene, camera) {
+    const a = buildCase("maple-grove"); a.position.set(-1.0, 0, 0.7); a.rotation.y = -0.5;
+    const b = buildCase("cranberry-bog"); b.position.set(2.2, 0, -0.7); b.rotation.y = -0.95;
+    const c = buildCase("pumpkin-patch"); c.position.set(-0.85, 1.56, 0.55); c.rotation.set(0, -0.18, 0.0);
+    scene.add(a, b, c);
+    const rand = seeded(11);
+    for (const [x, z, s] of [[2.8, 1.9, 0.62], [-3.1, 1.6, 0.55], [0.9, 2.4, 0.5]]) {
+      const l = leaf(s, LEAF_COLORS[Math.floor(rand() * 5)]);
+      l.rotation.set(-Math.PI / 2, 0, rand() * 6.28); l.position.set(x, 0.03, z);
+      scene.add(l);
+    }
+    const f = leaf(0.6, 0xe8a23a); f.position.set(2.4, 3.3, 0.6); f.rotation.set(0.6, 0.4, 0.9); scene.add(f);
+    camera.position.set(4.2, 6.2, 12.5);
+    camera.lookAt(0.45, 1.45, 0);
+  },
+  calendar(scene, camera) {
+    const box = giftBox({ color: 0xd4652a, lidAt: [0.25, 3.15, 0.1], lidTurn: [0.32, 0.2, 0.26] });
+    box.rotation.y = -0.5;
+    scene.add(box);
+    // leaves and coins flying up out of it, placed by hand so none hide
+    const rand = seeded(21);
+    const bits = [
+      ["leaf", -1.75, 2.55, 0.5, 0.95, 0xe0662b], ["leaf", -1.25, 3.75, -0.3, 0.8, 0xe8a23a], ["leaf", 1.85, 2.25, 0.6, 0.9, 0xc9452a],
+      ["leaf", 1.65, 3.95, -0.5, 0.75, 0xf0b54a], ["leaf", -0.55, 2.2, 1.15, 0.85, 0xb8341f], ["leaf", 0.95, 2.0, 1.05, 0.72, 0xe0662b],
+      ["coin", -1.0, 3.05, 0.95, 0.24], ["coin", 1.25, 2.95, 1.0, 0.22], ["coin", 0.3, 2.5, 1.5, 0.2],
+    ];
+    for (const [kind, x, y, z, size, color] of bits) {
+      const o = kind === "leaf" ? leaf(size, color) : coin(size);
+      o.position.set(x, y, z);
+      // leaves turned mostly to face the camera, spun in their own plane;
+      // coins tipped up so their faces show
+      if (kind === "leaf") o.rotation.set(rand() * 0.9 - 0.75, rand() * 1.0 - 0.2, rand() * 6.28);
+      else o.rotation.set(1.0 + rand() * 0.5, rand() * 6.28, rand() * 0.6 - 0.3);
+      scene.add(o);
+    }
+    camera.position.set(3.2, 5.0, 11.4);
+    camera.lookAt(0, 2.0, 0);
+    const pop = new THREE.PointLight(0xffd9a0, 6, 6, 1.5); pop.position.set(0, 2.3, 0.4); scene.add(pop);
+  },
+  board(scene, camera) {
+    const t = trophy(); t.rotation.y = -0.35;
+    scene.add(t);
+    const rand = seeded(31);
+    for (const [x, z, y] of [[1.5, 1.2, 0], [1.85, 0.5, 0], [-1.6, 1.1, 0], [1.62, 1.0, 0.09]]) {
+      const c = coin(0.32); c.position.set(x, 0.035 + y, z); c.rotation.set(rand() * 0.2, rand() * 6, rand() * 0.2); scene.add(c);
+    }
+    const l = leaf(0.62, 0xe0662b); l.rotation.set(-Math.PI / 2, 0, 0.8); l.position.set(-1.2, 0.03, 1.8); scene.add(l);
+    const f = leaf(0.55, 0xc9452a); f.position.set(-1.7, 3.6, 0.2); f.rotation.set(0.5, 0.6, 2.2); scene.add(f);
+    camera.position.set(3.0, 4.6, 10.6);
+    camera.lookAt(0, 1.95, 0);
+    const spec = new THREE.PointLight(0xfff1d6, 30, 20, 1.6); spec.position.set(2.5, 4.5, 5); scene.add(spec);
+  },
+};
+
+window.pictures = async () => {
+  // the case pile's name plates are lettered in Saira Condensed
+  document.fonts.add(await new FontFace("Saira Condensed", "url(saira-cond-800.woff2)", { weight: "800" }).load());
+  return Object.keys(SCENES).map((name) => {
+    const scene = stage();
+    const camera = new THREE.PerspectiveCamera(30, W / H, 0.1, 100);
+    SCENES[name](scene, camera);
+    renderer.render(scene, camera);
+    return { file: `event/tab-${name}.webp`, data: pack(renderer.domElement, { crop: true, pad: 10, height: 330 }) };
+  });
+};
+</script>
+</body></html>
