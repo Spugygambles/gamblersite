@@ -107,6 +107,60 @@ export const SAMPLE_DROPS: Drop[] = [
   { weapon: "Desert Eagle", skin: "Printstream", price: 47.5, rarity: "covert", from: "music-box" },
 ];
 
+// ---- Live bets ------------------------------------------------------------
+
+export type Bet = {
+  id: number;
+  /** The game's slug, from GAMES. */
+  game: string;
+  /** Null for a player who hides their name. */
+  player: string | null;
+  wager: number;
+  /** What the wager was multiplied by: 0 for a loss. */
+  multiplier: number;
+};
+
+export const BET_PLAYERS = [
+  "kyro", "MaxiM", "nova", "deadeye", "Spl1t", "frostbyte", "lunar", "zenn", "Obi", "vexx",
+  "tiko", "rook", "ghostR", "mira", "jaxx", "Pele", "sk8r", "dusk", "Wren", "hydra",
+];
+
+const WAGERS = [0.25, 0.5, 1, 2, 2.5, 5, 10, 12.5, 20, 25, 50, 100, 250];
+
+/**
+ * A bet, from a source of random numbers between 0 and 1: about four in ten
+ * lose, most wins are small, and a few are big. A case always pays out
+ * something, so a losing case is worth less than it cost rather than
+ * nothing.
+ */
+export function makeBet(id: number, random: () => number): Bet {
+  const game = GAMES[Math.floor(random() * GAMES.length)].slug;
+  const player = random() < 0.15 ? null : BET_PLAYERS[Math.floor(random() * BET_PLAYERS.length)];
+  const wager = WAGERS[Math.floor(random() * WAGERS.length)];
+  const r = random();
+  let multiplier = r < 0.42 ? 0 : r < 0.82 ? 1.1 + random() * 1.9 : r < 0.95 ? 3 + random() * 17 : 20 + random() * 280;
+  if (multiplier === 0 && game === "cases") multiplier = 0.1 + random() * 0.8;
+  return { id, game, player, wager, multiplier: Math.round(multiplier * 100) / 100 };
+}
+
+// Small deterministic random numbers, so the sample bets are the same on the
+// server and the client.
+function seeded(seed: number) {
+  let s = (seed * 2654435761) >>> 0 || 1;
+  return () => {
+    s ^= s << 13;
+    s ^= s >>> 17;
+    s ^= s << 5;
+    return ((s >>> 0) % 100000) / 100000;
+  };
+}
+
+/** The latest bets, newest first, until the table is wired to the server. */
+export const SAMPLE_BETS: Bet[] = (() => {
+  const random = seeded(7);
+  return Array.from({ length: 120 }, (_, i) => makeBet(120 - i, random));
+})();
+
 export const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 
 export const count = new Intl.NumberFormat("en-US");

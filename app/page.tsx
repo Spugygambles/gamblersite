@@ -5,6 +5,7 @@ import ChatPanel from "@/components/home/ChatPanel";
 import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
+import LiveBets from "@/components/home/LiveBets";
 import Sidebar from "@/components/home/Sidebar";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
@@ -46,6 +47,13 @@ export default function Home() {
             <span className={styles.count}>{GAMES.length}</span>
           </SectionHead>
           <GameModes />
+        </section>
+
+        <section className={styles.section} aria-labelledby="bets">
+          <h2 id="bets" className="sr-only">
+            Live bets
+          </h2>
+          <LiveBets />
         </section>
       </div>
       <SiteFooter />

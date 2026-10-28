@@ -8,6 +8,10 @@
   const sibling = (cls, name) => cls.replace(/__[^_]+$/, `__${name}`);
   const classOf = (el, suffix) => [...el.classList].find((c) => c.endsWith(`__${suffix}`));
 
+  // Each player's colour behind their initial (components/home/avatar.ts).
+  const AVATARS = ["#56649e", "#4c8068", "#a06a4a", "#7a5d96", "#4a7a8c", "#937c46", "#9a5060"];
+  const avatarOf = (name) => AVATARS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % AVATARS.length];
+
   // ---- Banner art: plays as the page loads and again on each hover, like
   // components/useBannerPlay.ts. Lengths match each art's play time.
   const PLAY_MS = {
@@ -192,8 +196,6 @@
     const input = form.querySelector("input");
     const send = form.querySelector('button[type="submit"]');
     log.scrollTop = log.scrollHeight;
-    const AVATARS = ["#56649e", "#4c8068", "#a06a4a", "#7a5d96", "#4a7a8c", "#937c46", "#9a5060"];
-    const avatarOf = (name) => AVATARS[[...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % AVATARS.length];
     const tierOf = (level) => (level >= 80 ? "gold" : level >= 50 ? "purple" : level >= 20 ? "blue" : "");
     // The player, as the header shows them ("Account, level 70").
     const account = document.querySelector('header button[aria-label^="Account"]');
@@ -222,6 +224,116 @@
       input.value = "";
       send.disabled = true;
     });
+  }
+
+  // ---- Live bets (components/home/LiveBets.tsx): a new bet every couple of
+  // seconds, tabs for the big and lucky wins, and how many rows to show.
+  // The sample bets come from the same seeded numbers as lib/home.ts, so the
+  // table starts as the site drew it.
+  const betTable = document.querySelector("main table");
+  if (betTable) {
+    const cls = (name) => sibling(classOf(betTable, "table"), name);
+    const tbody = betTable.tBodies[0];
+    const template = tbody.rows[0].cloneNode(true);
+    const GAMES = ["case-battles", "cases", "upgrader", "mines", "keno", "crash", "limbo", "coinflip", "blackjack"];
+    const NAMES = {
+      "case-battles": "Case Battles",
+      cases: "Cases",
+      upgrader: "Upgrader",
+      mines: "Mines",
+      keno: "Keno",
+      crash: "Crash",
+      limbo: "Limbo",
+      coinflip: "Coinflip",
+      blackjack: "Blackjack",
+    };
+    const PLAYERS = [
+      "kyro", "MaxiM", "nova", "deadeye", "Spl1t", "frostbyte", "lunar", "zenn", "Obi", "vexx",
+      "tiko", "rook", "ghostR", "mira", "jaxx", "Pele", "sk8r", "dusk", "Wren", "hydra",
+    ];
+    const WAGERS = [0.25, 0.5, 1, 2, 2.5, 5, 10, 12.5, 20, 25, 50, 100, 250];
+    const makeBet = (id, random) => {
+      const game = GAMES[Math.floor(random() * GAMES.length)];
+      const player = random() < 0.15 ? null : PLAYERS[Math.floor(random() * PLAYERS.length)];
+      const wager = WAGERS[Math.floor(random() * WAGERS.length)];
+      const r = random();
+      let multiplier = r < 0.42 ? 0 : r < 0.82 ? 1.1 + random() * 1.9 : r < 0.95 ? 3 + random() * 17 : 20 + random() * 280;
+      if (multiplier === 0 && game === "cases") multiplier = 0.1 + random() * 0.8;
+      return { id, game, player, wager, multiplier: Math.round(multiplier * 100) / 100 };
+    };
+    const seeded = (seed) => {
+      let s = (seed * 2654435761) >>> 0 || 1;
+      return () => {
+        s ^= s << 13;
+        s ^= s >>> 17;
+        s ^= s << 5;
+        return ((s >>> 0) % 100000) / 100000;
+      };
+    };
+    const random = seeded(7);
+    const bets = Array.from({ length: 120 }, (_, i) => makeBet(120 - i, random));
+    const newestSample = bets[0].id;
+    const SHOWS = {
+      all: () => true,
+      big: (b) => b.multiplier >= 1 && b.wager * b.multiplier >= 100,
+      lucky: (b) => b.multiplier >= 10,
+    };
+    const TAB_IDS = ["all", "big", "lucky"];
+    let tab = "all";
+    let rows = 10;
+    const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const setAmount = (cell, value) => {
+      cell.querySelector("span").lastChild.textContent = money.format(value);
+    };
+    const rowFor = (b) => {
+      const tr = template.cloneNode(true);
+      const [game, player, wager, mult, payout] = tr.cells;
+      const won = b.multiplier >= 1;
+      tr.classList.toggle(cls("fresh"), b.id > newestSample);
+      // The game's icon, borrowed from the menu.
+      const icon = document.querySelector(`[data-shell-part="sidebar"] a[href="/${b.game}"] svg`);
+      const gameSpan = game.querySelector("span");
+      gameSpan.firstElementChild.replaceWith(icon.cloneNode(true));
+      gameSpan.lastElementChild.textContent = NAMES[b.game];
+      const [avatar, name] = player.querySelector("span").children;
+      avatar.textContent = b.player ? b.player[0].toUpperCase() : "?";
+      avatar.style.background = b.player ? avatarOf(b.player) : "";
+      name.textContent = b.player || "Hidden";
+      name.classList.toggle(cls("hidden"), !b.player);
+      setAmount(wager, b.wager);
+      const chip = mult.querySelector("span");
+      chip.textContent = `${b.multiplier.toFixed(2)}×`;
+      chip.classList.toggle(cls("up"), won);
+      payout.classList.toggle(cls("win"), won);
+      payout.classList.toggle(cls("loss"), !won);
+      setAmount(payout, b.wager * b.multiplier);
+      return tr;
+    };
+    const render = () => tbody.replaceChildren(...bets.filter(SHOWS[tab]).slice(0, rows).map(rowFor));
+
+    const tabs = [...document.querySelectorAll('[role="tablist"] [role="tab"]')];
+    tabs.forEach((button, i) =>
+      button.addEventListener("click", () => {
+        tab = TAB_IDS[i];
+        tabs.forEach((t) => t.setAttribute("aria-selected", String(t === button)));
+        render();
+      }),
+    );
+    const select = betTable.parentElement.querySelector("select");
+    if (select) {
+      select.addEventListener("change", () => {
+        rows = Number(select.value);
+        render();
+      });
+    }
+    let nextId = newestSample;
+    setInterval(() => {
+      nextId += 1;
+      const bet = makeBet(nextId, Math.random);
+      bets.unshift(bet);
+      if (bets.length > 200) bets.pop();
+      if (SHOWS[tab](bet)) render();
+    }, 2200);
   }
 
   // ---- Links: only the homepage exists so far, so the rest say so

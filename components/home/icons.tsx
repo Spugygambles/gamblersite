@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 import { CLAW_MARKS } from "@/lib/claw";
 
 type IconProps = SVGProps<SVGSVGElement>;
@@ -196,6 +196,19 @@ export const HeadsetIcon = (p: IconProps) => (
     <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M18.7 19.4c0 1.3-1.6 2-4.2 2" />
   </svg>
 );
+
+/** Each game's menu icon, by its slug. */
+export const GAME_ICONS: Record<string, ComponentType<IconProps>> = {
+  "case-battles": SwordsIcon,
+  cases: CaseIcon,
+  upgrader: UpgradeIcon,
+  mines: BombIcon,
+  keno: KenoIcon,
+  crash: RocketIcon,
+  limbo: TargetIcon,
+  coinflip: CoinflipIcon,
+  blackjack: CardsIcon,
+};
 
 // Line icons for the header and chat: 24px, drawn in the current colour.
 function Line({ children, ...props }: IconProps) {

@@ -61,8 +61,8 @@
 }
 
 .featureTitle {
-  font: italic 900 29px/1 var(--font-ui), sans-serif;
-  letter-spacing: -0.01em;
+  font: 800 29px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -143,18 +143,19 @@
   min-width: 0;
 }
 
+/* Tall cards: the art in the upper half, the title at the foot. */
 .tile {
   display: block;
-  aspect-ratio: 5 / 6;
+  aspect-ratio: 2 / 3;
   border-radius: 10px;
 }
 
 .tileArt {
   position: absolute;
-  top: calc(var(--art-y) * 0.8);
+  top: calc(var(--art-y) * 0.86);
   left: 50%;
   z-index: 1;
-  width: var(--art-size);
+  width: calc(var(--art-size) * 1.08);
   aspect-ratio: 1;
   translate: -50% -50%;
   transition: scale 0.3s ease;
@@ -168,11 +169,11 @@
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 13px;
+  bottom: 18px;
   z-index: 2;
   overflow: hidden;
-  font: italic 900 15px/1.1 var(--font-ui), sans-serif;
-  letter-spacing: 0.01em;
+  font: 800 15px/1.1 var(--font-ui), sans-serif;
+  letter-spacing: 0.02em;
   text-align: center;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -320,10 +321,24 @@
   }
 }
 
-/* Short screens: slimmer banners, so every game still fits. */
+/* Short screens: slimmer banners and squarer cards, so every game still
+   fits. */
 @media (max-height: 720px) {
   .feature {
     min-height: 172px;
+  }
+
+  .tile {
+    aspect-ratio: 5 / 6;
+  }
+
+  .tileArt {
+    top: calc(var(--art-y) * 0.8);
+    width: var(--art-size);
+  }
+
+  .tileTitle {
+    bottom: 13px;
   }
 }
 
