@@ -193,7 +193,7 @@
       setInterval(showClock, 1000);
     }
 
-    const join = [...chat.querySelectorAll("button")].find((b) => b.textContent.trim() === "Join");
+    const join = chat.querySelector("[data-rain-join]");
     if (join) {
       join.addEventListener("click", () => {
         join.disabled = true;

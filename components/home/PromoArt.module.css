@@ -34,9 +34,30 @@
   }
 }
 
+/* Chat's rain: coins falling from the cloud, each at its own point in the
+   fall. Standing still, they rest at their own height. */
+.drop {
+  translate: 0 var(--rest, 0px);
+  animation: drop 2.4s linear infinite;
+}
+
+@keyframes drop {
+  from {
+    translate: 0 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  to {
+    translate: 0 64px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .bob,
-  .fan {
+  .fan,
+  .drop {
     animation: none;
   }
 }

@@ -74,75 +74,81 @@
 
 /* ---- Rain -------------------------------------------------------------- */
 
+/* A card like the promotions': the pot, a button to join and the time left
+   on the left, and a cloud raining coins on an angled panel on the right. */
 .rain {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
-  align-items: center;
-  gap: 5px 12px;
+  position: relative;
   flex-shrink: 0;
+  height: 104px;
   margin: 12px 12px 4px;
-  padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
+}
+
+.rainBg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--edge);
 }
 
-.rainIcon {
-  display: grid;
-  place-items: center;
-  grid-row: span 2;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background: var(--surface-2);
-  color: var(--brand);
+.rainPanel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 132px;
+  background: #233a5e;
+  clip-path: polygon(28px 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.rainIcon svg {
-  width: 22px;
-  height: 22px;
+/* The coins fall out of sight past the card's bottom edge. */
+.rainArt {
+  position: absolute;
+  top: 0;
+  right: 2px;
+  width: 112px;
+  height: 104px;
 }
 
-.rainLabel {
-  align-self: end;
-  color: var(--text-muted);
-  font: 600 11px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.08em;
+.rainCopy {
+  position: absolute;
+  inset: 0 auto 0 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.rainTitle {
+  margin: 0;
+  color: var(--text);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.rainRow {
+.pot {
+  margin-top: 6px;
+  color: var(--text);
+  font: 800 22px/1 var(--font-ui), sans-serif;
+}
+
+.rainFoot {
   display: flex;
   align-items: center;
-  gap: 8px;
-  align-self: start;
-}
-
-.pot {
-  color: var(--text);
-  font: 700 17px/1 var(--font-ui), sans-serif;
-}
-
-/* Time to the next rain. */
-.rainTime {
-  padding: 3px 6px;
-  border-radius: 4px;
-  background: var(--surface-2);
-  color: var(--text-soft);
-  font: 600 11.5px/1 var(--font-ui), sans-serif;
+  gap: 9px;
+  margin-top: 11px;
 }
 
 .join {
-  grid-row: 1 / span 2;
-  grid-column: 3;
-  height: 34px;
-  padding: 0 16px;
+  height: 28px;
+  padding: 0 12px;
   border: 0;
   border-radius: 6px;
   background: var(--brand);
   color: var(--on-brand);
-  font: 700 13px/1 var(--font-ui), sans-serif;
+  font: 700 12px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -152,9 +158,26 @@
 }
 
 .join:disabled {
-  background: var(--surface-2);
+  background: var(--surface-3);
   color: var(--text-soft);
   cursor: default;
+}
+
+/* Time to the next rain. */
+.rainTime {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-soft);
+  font: 600 11.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.rainTime svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--brand);
 }
 
 /* ---- Messages ---------------------------------------------------------- */
@@ -168,14 +191,10 @@
   scrollbar-color: var(--surface-3) transparent;
 }
 
+/* From the top, straight under the rain. */
 .messages {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: 100%;
   margin: 0;
   padding: 8px 0;
-  box-sizing: border-box;
   list-style: none;
 }
 

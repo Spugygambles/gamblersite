@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CHAT_SAMPLE, PLAYER, RAIN_POT, usd, type ChatMessage } from "@/lib/home";
 import { avatarOf } from "./avatar";
-import { CloseIcon, LeafIcon, RainIcon, SendIcon } from "./icons";
+import { ClockIcon, CloseIcon, LeafIcon, RainIcon, SendIcon } from "./icons";
+import { RainArt } from "./PromoArt";
 import { nextRain } from "./useCountdown";
 import { useOnlineCount } from "./useOnlineCount";
 import styles from "./ChatPanel.module.css";
@@ -29,8 +30,10 @@ const tierOf = (level: number) => (level >= 80 ? styles.gold : level >= 50 ? sty
 
 /**
  * Chat down the right, with the rain on top: a pot shared between the
- * players who join before it falls. Messages you send show up straight
- * away; they stay on this device until chat is wired to the server.
+ * players who join before it falls, on a card like the promotions'. The
+ * messages run from the top, newest at the bottom. Messages you send show
+ * up straight away; they stay on this device until chat is wired to the
+ * server.
  */
 export default function ChatPanel() {
   const online = useOnlineCount();
@@ -70,20 +73,26 @@ export default function ChatPanel() {
       </div>
 
       <div className={styles.rain}>
-        <span className={styles.rainIcon} aria-hidden>
-          <RainIcon />
-        </span>
-        <span className={styles.rainLabel}>Rain</span>
-        <span className={styles.rainRow}>
-          <span className={`${styles.pot} tabular`}>{usd.format(RAIN_POT)}</span>
-          <span className={`${styles.rainTime} tabular`} data-rain-clock>
-            <span className="sr-only">Falls in </span>
-            <RainClock />
+        <span className={styles.rainBg} aria-hidden>
+          <span className={styles.rainPanel} />
+          <span className={styles.rainArt}>
+            <RainArt />
           </span>
         </span>
-        <button type="button" className={styles.join} disabled={joined} onClick={() => setJoined(true)}>
-          {joined ? "Joined" : "Join"}
-        </button>
+        <div className={styles.rainCopy}>
+          <h3 className={styles.rainTitle}>Rain</h3>
+          <span className={`${styles.pot} tabular`}>{usd.format(RAIN_POT)}</span>
+          <span className={styles.rainFoot}>
+            <button type="button" className={styles.join} disabled={joined} onClick={() => setJoined(true)} data-rain-join>
+              {joined ? "Joined" : "Join rain"}
+            </button>
+            <span className={`${styles.rainTime} tabular`} data-rain-clock>
+              <ClockIcon />
+              <span className="sr-only">Falls in </span>
+              <RainClock />
+            </span>
+          </span>
+        </div>
       </div>
 
       <div ref={logRef} className={styles.log} role="log" aria-label="Messages">

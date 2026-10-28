@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { MAPLE_LEAF } from "./icons";
 import styles from "./PromoArt.module.css";
 
@@ -128,6 +129,52 @@ export function CaseArt() {
         <path d={loops} fill={ORANGE} {...ink} />
         <path d="M72 42c-7-8-20-12-24-7M78 42c7-8 20-12 24-7" fill="none" stroke="#b55f2c" strokeWidth="3" strokeLinecap="round" />
         <rect x="69" y="38" width="12" height="12" rx="4" fill="#b55f2c" {...ink} />
+      </g>
+    </svg>
+  );
+}
+
+// Chat's rain: a cloud raining coins. Each coin falls from behind the cloud
+// and out past the bottom of the card; standing still, they hang at
+// different heights under it.
+const DROPS = [
+  { x: 38, tilt: -20, rest: 18, delay: 0 },
+  { x: 76, tilt: 24, rest: 10, delay: -0.6 },
+  { x: 57, tilt: 10, rest: 30, delay: -1.2 },
+  { x: 92, tilt: -14, rest: 36, delay: -1.8 },
+];
+
+export function RainArt() {
+  const bumps = [
+    { cx: 34, cy: 44, r: 11 },
+    { cx: 51, cy: 34, r: 15 },
+    { cx: 71, cy: 31, r: 17 },
+    { cx: 89, cy: 43, r: 12 },
+  ];
+  // The cloud's outline goes round all its bumps at once: each bump drawn
+  // a size up in the line colour, then all of them filled over the top.
+  const cloud = (grow: number, fill: string) => (
+    <>
+      {bumps.map((b) => (
+        <circle key={b.cx} cx={b.cx} cy={b.cy} r={b.r + grow} fill={fill} />
+      ))}
+      <rect x={23 - grow} y={40 - grow} width={78 + 2 * grow} height={18 + 2 * grow} rx={9 + grow} fill={fill} />
+    </>
+  );
+  return (
+    <svg className={styles.scene} viewBox="0 0 112 104" aria-hidden>
+      {DROPS.map((d) => (
+        <g key={d.x} className={styles.drop} style={{ "--rest": `${d.rest}px`, animationDelay: `${d.delay}s` } as CSSProperties}>
+          <g transform={`rotate(${d.tilt} ${d.x} 52)`}>
+            <ellipse cx={d.x} cy="52" rx="6.5" ry="8.5" fill={GOLD} stroke={LINE} strokeWidth="2.6" paintOrder="stroke" />
+            <ellipse cx={d.x} cy="52" rx="2.8" ry="4.6" fill="none" stroke={GOLD_DARK} strokeWidth="1.8" />
+          </g>
+        </g>
+      ))}
+      <g className={styles.bob}>
+        {cloud(1.7, LINE)}
+        {cloud(0, "#eef2fb")}
+        <path d="M31 52.5h62" stroke="#cdd6ec" strokeWidth="6" strokeLinecap="round" />
       </g>
     </svg>
   );
