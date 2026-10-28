@@ -1,12 +1,13 @@
 /*
- * The promotions strip over the games: compact cards, each with its
- * drawing in a small well of muted colour, a label, the title and the time
- * left. The whole card is the link. Four across when there's room, two
- * when there's less, and a row you swipe through on a phone.
+ * The promotions strip over the games: four banners, each with a bold
+ * title, a line about it, a button and the time left, and its art on an
+ * angled panel of the promo's colour, breaking out over the top edge. The
+ * whole banner is the link. Four across when there's room, two when
+ * there's less, and a row you swipe through on a phone.
  */
 
 .strip {
-  container-type: inline-size;
+  container: strip / inline-size;
 }
 
 .row {
@@ -15,86 +16,117 @@
   gap: 12px;
 }
 
-.card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+.banner {
+  /* How tall the banner is, how far its art reaches over the top, and how
+     wide the art is: what the words leave, up to a point. */
+  --h: 112px;
+  --lift: 22px;
+  --art-w: min(100% - 192px, 152px);
+  container: banner / inline-size;
+  position: relative;
+  display: block;
   min-width: 0;
-  height: 96px;
-  padding: 10px 12px 10px 10px;
-  border-radius: 10px;
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--edge);
-  box-sizing: border-box;
+  height: var(--h);
+  border-radius: 12px;
   color: var(--text);
   text-decoration: none;
-  transition: background-color 0.15s ease;
 }
 
-.card:hover {
-  background: var(--surface-2);
-}
-
-.card:focus-visible {
+.banner:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
 
-/* The drawing's square. */
-.well {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 76px;
-  height: 76px;
+/* The card, with the panel cut in at an angle on the right. */
+.bg {
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  border-radius: 8px;
-  background: var(--well, var(--surface-3));
+  border-radius: inherit;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  transition: background-color 0.15s ease;
 }
 
-.well svg {
-  width: 90%;
-  height: 90%;
+.banner:hover .bg {
+  background: var(--surface-2);
 }
 
-.daily {
-  width: 64px;
-  height: 64px;
-  object-fit: contain;
+.panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: calc(var(--art-w) + 18px);
+  background: var(--panel);
+  clip-path: polygon(30px 0, 100% 0, 100% 100%, 0 100%);
 }
 
-.body {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
+.copy {
+  position: absolute;
+  inset: 0 auto 0 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: calc(100% - var(--art-w) - 14px);
 }
 
-.kicker,
 .title,
+.line,
 .timer {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.kicker {
-  color: var(--text-muted);
-  font: 600 10.5px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.08em;
+.title {
+  font: 800 19px/1.05 var(--font-ui), sans-serif;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
 }
 
-.title {
-  font: 700 16px/1.15 var(--font-ui), sans-serif;
-  letter-spacing: -0.005em;
+.line {
+  margin-top: 6px;
+  color: var(--text-soft);
+  font: 500 12.5px/1.3 var(--font-ui), sans-serif;
+}
+
+/* The button and, beside it, the time left. */
+.foot {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  margin-top: 12px;
+}
+
+.button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 6px;
+  background: var(--surface-3);
+  font: 700 12px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.banner:hover .button {
+  background: var(--brand);
+  color: var(--on-brand);
 }
 
 .timer {
   display: flex;
   align-items: center;
   gap: 5px;
+  min-width: 0;
   color: var(--text-soft);
-  font: 500 12px/1 var(--font-ui), sans-serif;
+  font: 600 11.5px/1 var(--font-ui), sans-serif;
 }
 
 .timer svg {
@@ -104,127 +136,89 @@
   color: var(--brand);
 }
 
-/* Progress to the next level, on the rewards card. */
-.level {
+.ready {
+  color: var(--live);
+  font: 600 11.5px/1 var(--font-ui), sans-serif;
+}
+
+/* The art stands on the panel and reaches over the banner's top edge. */
+.art {
+  --art-h: calc(var(--h) + var(--lift) - 2px);
+  position: absolute;
+  right: 6px;
+  bottom: 2px;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-soft);
-  font: 500 12px/1 var(--font-ui), sans-serif;
+  align-items: flex-end;
+  justify-content: center;
+  width: var(--art-w);
+  height: var(--art-h);
+  pointer-events: none;
+  transition: translate 0.2s ease;
 }
 
-.bar {
-  flex: 1;
-  height: 5px;
-  overflow: hidden;
-  border-radius: 3px;
-  background: var(--track);
+.banner:hover .art {
+  translate: 0 -3px;
 }
 
-.bar span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--brand);
-}
-
-/* An arrow at the end says the card goes somewhere. */
-.go {
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  margin-left: auto;
-  color: var(--text-muted);
-  transition:
-    color 0.15s ease,
-    translate 0.15s ease;
-}
-
-.card:hover .go {
-  color: var(--text);
-  translate: 2px 0;
-}
-
-/* Four narrow cards: the arrow makes way for the title. */
-@container (max-width: 1199px) {
-  .go {
-    display: none;
-  }
-
-  .title {
-    font-size: 15px;
-  }
-}
-
-/* Narrower still: a smaller well and type, so the words fit. */
-@container (max-width: 1099px) {
-  .card {
-    gap: 12px;
-  }
-
-  .well {
-    width: 62px;
-    height: 62px;
-  }
-
-  .daily {
-    width: 52px;
-    height: 52px;
-  }
-
-  .kicker {
-    font-size: 10px;
-    letter-spacing: 0.05em;
-  }
-
-  .title {
-    font-size: 14.5px;
-  }
-}
-
-/* Less room: two across, with the arrow, well and type back to size. */
-@container (max-width: 959px) {
-  .card {
-    gap: 14px;
-  }
-
-  .well {
-    width: 76px;
-    height: 76px;
-  }
-
-  .daily {
-    width: 64px;
-    height: 64px;
-  }
-
-  .kicker {
-    font-size: 10.5px;
-    letter-spacing: 0.08em;
+/* A narrow banner: no line, and the time left over the button, so the art
+   keeps its room. */
+@container banner (max-width: 309px) {
+  .bg,
+  .copy,
+  .art {
+    --art-w: min(100% - 146px, 140px);
   }
 
   .title {
     font-size: 16px;
   }
 
-  .go {
-    display: block;
+  .line {
+    display: none;
   }
 
-  .row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+  .foot {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 9px;
+    margin-top: 9px;
+  }
+
+  .button {
+    height: 26px;
+    padding: 0 11px;
+    font-size: 11.5px;
   }
 }
 
-/* Phones: one row you swipe through, running out to the page's edges. */
-@container (max-width: 599px) {
+/* Four narrow banners: a little shorter. */
+@container strip (max-width: 1235px) {
+  .banner {
+    --h: 104px;
+  }
+}
+
+/* Less room: two across, with room between the rows for the art. */
+@container strip (max-width: 959px) {
+  .row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 12px;
+  }
+
+  .banner {
+    --h: 112px;
+  }
+}
+
+/* Phones: one row you swipe through, running out to the page's edges, with
+   room over it for the art. */
+@container strip (max-width: 599px) {
   .row {
     grid-template-columns: none;
-    grid-auto-columns: 84%;
+    grid-auto-columns: min(86%, 340px);
     grid-auto-flow: column;
-    margin-inline: calc(-1 * var(--gutter, 16px));
-    padding-inline: var(--gutter, 16px);
+    margin: -24px calc(-1 * var(--gutter, 16px)) 0;
+    padding: 24px var(--gutter, 16px) 0;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-padding-inline: var(--gutter, 16px);
@@ -236,41 +230,49 @@
     display: none;
   }
 
-  .card {
+  .banner {
     scroll-snap-align: start;
   }
 }
 
-/* Short screens: slimmer cards, so the games still all fit. */
+/* Short screens: slimmer banners with just the title, the button and the
+   time, so the games still all fit. */
 @media (max-height: 720px) {
-  .card {
-    height: 74px;
-    gap: 12px;
-    padding: 8px 12px 8px 8px;
+  .banner {
+    --h: 86px;
+    --lift: 12px;
   }
 
-  .well {
-    width: 58px;
-    height: 58px;
+  .title {
+    font-size: 16px;
   }
 
-  .daily {
-    width: 50px;
-    height: 50px;
-  }
-
-  .body {
-    gap: 5px;
-  }
-
-  .kicker {
+  .line {
     display: none;
+  }
+
+  .foot {
+    margin-top: 10px;
+  }
+
+  .button {
+    height: 25px;
+    padding: 0 10px;
+    font-size: 11.5px;
+  }
+
+  /* Narrow and short: just the title and the time left. */
+  @container banner (max-width: 309px) {
+    .button {
+      display: none;
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .go {
+  .bg,
+  .button,
+  .art {
     transition: none;
   }
 }

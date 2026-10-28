@@ -1,141 +1,134 @@
 import { MAPLE_LEAF } from "./icons";
 import styles from "./PromoArt.module.css";
 
-// Flat autumn scenes for the promo cards, drawn in a 180 x 160 box. Matte:
-// solid shapes in muted colours, no gradients or glows. Leaves sway, and the
-// turkey and the trophy bob a little.
+// Art for the promo banners, drawn as a set: cartoon style, flat colour
+// with a dark outline round every shape, each boxed tight so it fills the
+// space it's given. They all bob a little, and the turkey's tail opens and
+// closes.
 
-const GOLD = "#dba64a";
-const GOLD_DARK = "#c28f3a";
-const GOLD_SIDE = "#ad7e33";
-const ORANGE = "#d9773f";
+const LINE = "#170f1c";
+const GOLD = "#e3a845";
+const GOLD_DARK = "#c48a35";
 const RED = "#c2503e";
-const CREAM = "#f3e6d4";
-const BROWN = "#80553a";
-const BROWN_LIGHT = "#9c6d4b";
-const BROWN_DARK = "#644130";
+const ORANGE = "#d9773f";
+const CREAM = "#f6e9d6";
+const BROWN = "#7d5034";
 
-/** A maple leaf with its veins, centred on (x, y), turned and scaled. */
-function Leaf({ x, y, size = 1, turn = 0, fill, delay = 0 }: { x: number; y: number; size?: number; turn?: number; fill: string; delay?: number }) {
+// The outline, drawn behind each shape's fill.
+const ink = { stroke: LINE, strokeWidth: 3.4, paintOrder: "stroke", strokeLinejoin: "round" } as const;
+
+// The Turkey Hunt: a turkey with its tail fanned up behind it.
+export function TurkeyArt() {
+  const feathers = [RED, ORANGE, GOLD];
   return (
-    <g transform={`translate(${x} ${y}) rotate(${turn}) scale(${size}) translate(-50 -54)`}>
-      <g className={styles.sway} style={{ animationDelay: `${delay}s` }}>
-        <path d={MAPLE_LEAF} fill={fill} stroke={fill} strokeWidth="2" strokeLinejoin="round" />
-        <path
-          d="M50 88V30M50 60 70 44M50 60 30 44M50 70 66 66M50 70 34 66"
-          stroke="rgba(0,0,0,0.16)"
-          strokeWidth="2.4"
-          strokeLinecap="round"
-          fill="none"
-        />
+    <svg className={styles.scene} viewBox="14 10 152 150" preserveAspectRatio="xMidYMax meet" aria-hidden>
+      <g className={styles.bob}>
+        <g transform="translate(90 104) scale(0.8 1)">
+          <g className={styles.fan}>
+            {[-80, -60, -40, -20, 0, 20, 40, 60, 80].map((a, i) => (
+              <ellipse key={a} cy="-52" rx="15" ry="41" transform={`rotate(${a})`} fill={feathers[i % 3]} {...ink} />
+            ))}
+            {[-60, -40, -20, 0, 20, 40, 60].map((a, i) => (
+              <ellipse key={a} cy="-38" rx="11" ry="27" transform={`rotate(${a})`} fill={feathers[(i + 1) % 3]} {...ink} />
+            ))}
+            {[-40, -20, 0, 20, 40].map((a) => (
+              <ellipse key={a} cy="-27" rx="7.5" ry="17" transform={`rotate(${a})`} fill={CREAM} {...ink} />
+            ))}
+          </g>
+        </g>
+        <path d="M80 144v10m-6 0h12M100 144v10m-6 0h12" stroke={LINE} strokeWidth="7" strokeLinecap="round" />
+        <path d="M80 144v10m-6 0h12M100 144v10m-6 0h12" stroke={GOLD} strokeWidth="3.4" strokeLinecap="round" />
+        <ellipse cx="90" cy="116" rx="37" ry="34" fill={BROWN} {...ink} />
+        <ellipse cx="90" cy="124" rx="23" ry="22" fill="#9b6a46" />
+        <ellipse cx="59" cy="116" rx="12" ry="21" transform="rotate(18 59 116)" fill="#5f3d29" {...ink} />
+        <ellipse cx="121" cy="116" rx="12" ry="21" transform="rotate(-18 121 116)" fill="#5f3d29" {...ink} />
+        <circle cx="90" cy="76" r="18" fill={BROWN} {...ink} />
+        <circle cx="83" cy="72" r="5" fill="#fff" />
+        <circle cx="97" cy="72" r="5" fill="#fff" />
+        <circle cx="84.2" cy="73" r="2.6" fill={LINE} />
+        <circle cx="98.2" cy="73" r="2.6" fill={LINE} />
+        <path d="M84 80h12l-6 8.5Z" fill={GOLD} {...ink} />
+        <path d="M94 84c4 1 6 4.6 5.4 9.2-.5 3.8-5 4-6 .6-.8-2.8-.4-6.8.6-9.8Z" fill={RED} {...ink} />
       </g>
-    </g>
-  );
-}
-
-/** A flat coin lying down, its left edge at x and its bottom at y. */
-function Coin({ x, y }: { x: number; y: number }) {
-  const t = 9;
-  return (
-    <>
-      <path d={`M${x} ${y - t}V${y}A32 12 0 0 0 ${x + 64} ${y}V${y - t}A32 12 0 0 1 ${x} ${y - t}Z`} fill={GOLD_SIDE} />
-      <ellipse cx={x + 32} cy={y - t} rx="32" ry="12" fill={GOLD} />
-      <ellipse cx={x + 32} cy={y - t} rx="23" ry="8" fill="none" stroke={GOLD_DARK} strokeWidth="2.4" />
-    </>
-  );
-}
-
-function Scene({ children }: { children: React.ReactNode }) {
-  return (
-    <svg className={styles.scene} viewBox="0 0 180 160" aria-hidden>
-      {children}
     </svg>
   );
 }
 
-// The deposit bonus: two stacks of coins under falling leaves.
+// The race: a gold cup with a star.
+export function RaceArt() {
+  const handles = "M58 40H42c0 22 12 34 30 36M122 40h16c0 22-12 34-30 36";
+  return (
+    <svg className={styles.scene} viewBox="34 18 112 129" preserveAspectRatio="xMidYMax meet" aria-hidden>
+      <g className={styles.bob}>
+        <path d={handles} fill="none" stroke={LINE} strokeWidth="12" strokeLinecap="round" />
+        <path d={handles} fill="none" stroke={GOLD} strokeWidth="6" strokeLinecap="round" />
+        <path d="M56 22h68v34a34 34 0 0 1-68 0Z" fill={GOLD} {...ink} />
+        <path d="M104 22h20v34a34 34 0 0 1-30 33.8c6-9 10-28 10-67.8Z" fill={GOLD_DARK} />
+        <rect x="64" y="30" width="8" height="30" rx="4" fill="#f6d58c" />
+        <path d="m90 34 4.4 9 9.9 1.4-7.2 7 1.7 9.8L90 56.6l-8.8 4.6 1.7-9.8-7.2-7 9.9-1.4Z" fill="#fff6e3" {...ink} />
+        <path d="M82 92h16v18H82Z" fill={GOLD_DARK} {...ink} />
+      </g>
+      <path d="M64 110h52a6 6 0 0 1 6 6v14H58v-14a6 6 0 0 1 6-6Z" fill="#6b4630" {...ink} />
+      <path d="M72 118h36v6H72Z" fill={GOLD} />
+      <path d="M48 130h84a5 5 0 0 1 5 5v8H43v-8a5 5 0 0 1 5-5Z" fill="#4e3324" {...ink} />
+    </svg>
+  );
+}
+
+// One stack of coins, `n` high, centred on `x` with its bottom at `y`.
+function Stack({ x, y, n }: { x: number; y: number; n: number }) {
+  const rx = 22;
+  const ry = 7.5;
+  const top = y - n * 7.5;
+  const ridges = Array.from({ length: n - 1 }, (_, i) => `M${x - rx} ${y - (i + 1) * 7.5}a${rx} ${ry} 0 0 0 ${2 * rx} 0`);
+  return (
+    <>
+      <path d={`M${x - rx} ${top}V${y}a${rx} ${ry} 0 0 0 ${2 * rx} 0V${top}Z`} fill={GOLD_DARK} {...ink} />
+      <path d={ridges.join("")} fill="none" stroke={LINE} strokeWidth="2" />
+      <ellipse cx={x} cy={top} rx={rx} ry={ry} fill={GOLD} {...ink} />
+      <ellipse cx={x} cy={top} rx={rx - 6} ry={ry - 2.4} fill="none" stroke={GOLD_DARK} strokeWidth="2.4" />
+    </>
+  );
+}
+
+// The deposit bonus: stacks of gold coins, and one stood up in front with a
+// leaf on it.
 export function BonusArt() {
   return (
-    <Scene>
-      <Leaf x={124} y={56} size={0.95} turn={22} fill={RED} />
-      <Leaf x={70} y={50} size={0.8} turn={-28} fill={GOLD} delay={-1.2} />
-      {[0, 1, 2, 3, 4].map((i) => (
-        <Coin key={`a${i}`} x={30 + (i % 2) * 3} y={150 - i * 10} />
-      ))}
-      {[0, 1, 2].map((i) => (
-        <Coin key={`b${i}`} x={94 + (i % 2) * 2} y={150 - i * 10} />
-      ))}
-      <Leaf x={152} y={128} size={0.34} turn={40} fill={CREAM} delay={-0.6} />
-    </Scene>
-  );
-}
-
-// The Turkey Hunt: a turkey with its tail fanned out.
-export function TurkeyArt() {
-  const outer = [RED, ORANGE, GOLD];
-  return (
-    <Scene>
+    <svg className={styles.scene} viewBox="28 13 122 118" preserveAspectRatio="xMidYMax meet" aria-hidden>
       <g className={styles.bob}>
-        <g transform="translate(90 102)">
-          <g className={styles.fan}>
-            {[-80, -60, -40, -20, 0, 20, 40, 60, 80].map((a, i) => (
-              <ellipse key={a} cy="-52" rx="14" ry="40" transform={`rotate(${a})`} fill={outer[i % 3]} />
-            ))}
-            {[-60, -40, -20, 0, 20, 40, 60].map((a, i) => (
-              <ellipse key={a} cy="-38" rx="10" ry="27" transform={`rotate(${a})`} fill={outer[(i + 1) % 3]} />
-            ))}
-            {[-40, -20, 0, 20, 40].map((a) => (
-              <ellipse key={a} cy="-27" rx="7" ry="17" transform={`rotate(${a})`} fill={CREAM} />
-            ))}
-          </g>
+        <Stack x={92} y={92} n={9} />
+        <Stack x={54} y={102} n={4} />
+        <Stack x={76} y={120} n={2} />
+        <g transform="rotate(12 118 98)">
+          <ellipse cx="123" cy="98" rx="19" ry="24" fill={GOLD_DARK} {...ink} />
+          <ellipse cx="118" cy="98" rx="19" ry="24" fill={GOLD} {...ink} />
+          <ellipse cx="118" cy="98" rx="13" ry="17.5" fill="none" stroke={GOLD_DARK} strokeWidth="2.4" />
+          <path d={MAPLE_LEAF} transform="translate(108.5 88.5) scale(0.19)" fill={GOLD_DARK} />
+          <path d="M105.5 86.5a15 19 0 0 1 7-7" fill="none" stroke="#f6d58c" strokeWidth="3" strokeLinecap="round" />
         </g>
-        <ellipse cx="90" cy="114" rx="36" ry="33" fill={BROWN} />
-        <ellipse cx="90" cy="121" rx="23" ry="22" fill={BROWN_LIGHT} />
-        <ellipse cx="60" cy="114" rx="11" ry="20" transform="rotate(18 60 114)" fill={BROWN_DARK} />
-        <ellipse cx="120" cy="114" rx="11" ry="20" transform="rotate(-18 120 114)" fill={BROWN_DARK} />
-        <circle cx="90" cy="76" r="17" fill={BROWN} />
-        <circle cx="83.5" cy="72" r="4.6" fill="#fff" />
-        <circle cx="96.5" cy="72" r="4.6" fill="#fff" />
-        <circle cx="84.5" cy="73" r="2.3" fill="#2b1a0f" />
-        <circle cx="97.5" cy="73" r="2.3" fill="#2b1a0f" />
-        <path d="M84.5 79h11l-5.5 8Z" fill={GOLD} stroke={GOLD} strokeWidth="2" strokeLinejoin="round" />
-        <path d="M93 83c4 1 5.5 4.5 5 9-.4 3.6-4.6 3.8-5.6.6-.8-2.6-.4-6.6.6-9.6Z" fill={RED} />
       </g>
-      <path d="M80 146v8m-5 0h10M100 146v8m-5 0h10" stroke={GOLD} strokeWidth="3.2" strokeLinecap="round" />
-    </Scene>
+    </svg>
   );
 }
 
-// The race: a trophy on the top step of a podium.
-export function RaceArt() {
-  const step = { fontFamily: "var(--font-ui), sans-serif", fontWeight: 900 } as const;
+// The daily case: a case done up with a bow.
+export function CaseArt() {
+  const loops = "M75 44C64 28 40 22 39 36c-1 12 22 13 36 8ZM75 44c11-16 35-22 36-8 1 12-22 13-36 8Z";
   return (
-    <Scene>
-      <Leaf x={28} y={40} size={0.42} turn={-30} fill={ORANGE} />
-      <Leaf x={152} y={58} size={0.5} turn={25} fill={RED} delay={-1.4} />
-      <Leaf x={140} y={18} size={0.3} turn={60} fill={GOLD} delay={-0.7} />
-      <rect x="8" y="112" width="54" height="50" rx="3" fill="#ddcdb6" />
-      <rect x="118" y="122" width="54" height="40" rx="3" fill="#cfbea3" />
-      <rect x="60" y="94" width="60" height="68" rx="3" fill={CREAM} />
-      <text x="90" y="134" textAnchor="middle" fontSize="26" fill="#3b4733" style={step}>
-        1
-      </text>
-      <text x="35" y="144" textAnchor="middle" fontSize="20" fill="#3b4733" opacity="0.75" style={step}>
-        2
-      </text>
-      <text x="145" y="150" textAnchor="middle" fontSize="18" fill="#3b4733" opacity="0.75" style={step}>
-        3
-      </text>
+    <svg className={styles.scene} viewBox="22 24 106 102" preserveAspectRatio="xMidYMax meet" aria-hidden>
       <g className={styles.bob}>
-        <path d="M72 34h-7a8 8 0 0 0 0 16h7M108 34h7a8 8 0 0 1 0 16h-7" stroke={GOLD_DARK} strokeWidth="4.5" fill="none" strokeLinecap="round" />
-        <path d="M70 26h40v16a20 20 0 0 1-40 0Z" fill={GOLD} />
-        <path d="M98 26h12v16a20 20 0 0 1-17 19.8c3.5-6 5-17 5-35.8Z" fill={GOLD_DARK} />
-        <rect x="76" y="30" width="5" height="16" rx="2.5" fill="#ecc57a" />
-        <rect x="86" y="61" width="8" height="12" fill={GOLD_DARK} />
-        <rect x="76" y="72" width="28" height="10" rx="2" fill={BROWN_DARK} />
-        <path d="m90 33 2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z" fill={CREAM} />
+        <rect x="30" y="62" width="90" height="60" rx="8" fill="#46557a" {...ink} />
+        <path d="M30 110h90v4a8 8 0 0 1-8 8H38a8 8 0 0 1-8-8Z" fill="#3a4766" />
+        <rect x="26" y="47" width="98" height="24" rx="7" fill="#5d6c92" {...ink} />
+        <rect x="33" y="52" width="26" height="5" rx="2.5" fill="#7d8cb4" />
+        <rect x="38" y="66" width="12" height="13" rx="2.5" fill={GOLD} {...ink} />
+        <rect x="100" y="66" width="12" height="13" rx="2.5" fill={GOLD} {...ink} />
+        <path d="M67 47h16v75H67Z" fill={ORANGE} {...ink} />
+        <path d={loops} fill={ORANGE} {...ink} />
+        <path d="M72 42c-7-8-20-12-24-7M78 42c7-8 20-12 24-7" fill="none" stroke="#b55f2c" strokeWidth="3" strokeLinecap="round" />
+        <rect x="69" y="38" width="12" height="12" rx="4" fill="#b55f2c" {...ink} />
       </g>
-      <rect x="72" y="82" width="36" height="12" rx="2" fill="#5a331e" />
-    </Scene>
+    </svg>
   );
 }

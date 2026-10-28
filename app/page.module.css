@@ -9,8 +9,9 @@
   padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
+/* Room over the promotions for their art to break out of the top. */
 .promos {
-  margin-top: 20px;
+  margin-top: 28px;
 }
 
 .section {
@@ -57,7 +58,7 @@
   }
 
   .promos {
-    margin-top: 16px;
+    margin-top: 26px;
   }
 
   .section {

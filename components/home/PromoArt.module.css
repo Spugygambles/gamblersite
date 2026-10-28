@@ -5,21 +5,7 @@
   overflow: visible;
 }
 
-/* Leaves rock on their stems. */
-.sway {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: sway 3.2s ease-in-out infinite alternate;
-}
-
-@keyframes sway {
-  from {
-    rotate: -5deg;
-  }
-  to {
-    rotate: 5deg;
-  }
-}
+/* ---- Motion ------------------------------------------------------------ */
 
 .bob {
   animation: bob 2.8s ease-in-out infinite alternate;
@@ -49,7 +35,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sway,
   .bob,
   .fan {
     animation: none;
