@@ -61,63 +61,42 @@
     }, 3800);
   }
 
-  // ---- The frame (components/home/AppShell.tsx): the menu and chat
-  // buttons, the drawer and chat sliding over the page on smaller screens,
-  // and Escape or the dimmed page closing them.
+  // ---- The frame (components/home/AppShell.tsx): the chat buttons, chat
+  // sliding over the page on smaller screens, and Escape or the dimmed page
+  // closing it.
   const shell = document.querySelector("[data-shell]");
   if (shell) {
     const WIDE_CHAT = "(min-width: 1440px)";
     const OVERLAY_CHAT = "(max-width: 1199px)";
-    const RAIL_MENU = "(min-width: 768px) and (max-width: 1279px)";
-    const DRAWER_MENU = "(max-width: 767px)";
     const matches = (q) => matchMedia(q).matches;
-    let menu = "auto";
     let talk = "auto";
-    const menuIsRail = () => menu === "collapsed" || (menu === "auto" && matches(RAIL_MENU));
     const chatIsShown = () => talk === "open" || (talk === "auto" && matches(WIDE_CHAT));
     const sync = () => {
-      shell.dataset.sidebar = menu;
       shell.dataset.chat = talk;
-      const menuShown = matches(DRAWER_MENU) ? menu === "open" : !menuIsRail();
-      shell.querySelectorAll('[data-shell-toggle="sidebar"]').forEach((b) => b.setAttribute("aria-expanded", String(menuShown)));
       shell.querySelectorAll('[data-shell-toggle="chat"]').forEach((b) => b.setAttribute("aria-expanded", String(chatIsShown())));
     };
     const dismiss = () => {
-      if (menu === "open") menu = "auto";
       if (talk === "open" && matches(OVERLAY_CHAT)) talk = "closed";
       sync();
     };
     shell.addEventListener("click", (e) => {
       const toggle = e.target.closest("[data-shell-toggle]");
       const which = toggle && toggle.dataset.shellToggle;
-      // Only one thing slides over the page at a time.
-      if (which === "sidebar") {
-        if (matches(DRAWER_MENU)) {
-          const opening = menu !== "open";
-          menu = opening ? "open" : "auto";
-          if (opening && talk === "open" && matches(OVERLAY_CHAT)) talk = "closed";
-        } else {
-          menu = menuIsRail() ? "expanded" : "collapsed";
-        }
+      if (which === "chat") {
+        talk = chatIsShown() ? "closed" : "open";
         sync();
-        if (menu === "open") shell.querySelector('[data-shell-part="sidebar"] a').focus();
-      } else if (which === "chat") {
-        const opening = !chatIsShown();
-        talk = opening ? "open" : "closed";
-        if (opening && menu === "open") menu = "auto";
-        sync();
-      } else if (which === "dismiss" || e.target.closest('[data-shell-part="sidebar"] a')) {
+      } else if (which === "dismiss") {
         dismiss();
       }
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      const closing = [menu === "open" && matches(DRAWER_MENU) && "sidebar", talk === "open" && matches(OVERLAY_CHAT) && "chat"];
-      const part = document.activeElement && document.activeElement.closest("[data-shell-part]");
-      const from = part && part.dataset.shellPart;
+      if (e.key !== "Escape" || talk !== "open" || !matches(OVERLAY_CHAT)) return;
+      const fromChat = document.activeElement && document.activeElement.closest('[data-shell-part="chat"]');
       dismiss();
-      if (from && closing.includes(from)) {
-        const toggle = [...shell.querySelectorAll(`[data-shell-toggle="${from}"]`)].find((t) => t.getClientRects().length > 0);
+      if (fromChat) {
+        const toggle = [...shell.querySelectorAll('[data-shell-toggle="chat"]')].find(
+          (t) => !t.closest('[data-shell-part="chat"]') && t.getClientRects().length > 0,
+        );
         if (toggle) toggle.focus();
       }
     });
@@ -272,8 +251,8 @@
       const tr = template.cloneNode(true);
       const [game, player, wager, mult, payout] = tr.cells;
       const won = b.multiplier >= 1;
-      // The game's icon, borrowed from the menu.
-      const icon = document.querySelector(`[data-shell-part="sidebar"] a[href="/${b.game}"] svg`);
+      // The game's icon, borrowed from the header's games menu.
+      const icon = document.querySelector(`#games-menu a[href="/${b.game}"] svg`);
       const gameSpan = game.querySelector("span");
       gameSpan.firstElementChild.replaceWith(icon.cloneNode(true));
       gameSpan.lastElementChild.textContent = NAMES[b.game];

@@ -28,14 +28,6 @@ export function ChevronIcon({ direction = "down", ...props }: IconProps & { dire
   );
 }
 
-export function MenuIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden {...props}>
-      <path d="M4 7h16M4 12h16M4 17h11" />
-    </svg>
-  );
-}
-
 export function CloseIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden {...props}>
@@ -179,32 +171,6 @@ export const CardsIcon = (p: IconProps) => (
       fillRule="evenodd"
       d="M5.6 6.4h8.4c1.1 0 2 .9 2 2v11c0 1.1-.9 2-2 2H5.6c-1.1 0-2-.9-2-2v-11c0-1.1.9-2 2-2Zm4.2 4.2c-1.4 1.4-2.8 2.4-2.8 3.8 0 .9.7 1.6 1.6 1.6.4 0 .8-.2 1-.5l-.5 1.6h1.4l-.5-1.6c.2.3.6.5 1 .5.9 0 1.6-.7 1.6-1.6 0-1.4-1.4-2.4-2.8-3.8Z"
     />
-  </svg>
-);
-
-export const TrophyIcon = (p: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path d="M7 3h10v6a5 5 0 0 1-10 0Z" />
-    <path fill="none" stroke="currentColor" strokeWidth="1.8" d="M7 5H4.6v1.2c0 1.9 1.3 3.4 3.1 3.8M17 5h2.4v1.2c0 1.9-1.3 3.4-3.1 3.8" />
-    <path d="M10.8 13.6h2.4v3h-2.4ZM7.6 17.2h8.8c.6 0 1 .4 1 1v2.4H6.6v-2.4c0-.6.4-1 1-1Z" />
-  </svg>
-);
-
-export const ShieldIcon = (p: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path
-      fillRule="evenodd"
-      d="M12 2.6 19.6 5.5v5.9c0 4.7-3.1 8.6-7.6 10-4.5-1.4-7.6-5.3-7.6-10V5.5Zm3.7 6.3-4.6 4.6-1.9-1.9-1.4 1.4 3.3 3.3 6-6Z"
-    />
-  </svg>
-);
-
-export const HeadsetIcon = (p: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" d="M4.6 13v-1.4a7.4 7.4 0 0 1 14.8 0V13" />
-    <rect x="3" y="12.4" width="4.6" height="7" rx="1.6" />
-    <rect x="16.4" y="12.4" width="4.6" height="7" rx="1.6" />
-    <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M18.7 19.4c0 1.3-1.6 2-4.2 2" />
   </svg>
 );
 

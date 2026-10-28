@@ -1,22 +1,20 @@
 /*
- * The frame: header across the top, menu on the left, chat on the right.
- * --sidebar-w and --chat-w size the side columns; data-sidebar and
- * data-chat on the shell (see AppShell.tsx) change them, and "auto" leaves
- * it to the screen size. AppShell.tsx uses the same widths.
+ * The frame: header across the top, the page, and chat on the right.
+ * --chat-w sizes chat's column; data-chat on the shell (see AppShell.tsx)
+ * changes it, and "auto" leaves it to the screen size. AppShell.tsx uses
+ * the same widths.
  */
 
 .shell {
-  --sidebar-w: 216px;
   --chat-w: 0px;
   display: grid;
-  grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--chat-w);
+  grid-template-columns: minmax(0, 1fr) var(--chat-w);
   grid-template-rows: var(--header-h) auto;
   grid-template-areas:
-    "header header header"
-    "sidebar main chat";
+    "header header"
+    "main chat";
   min-height: 100vh;
-  /* The wallpaper shows on the page between the menu and chat, which have
-     backgrounds of their own. */
+  /* The wallpaper shows on the page; chat has a background of its own. */
   background: var(--bg) var(--wallpaper) 0 0 / 800px 800px repeat;
   transition: grid-template-columns 0.22s ease;
 }
@@ -28,7 +26,6 @@
   grid-area: header;
 }
 
-.sidebar,
 .chat {
   position: sticky;
   top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
@@ -38,14 +35,7 @@
   background: var(--bg-raised);
 }
 
-/* The menu lays itself out for the width it's given (Sidebar.module.css).
-   The edges are drawn inside, so a closed column takes no room at all. */
-.sidebar {
-  grid-area: sidebar;
-  box-shadow: inset -1px 0 var(--line);
-  container-type: inline-size;
-}
-
+/* The edge is drawn inside, so a closed column takes no room at all. */
 .chat {
   grid-area: chat;
   box-shadow: inset 1px 0 var(--line);
@@ -119,27 +109,10 @@
   }
 }
 
-/* ---- Menu -------------------------------------------------------------- */
+/* ---- Phones ------------------------------------------------------------ */
 
-/* Full width from 1280px and a rail of icons from 768px to 1279px, unless
-   toggled. */
-.shell[data-sidebar="collapsed"] {
-  --sidebar-w: 64px;
-}
-
-@media (min-width: 768px) and (max-width: 1279px) {
-  .shell[data-sidebar="auto"] {
-    --sidebar-w: 64px;
-  }
-}
-
-/* Below 768px the menu slides in over the page, and everything stops short
-   of the phone bar along the bottom. */
+/* Everything stops short of the bar of tabs along the bottom. */
 @media (max-width: 767px) {
-  .shell[data-sidebar] {
-    --sidebar-w: 0px;
-  }
-
   .main {
     padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
   }
@@ -147,29 +120,6 @@
   .chat,
   .backdrop {
     bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) !important;
-  }
-
-  .sidebar {
-    position: fixed;
-    top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
-    left: 0;
-    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-    z-index: 70;
-    align-self: stretch;
-    width: 240px;
-    height: auto;
-    padding-bottom: 0;
-    transform: translateX(-100%);
-    visibility: hidden;
-    transition:
-      transform 0.22s ease,
-      visibility 0s linear 0.22s;
-  }
-
-  .shell[data-sidebar="open"] .sidebar {
-    transform: none;
-    visibility: visible;
-    transition: transform 0.22s ease;
   }
 }
 
@@ -191,16 +141,9 @@
   }
 }
 
-@media (max-width: 767px) {
-  .shell[data-sidebar="open"] .backdrop {
-    display: block;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .shell,
-  .chat,
-  .sidebar {
+  .chat {
     transition: none !important;
   }
 }

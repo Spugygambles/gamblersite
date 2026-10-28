@@ -1,8 +1,7 @@
 /*
- * The bar across the top, in two parts: the menu button, the name and the
- * links to the games, rewards and the event on the left; withdraw, the
- * wallet and the player on the right. Matte: flat fills and one solid
- * accent, no glows.
+ * The bar across the top, in two parts: the name and the links to the
+ * games, rewards and the event on the left; withdraw, the wallet and the
+ * player on the right. Matte: flat fills and one solid accent, no glows.
  */
 
 .header {
@@ -429,7 +428,7 @@
   }
 }
 
-/* Phones: the bar along the bottom has the menu and chat. */
+/* Phones: the bar along the bottom has chat. */
 @media (max-width: 767px) {
   .iconButton[data-shell-toggle] {
     display: none;

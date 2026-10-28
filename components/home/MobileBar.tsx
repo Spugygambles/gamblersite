@@ -7,8 +7,8 @@ import styles from "./MobileBar.module.css";
 
 /**
  * The bar along the bottom on phones, like the big sites' apps: home, the
- * games menu, rewards and chat. AppShell works the two buttons and keeps
- * their aria-expanded up to date.
+ * games, rewards and chat. AppShell works the chat button and keeps its
+ * aria-expanded up to date.
  */
 export default function MobileBar() {
   const path = usePathname();
@@ -19,10 +19,10 @@ export default function MobileBar() {
         <HomeIcon />
         Home
       </Link>
-      <button type="button" className={styles.item} data-shell-toggle="sidebar">
+      <Link href="/#games" className={styles.item}>
         <GamepadIcon />
         Games
-      </button>
+      </Link>
       <Link href="/rewards" className={styles.item} aria-current={path === "/rewards" ? "page" : undefined}>
         <GiftIcon />
         Rewards

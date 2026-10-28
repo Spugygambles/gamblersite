@@ -4,7 +4,6 @@ import AppShell from "@/components/home/AppShell";
 import ChatPanel from "@/components/home/ChatPanel";
 import GameModes from "@/components/home/GameModes";
 import LiveBets from "@/components/home/LiveBets";
-import Sidebar from "@/components/home/Sidebar";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
 import { GamepadIcon, SlipIcon } from "@/components/home/icons";
@@ -27,7 +26,7 @@ function SectionHead({ id, title, icon, children }: { id: string; title: string;
 
 export default function Home() {
   return (
-    <AppShell header={<SiteHeader />} sidebar={<Sidebar />} chat={<ChatPanel />} tabBar={<MobileBar />}>
+    <AppShell header={<SiteHeader />} chat={<ChatPanel />} tabBar={<MobileBar />}>
       <div className={styles.content}>
         <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 

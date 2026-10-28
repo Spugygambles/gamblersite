@@ -1,17 +1,17 @@
 import Link from "next/link";
 import { PLAYER } from "@/lib/home";
 import GamesMenu from "./GamesMenu";
-import { ChatIcon, CoinIcon, GemIcon, GiftIcon, MenuIcon } from "./icons";
+import { ChatIcon, CoinIcon, GemIcon, GiftIcon } from "./icons";
 import { TurkeyArt } from "./PromoArt";
 import Wordmark from "./Wordmark";
 import styles from "./SiteHeader.module.css";
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-// The bar across the top. On the left: the menu button, the name, the
-// games menu, rewards, and the Thanksgiving event. On the right: withdraw,
-// the wallet, the player and the chat button. AppShell works the menu and
-// chat buttons and keeps their aria-expanded up to date.
+// The bar across the top. On the left: the name, the games menu, rewards,
+// and the Thanksgiving event. On the right: withdraw, the wallet, the
+// player and the chat button, which AppShell works and keeps the
+// aria-expanded of up to date.
 export default function SiteHeader() {
   // The ring round the avatar shows progress through the current level.
   const ring = 2 * Math.PI * 17;
@@ -19,9 +19,6 @@ export default function SiteHeader() {
   return (
     <header className={styles.header}>
       <div className={styles.start}>
-        <button type="button" className={styles.iconButton} data-shell-toggle="sidebar" aria-label="Menu">
-          <MenuIcon />
-        </button>
         <Wordmark />
         <nav className={styles.nav} aria-label="Main">
           <GamesMenu />

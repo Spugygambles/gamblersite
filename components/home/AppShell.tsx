@@ -3,118 +3,80 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import styles from "./AppShell.module.css";
 
-type SidebarState = "auto" | "collapsed" | "expanded" | "open";
 type ChatState = "auto" | "open" | "closed";
 
 // The same widths as AppShell.module.css.
 const WIDE_CHAT = "(min-width: 1440px)";
 const OVERLAY_CHAT = "(max-width: 1199px)";
-const RAIL_MENU = "(min-width: 768px) and (max-width: 1279px)";
-const DRAWER_MENU = "(max-width: 767px)";
 const matches = (query: string) => window.matchMedia(query).matches;
 
-// "auto" leaves it to the screen: chat shows from 1440px, the menu is a rail
-// of icons from 768px to 1279px, and below 768px it's a drawer.
-const menuIsRail = (s: SidebarState) => s === "collapsed" || (s === "auto" && matches(RAIL_MENU));
+// "auto" leaves it to the screen: chat shows from 1440px.
 const chatIsShown = (s: ChatState) => s === "open" || (s === "auto" && matches(WIDE_CHAT));
 
 /**
- * The frame big case sites use: the header across the top, the menu down
- * the left, chat down the right, the page between them, and on phones a
- * bar of tabs along the bottom. A button marked data-shell-toggle works a
- * part: "sidebar", "chat", or "dismiss", which closes whatever is sliding
- * over the page.
+ * The frame big case sites use: the header across the top, chat down the
+ * right, the page beside it, and on phones a bar of tabs along the bottom.
+ * A button marked data-shell-toggle works a part: "chat", or "dismiss",
+ * which closes chat when it's sliding over the page.
  */
 export default function AppShell({
   header,
-  sidebar,
   chat,
   tabBar,
   children,
 }: {
   header: ReactNode;
-  sidebar: ReactNode;
   chat: ReactNode;
   /** Shown on phones only; it styles that itself. */
   tabBar?: ReactNode;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [menu, setMenu] = useState<SidebarState>("auto");
   const [talk, setTalk] = useState<ChatState>("auto");
 
   const dismiss = useCallback(() => {
-    setMenu((m) => (m === "open" ? "auto" : m));
     setTalk((c) => (c === "open" && matches(OVERLAY_CHAT) ? "closed" : c));
   }, []);
 
   const onClick = (e: MouseEvent) => {
-    const target = e.target as Element;
-    const which = target.closest("[data-shell-toggle]")?.getAttribute("data-shell-toggle");
-    // Only one thing slides over the page at a time: opening the drawer
-    // closes chat if it's sliding over too, and the other way round.
-    if (which === "sidebar") {
-      if (matches(DRAWER_MENU)) {
-        const opening = menu !== "open";
-        setMenu(opening ? "open" : "auto");
-        if (opening && talk === "open" && matches(OVERLAY_CHAT)) setTalk("closed");
-      } else {
-        setMenu(menuIsRail(menu) ? "expanded" : "collapsed");
-      }
-    } else if (which === "chat") {
-      const opening = !chatIsShown(talk);
-      setTalk(opening ? "open" : "closed");
-      if (opening && menu === "open") setMenu("auto");
-    } else if (which === "dismiss" || target.closest('[data-shell-part="sidebar"] a')) {
-      // Picking somewhere to go closes the drawer too.
-      dismiss();
-    }
+    const which = (e.target as Element).closest("[data-shell-toggle]")?.getAttribute("data-shell-toggle");
+    if (which === "chat") setTalk(chatIsShown(talk) ? "closed" : "open");
+    else if (which === "dismiss") dismiss();
   };
 
-  // Escape closes anything sliding over the page, and if focus was in it,
-  // hands focus back to the button that opened it.
+  // Escape closes chat when it's sliding over the page, and if focus was in
+  // it, hands focus back to the button that opened it.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      const closing = [menu === "open" && matches(DRAWER_MENU) && "sidebar", talk === "open" && matches(OVERLAY_CHAT) && "chat"];
-      const from = document.activeElement?.closest("[data-shell-part]")?.getAttribute("data-shell-part");
+      if (e.key !== "Escape" || talk !== "open" || !matches(OVERLAY_CHAT)) return;
+      const fromChat = document.activeElement?.closest('[data-shell-part="chat"]');
       dismiss();
-      if (from && closing.includes(from)) {
-        // The toggle that's showing: the header's, or the phone bar's.
-        const toggles = ref.current?.querySelectorAll<HTMLElement>(`[data-shell-toggle="${from}"]`) ?? [];
-        [...toggles].find((t) => t.getClientRects().length > 0)?.focus();
+      if (fromChat) {
+        // The button that's showing outside chat: the header's, or the phone
+        // bar's.
+        const toggles = ref.current?.querySelectorAll<HTMLElement>('[data-shell-toggle="chat"]') ?? [];
+        [...toggles].find((t) => !t.closest('[data-shell-part="chat"]') && t.getClientRects().length > 0)?.focus();
       }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [dismiss, menu, talk]);
+  }, [dismiss, talk]);
 
-  // The drawer takes focus as it opens.
-  useEffect(() => {
-    if (menu === "open") ref.current?.querySelector<HTMLElement>('[data-shell-part="sidebar"] a')?.focus();
-  }, [menu]);
-
-  // The toggles say whether their part is showing, which can change with
-  // the screen's width as well as with a click.
+  // The chat buttons say whether chat is showing, which can change with the
+  // screen's width as well as with a click.
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    const sync = () => {
-      const menuShown = matches(DRAWER_MENU) ? menu === "open" : !menuIsRail(menu);
-      root.querySelectorAll('[data-shell-toggle="sidebar"]').forEach((b) => b.setAttribute("aria-expanded", String(menuShown)));
+    const sync = () =>
       root.querySelectorAll('[data-shell-toggle="chat"]').forEach((b) => b.setAttribute("aria-expanded", String(chatIsShown(talk))));
-    };
     sync();
     window.addEventListener("resize", sync);
     return () => window.removeEventListener("resize", sync);
-  }, [menu, talk]);
+  }, [talk]);
 
   return (
-    <div ref={ref} className={styles.shell} data-shell data-sidebar={menu} data-chat={talk} onClick={onClick}>
+    <div ref={ref} className={styles.shell} data-shell data-chat={talk} onClick={onClick}>
       <div className={styles.header}>{header}</div>
-      <div className={styles.sidebar} data-shell-part="sidebar">
-        {sidebar}
-      </div>
       <main className={styles.main}>{children}</main>
       <div className={styles.chat} data-shell-part="chat">
         {chat}

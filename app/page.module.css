@@ -12,6 +12,8 @@
 
 .section {
   margin-top: 32px;
+  /* Clear of the header when a link jumps here. */
+  scroll-margin-top: calc(var(--header-h) + 16px);
 }
 
 .section:first-of-type {

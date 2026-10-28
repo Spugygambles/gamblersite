@@ -25,6 +25,38 @@
   font: 400 13px/1.6 var(--font-ui), sans-serif;
 }
 
+/* The community's links: Discord, X and YouTube. */
+.socials {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.social {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.social:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.social svg {
+  width: 18px;
+  height: 18px;
+}
+
 .age {
   display: flex;
   align-items: center;
@@ -104,5 +136,12 @@
   .columns {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .columns a,
+  .social {
+    transition: none;
   }
 }
