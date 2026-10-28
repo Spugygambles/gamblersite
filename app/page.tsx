@@ -8,7 +8,8 @@ import LiveBets from "@/components/home/LiveBets";
 import Sidebar from "@/components/home/Sidebar";
 import SiteFooter from "@/components/home/SiteFooter";
 import SiteHeader from "@/components/home/SiteHeader";
-import { GamepadIcon } from "@/components/home/icons";
+import { GamepadIcon, SlipIcon } from "@/components/home/icons";
+import MobileBar from "@/components/home/MobileBar";
 import styles from "./page.module.css";
 
 function SectionHead({ id, title, icon, children }: { id: string; title: string; icon: ReactNode; children?: ReactNode }) {
@@ -27,7 +28,7 @@ function SectionHead({ id, title, icon, children }: { id: string; title: string;
 
 export default function Home() {
   return (
-    <AppShell header={<SiteHeader />} sidebar={<Sidebar />} chat={<ChatPanel />}>
+    <AppShell header={<SiteHeader />} sidebar={<Sidebar />} chat={<ChatPanel />} tabBar={<MobileBar />}>
       <div className={styles.content}>
         <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 
@@ -48,9 +49,7 @@ export default function Home() {
         </section>
 
         <section className={styles.section} aria-labelledby="bets">
-          <h2 id="bets" className="sr-only">
-            Live bets
-          </h2>
+          <SectionHead id="bets" title="Recent bets" icon={<SlipIcon />} />
           <LiveBets />
         </section>
       </div>

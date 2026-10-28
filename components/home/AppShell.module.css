@@ -133,22 +133,32 @@
   }
 }
 
-/* Below 768px the menu slides in over the page. */
+/* Below 768px the menu slides in over the page, and everything stops short
+   of the phone bar along the bottom. */
 @media (max-width: 767px) {
   .shell[data-sidebar] {
     --sidebar-w: 0px;
+  }
+
+  .main {
+    padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .chat,
+  .backdrop {
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)) !important;
   }
 
   .sidebar {
     position: fixed;
     top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
     left: 0;
-    bottom: 0;
+    bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
     z-index: 70;
     align-self: stretch;
     width: 240px;
     height: auto;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-bottom: 0;
     transform: translateX(-100%);
     visibility: hidden;
     transition:

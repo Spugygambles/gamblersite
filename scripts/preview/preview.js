@@ -139,13 +139,21 @@
     shell.addEventListener("click", (e) => {
       const toggle = e.target.closest("[data-shell-toggle]");
       const which = toggle && toggle.dataset.shellToggle;
+      // Only one thing slides over the page at a time.
       if (which === "sidebar") {
-        if (matches(DRAWER_MENU)) menu = menu === "open" ? "auto" : "open";
-        else menu = menuIsRail() ? "expanded" : "collapsed";
+        if (matches(DRAWER_MENU)) {
+          const opening = menu !== "open";
+          menu = opening ? "open" : "auto";
+          if (opening && talk === "open" && matches(OVERLAY_CHAT)) talk = "closed";
+        } else {
+          menu = menuIsRail() ? "expanded" : "collapsed";
+        }
         sync();
         if (menu === "open") shell.querySelector('[data-shell-part="sidebar"] a').focus();
       } else if (which === "chat") {
-        talk = chatIsShown() ? "closed" : "open";
+        const opening = !chatIsShown();
+        talk = opening ? "open" : "closed";
+        if (opening && menu === "open") menu = "auto";
         sync();
       } else if (which === "dismiss" || e.target.closest('[data-shell-part="sidebar"] a')) {
         dismiss();
@@ -157,7 +165,10 @@
       const part = document.activeElement && document.activeElement.closest("[data-shell-part]");
       const from = part && part.dataset.shellPart;
       dismiss();
-      if (from && closing.includes(from)) shell.querySelector(`[data-shell-toggle="${from}"]`).focus();
+      if (from && closing.includes(from)) {
+        const toggle = [...shell.querySelectorAll(`[data-shell-toggle="${from}"]`)].find((t) => t.getClientRects().length > 0);
+        if (toggle) toggle.focus();
+      }
     });
     addEventListener("resize", sync);
     sync();

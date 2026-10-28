@@ -9,6 +9,7 @@ import {
   CardsIcon,
   CaseIcon,
   CoinflipIcon,
+  DiscordIcon,
   GiftIcon,
   HeadsetIcon,
   HomeIcon,
@@ -20,6 +21,8 @@ import {
   TargetIcon,
   TrophyIcon,
   UpgradeIcon,
+  XIcon,
+  YouTubeIcon,
 } from "./icons";
 import styles from "./Sidebar.module.css";
 
@@ -71,13 +74,21 @@ const GROUPS: { name: string; items: Item[] }[] = [
   },
 ];
 
+// Where the community is. These point at each site's front page until
+// CsgoNeo's own pages are set up: swap in their addresses here.
+const SOCIALS = [
+  { name: "Discord", href: "https://discord.com", icon: DiscordIcon },
+  { name: "X", href: "https://x.com", icon: XIcon },
+  { name: "YouTube", href: "https://www.youtube.com", icon: YouTubeIcon },
+];
+
 // A game's "Hot" or "New" tag, from the lobby's list.
 const tagOf = (href: string) => GAMES.find((g) => `/${g.slug}` === href)?.tag;
 
 /**
  * The menu down the left: compact rows with solid icons, grouped on
- * panels. It fits whatever width AppShell gives it, and when that's only a
- * rail it shows just the icons.
+ * panels, and the community's links at the foot. It fits whatever width
+ * AppShell gives it, and when that's only a rail it shows just the icons.
  */
 export default function Sidebar() {
   const path = usePathname();
@@ -105,6 +116,15 @@ export default function Sidebar() {
           })}
         </ul>
       ))}
+      <ul className={styles.socials} aria-label="Community">
+        {SOCIALS.map(({ name, href, icon: Icon }) => (
+          <li key={name}>
+            <a href={href} className={styles.social} target="_blank" rel="noopener noreferrer" aria-label={name} title={name}>
+              <Icon />
+            </a>
+          </li>
+        ))}
+      </ul>
     </nav>
   );
 }

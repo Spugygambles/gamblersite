@@ -20,19 +20,23 @@ const chatIsShown = (s: ChatState) => s === "open" || (s === "auto" && matches(W
 
 /**
  * The frame big case sites use: the header across the top, the menu down
- * the left, chat down the right, and the page between them. A button marked
- * data-shell-toggle works a part: "sidebar", "chat", or "dismiss", which
- * closes whatever is sliding over the page.
+ * the left, chat down the right, the page between them, and on phones a
+ * bar of tabs along the bottom. A button marked data-shell-toggle works a
+ * part: "sidebar", "chat", or "dismiss", which closes whatever is sliding
+ * over the page.
  */
 export default function AppShell({
   header,
   sidebar,
   chat,
+  tabBar,
   children,
 }: {
   header: ReactNode;
   sidebar: ReactNode;
   chat: ReactNode;
+  /** Shown on phones only; it styles that itself. */
+  tabBar?: ReactNode;
   children: ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,11 +51,20 @@ export default function AppShell({
   const onClick = (e: MouseEvent) => {
     const target = e.target as Element;
     const which = target.closest("[data-shell-toggle]")?.getAttribute("data-shell-toggle");
+    // Only one thing slides over the page at a time: opening the drawer
+    // closes chat if it's sliding over too, and the other way round.
     if (which === "sidebar") {
-      if (matches(DRAWER_MENU)) setMenu((m) => (m === "open" ? "auto" : "open"));
-      else setMenu((m) => (menuIsRail(m) ? "expanded" : "collapsed"));
+      if (matches(DRAWER_MENU)) {
+        const opening = menu !== "open";
+        setMenu(opening ? "open" : "auto");
+        if (opening && talk === "open" && matches(OVERLAY_CHAT)) setTalk("closed");
+      } else {
+        setMenu(menuIsRail(menu) ? "expanded" : "collapsed");
+      }
     } else if (which === "chat") {
-      setTalk((c) => (chatIsShown(c) ? "closed" : "open"));
+      const opening = !chatIsShown(talk);
+      setTalk(opening ? "open" : "closed");
+      if (opening && menu === "open") setMenu("auto");
     } else if (which === "dismiss" || target.closest('[data-shell-part="sidebar"] a')) {
       // Picking somewhere to go closes the drawer too.
       dismiss();
@@ -66,7 +79,11 @@ export default function AppShell({
       const closing = [menu === "open" && matches(DRAWER_MENU) && "sidebar", talk === "open" && matches(OVERLAY_CHAT) && "chat"];
       const from = document.activeElement?.closest("[data-shell-part]")?.getAttribute("data-shell-part");
       dismiss();
-      if (from && closing.includes(from)) ref.current?.querySelector<HTMLElement>(`[data-shell-toggle="${from}"]`)?.focus();
+      if (from && closing.includes(from)) {
+        // The toggle that's showing: the header's, or the phone bar's.
+        const toggles = ref.current?.querySelectorAll<HTMLElement>(`[data-shell-toggle="${from}"]`) ?? [];
+        [...toggles].find((t) => t.getClientRects().length > 0)?.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -103,6 +120,7 @@ export default function AppShell({
         {chat}
       </div>
       <button type="button" className={styles.backdrop} data-shell-toggle="dismiss" aria-label="Close" tabIndex={-1} />
+      {tabBar}
     </div>
   );
 }

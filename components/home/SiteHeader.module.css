@@ -230,14 +230,17 @@
   }
 }
 
+/* Phones: the bar along the bottom has the menu and chat. */
+@media (max-width: 767px) {
+  .iconButton[data-shell-toggle] {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .iconButton {
     width: 36px;
     height: 36px;
-  }
-
-  .bonus {
-    display: none;
   }
 
   .wallet {
