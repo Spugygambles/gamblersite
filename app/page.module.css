@@ -5,17 +5,17 @@
   width: 100%;
   max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
+  padding-top: 24px;
   padding-bottom: 48px;
   padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
-/* Room over the promotions for their art to break out of the top. */
-.promos {
-  margin-top: 28px;
-}
-
 .section {
   margin-top: 32px;
+}
+
+.section:first-of-type {
+  margin-top: 0;
 }
 
 /* Section heads: an icon in the accent colour, the title, and a count or a
@@ -57,8 +57,8 @@
     --gutter: 16px;
   }
 
-  .promos {
-    margin-top: 26px;
+  .content {
+    padding-top: 18px;
   }
 
   .section {
@@ -72,8 +72,8 @@
 
 /* Short screens: tighter spacing, so the games still all fit. */
 @media (max-height: 720px) {
-  .promos {
-    margin-top: 14px;
+  .content {
+    padding-top: 14px;
   }
 
   .section {

@@ -60,6 +60,17 @@ export function CoinIcon(props: IconProps) {
   );
 }
 
+// Chat's rain button: a coin dropping into an open hand.
+export function HandCoinIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
+      <path fillRule="evenodd" d="M15.5 2.8a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6Zm0 2a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6Z" />
+      <rect x="2" y="12.6" width="3.2" height="8.6" rx="0.8" />
+      <path d="M6.2 13.4h3.1c.9 0 1.8.3 2.5.8l1.3.9h3.1c1 0 1.8.8 1.8 1.8v.1l2.9-1.5c.9-.5 2-.1 2.4.8.4.8.1 1.7-.6 2.2l-5.4 3.3c-.9.5-1.9.8-2.9.8H6.2Z" />
+    </svg>
+  );
+}
+
 // The rewards currency: a cut purple gem.
 export function GemIcon(props: IconProps) {
   return (
@@ -222,6 +233,12 @@ function Line({ children, ...props }: IconProps) {
 export const ChatIcon = (p: IconProps) => (
   <Line {...p}>
     <path d="M4.5 6.5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-4.5 3.5v-3.5h0a2 2 0 0 1-2-2Z" />
+  </Line>
+);
+
+export const CheckIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
   </Line>
 );
 

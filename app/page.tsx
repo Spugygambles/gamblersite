@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { GAMES } from "@/lib/home";
 import AppShell from "@/components/home/AppShell";
 import ChatPanel from "@/components/home/ChatPanel";
-import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
 import LiveBets from "@/components/home/LiveBets";
 import Sidebar from "@/components/home/Sidebar";
@@ -32,15 +31,7 @@ export default function Home() {
       <div className={styles.content}>
         <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 
-        {/* A slim strip of what's on, then the games, all of them still on
-            screen without scrolling. */}
-        <section className={styles.promos} aria-labelledby="promotions">
-          <h2 id="promotions" className="sr-only">
-            Thanksgiving promotions
-          </h2>
-          <EventsRow />
-        </section>
-
+        {/* The games first, all of them on screen without scrolling. */}
         <section className={styles.section} aria-labelledby="games">
           <SectionHead id="games" title="Games" icon={<GamepadIcon />}>
             <span className={styles.count}>{GAMES.length}</span>

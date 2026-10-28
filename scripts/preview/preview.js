@@ -61,55 +61,6 @@
     }, 3800);
   }
 
-  // ---- Countdowns on the promo cards, as "6d 2h", "2h 13m" or "13m"
-  // (components/home/useCountdown.ts), updated every half minute.
-  const ENDS = {
-    "/deposit": () => {
-      const d = new Date();
-      d.setHours(24, 0, 0, 0);
-      return d;
-    },
-    "/turkey-hunt": () => {
-      // The end of the Monday after Thanksgiving (the fourth Thursday in
-      // November); next year's once it's over.
-      const endOf = (year) => {
-        const first = new Date(year, 10, 1).getDay();
-        return new Date(year, 10, 1 + ((4 - first + 7) % 7) + 25, 23, 59, 59);
-      };
-      const now = new Date();
-      const end = endOf(now.getFullYear());
-      return end > now ? end : endOf(now.getFullYear() + 1);
-    },
-    "/race": () => {
-      const d = new Date();
-      const days = (8 - d.getUTCDay()) % 7 || 7;
-      return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + days));
-    },
-  };
-  const formatLeft = (ms) => {
-    const m = Math.max(0, Math.floor(ms / 60000));
-    const d = Math.floor(m / 1440);
-    const h = Math.floor((m % 1440) / 60);
-    if (d > 0) return `${d}d ${h}h`;
-    if (h > 0) return `${h}h ${m % 60}m`;
-    return `${m}m`;
-  };
-  const timers = [];
-  document.querySelectorAll("main a[href]").forEach((card) => {
-    const ends = ENDS[card.getAttribute("href")];
-    const el = [...card.querySelectorAll("span")].find((s) => classOf(s, "timer"));
-    if (ends && el) timers.push({ ends, end: ends().getTime(), el });
-  });
-  const tick = () => {
-    for (const t of timers) {
-      // Once one's up, count down to the next.
-      if (t.end <= Date.now()) t.end = t.ends().getTime();
-      t.el.lastChild.textContent = formatLeft(t.end - Date.now());
-    }
-  };
-  tick();
-  setInterval(tick, 30000);
-
   // ---- The frame (components/home/AppShell.tsx): the menu and chat
   // buttons, the drawer and chat sliding over the page on smaller screens,
   // and Escape or the dimmed page closing them.
@@ -174,6 +125,29 @@
     sync();
   }
 
+  // ---- The games menu in the header (components/home/GamesMenu.tsx): its
+  // button opens it, and a click outside, Escape or picking a game closes it.
+  const gamesButton = document.querySelector("[data-games-toggle]");
+  if (gamesButton) {
+    const menu = document.getElementById(gamesButton.getAttribute("aria-controls"));
+    const show = (open) => {
+      menu.hidden = !open;
+      gamesButton.setAttribute("aria-expanded", String(open));
+    };
+    gamesButton.addEventListener("click", () => show(menu.hidden));
+    document.addEventListener("pointerdown", (e) => {
+      if (!menu.hidden && !gamesButton.parentElement.contains(e.target)) show(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || menu.hidden) return;
+      show(false);
+      gamesButton.focus();
+    });
+    menu.addEventListener("click", (e) => {
+      if (e.target.closest("a")) show(false);
+    });
+  }
+
   // ---- Chat (components/home/ChatPanel.tsx): the rain clock, joining the
   // rain, and sending a message, which shows up straight away.
   const chat = document.querySelector('aside[aria-label="Chat"]');
@@ -197,7 +171,7 @@
     if (join) {
       join.addEventListener("click", () => {
         join.disabled = true;
-        join.textContent = "Joined";
+        join.setAttribute("aria-label", "Joined the rain");
       });
     }
 
