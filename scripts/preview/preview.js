@@ -194,7 +194,7 @@
   // ---- Bets (components/home/LiveBets.tsx): tabs for the big and lucky
   // wins, and how many rows to show. The sample bets come from the same
   // seeded numbers as lib/home.ts, so the table matches what the site drew.
-  const betTable = document.querySelector("main table");
+  const betTable = document.querySelector('main table[class*="LiveBets-module__"]');
   if (betTable) {
     const cls = (name) => sibling(classOf(betTable, "table"), name);
     const tbody = betTable.tBodies[0];
@@ -273,7 +273,7 @@
     };
     const render = () => tbody.replaceChildren(...bets.filter(SHOWS[tab]).slice(0, rows).map(rowFor));
 
-    const tabs = [...document.querySelectorAll('[role="tablist"] [role="tab"]')];
+    const tabs = [...betTable.parentElement.querySelectorAll('[role="tablist"] [role="tab"]')];
     tabs.forEach((button, i) =>
       button.addEventListener("click", () => {
         tab = TAB_IDS[i];
@@ -290,9 +290,10 @@
     }
   }
 
-  // ---- The Turkey Hunt (components/event): the hunt's countdown, ticking
-  // every second to the end of the Monday after Thanksgiving (lib/event.ts),
-  // and the shop's Buy buttons, which mark an item bought.
+  // ---- The Turkey Hunt (components/event): the countdown, a box per digit,
+  // ticking every second to the end of the Monday after Thanksgiving
+  // (lib/event.ts); the picture cards switching panels, by click or arrow
+  // key; and the calendar's Claim button, which marks today claimed.
   const countdown = document.querySelector("[data-countdown]");
   if (countdown) {
     const huntEnds = () => {
@@ -308,18 +309,53 @@
     const tick = () => {
       const s = Math.max(0, Math.floor((huntEnds().getTime() - Date.now()) / 1000));
       const parts = { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
-      for (const [unit, el] of Object.entries(units)) el.textContent = String(parts[unit]).padStart(2, "0");
+      for (const [unit, el] of Object.entries(units)) {
+        const digits = [...String(parts[unit]).padStart(2, "0")];
+        while (el.children.length < digits.length) el.append(el.firstElementChild.cloneNode(true));
+        while (el.children.length > digits.length) el.lastElementChild.remove();
+        digits.forEach((digit, i) => (el.children[i].textContent = digit));
+      }
     };
     tick();
     setInterval(tick, 1000);
   }
-  document.querySelectorAll("[data-buy]").forEach((button) => {
+
+  const tabs = [...document.querySelectorAll("[data-event-tab]")];
+  const selectTab = (id, focus) => {
+    for (const tab of tabs) {
+      const on = tab.dataset.eventTab === id;
+      tab.setAttribute("aria-selected", String(on));
+      tab.tabIndex = on ? 0 : -1;
+      if (on && focus) tab.focus();
+    }
+    document.querySelectorAll("[data-event-panel]").forEach((panel) => (panel.hidden = panel.dataset.eventPanel !== id));
+  };
+  for (const tab of tabs) {
+    tab.addEventListener("click", () => selectTab(tab.dataset.eventTab));
+    tab.addEventListener("keydown", (e) => {
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (!step) return;
+      e.preventDefault();
+      const at = tabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+      selectTab(tabs[(at + step + tabs.length) % tabs.length].dataset.eventTab, true);
+    });
+  }
+
+  document.querySelectorAll("[data-claim]").forEach((button) => {
     button.addEventListener("click", () => {
-      if (button.disabled) return;
-      const tick = document.querySelector('[class*="RewardTrack-module"] svg');
-      button.replaceChildren(...(tick ? [tick.cloneNode(true)] : []), "Bought");
-      button.classList.add(sibling(classOf(button, "buy"), "got"));
-      button.disabled = true;
+      const day = button.closest("[data-day-state]");
+      const done = document.querySelector('[data-day-state="claimed"]');
+      if (!day || !done) return;
+      day.className = done.className;
+      day.dataset.dayState = "claimed";
+      button.replaceWith(done.querySelector("[data-status]").cloneNode(true));
+      // one more day claimed, and its leaves added to the total under it
+      const claimed = document.querySelector("[data-claimed-count]");
+      if (!claimed) return;
+      claimed.textContent = String(Number(claimed.textContent) + 1);
+      const leaves = parseInt(day.querySelector('[class*="__gift"]')?.textContent ?? "", 10) || 0;
+      const note = claimed.closest("p")?.lastElementChild;
+      if (note) note.textContent = note.textContent.replace(/^[\d,]+/, (n) => (Number(n.replace(/,/g, "")) + leaves).toLocaleString("en-US"));
     });
   });
 

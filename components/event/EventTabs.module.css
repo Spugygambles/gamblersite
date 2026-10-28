@@ -1,0 +1,172 @@
+/*
+ * The three ways in, as picture cards in their own colours: the title
+ * slanted and wide on the left, a picture standing up out of the card on
+ * the right. The open one is ringed in a lighter shade of its colour.
+ * Narrow, the picture sits on top and the title under it.
+ */
+
+.wrap {
+  container-type: inline-size;
+  margin-top: 40px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.calendar {
+  --tab-bg: #4a2346;
+  --tab-ring: #d58bc8;
+  --tab-tint: #f5c8ec;
+}
+
+.shop {
+  --tab-bg: #25462f;
+  --tab-ring: #84cf94;
+  --tab-tint: #c9f0d0;
+}
+
+.board {
+  --tab-bg: #74401b;
+  --tab-ring: #f2a65a;
+  --tab-tint: #ffd8a6;
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  height: 128px;
+  padding: 0 0 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--tab-bg);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  text-align: left;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.tab[aria-selected="false"] {
+  filter: saturate(0.8) brightness(0.86);
+}
+
+.tab:hover {
+  filter: none;
+}
+
+.tab[aria-selected="true"] {
+  box-shadow: inset 0 0 0 2px var(--tab-ring);
+}
+
+.tab:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.words {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 9px;
+  padding-bottom: 20px;
+}
+
+.title {
+  width: fit-content;
+  padding-right: 0.1em;
+  background: linear-gradient(180deg, #fff 35%, var(--tab-tint) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font: italic 900 25px/0.94 var(--font-display), var(--font-ui), sans-serif;
+  font-stretch: 112%;
+  text-transform: uppercase;
+}
+
+.note {
+  color: rgba(255, 255, 255, 0.7);
+  font: 600 12.5px/1 var(--font-ui), sans-serif;
+}
+
+/* The picture stands on the card's floor and pokes out over its top,
+   fitted to a box so each sits the same size. */
+.art {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 46%;
+  max-width: 210px;
+  height: 150px;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
+
+.panel {
+  margin-top: 22px;
+}
+
+@container (max-width: 1000px) {
+  .tab {
+    padding-left: 18px;
+  }
+
+  .title {
+    font-size: 21px;
+  }
+
+  .note {
+    font-size: 11.5px;
+  }
+
+  .art {
+    right: 6px;
+    width: 40%;
+    height: 128px;
+  }
+}
+
+/* Narrow: picture on top, title under it, no note. */
+@container (max-width: 780px) {
+  .wrap {
+    margin-top: 34px;
+  }
+
+  .tabs {
+    gap: 8px;
+  }
+
+  .tab {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 118px;
+    padding: 0 6px;
+    text-align: center;
+  }
+
+  .words {
+    justify-items: center;
+    padding-bottom: 12px;
+  }
+
+  .title {
+    font-size: 14px;
+    font-stretch: 105%;
+  }
+
+  .note {
+    display: none;
+  }
+
+  .art {
+    top: -22px;
+    right: 6%;
+    bottom: auto;
+    width: 88%;
+    height: 86px;
+  }
+}

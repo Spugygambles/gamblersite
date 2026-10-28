@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Rubik } from "next/font/google";
+import { Rubik, Saira } from "next/font/google";
 import "./globals.css";
 
 // One face for the whole interface.
@@ -8,6 +8,15 @@ const rubik = Rubik({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
   style: ["normal", "italic"],
+});
+
+// Big numbers and event titles: Saira, which widens as well as bolds, set
+// heavy, wide and slanted.
+const saira = Saira({
+  variable: "--font-display",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["wdth"],
 });
 
 const title = "CsgoNeo — CS2 Case Opening, Battles & Games";
@@ -36,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} antialiased`}>{children}</body>
+      <body className={`${rubik.variable} ${saira.variable} antialiased`}>{children}</body>
     </html>
   );
 }

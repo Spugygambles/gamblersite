@@ -251,6 +251,31 @@ export const ClockIcon = (p: IconProps) => (
   </Line>
 );
 
+// The case cards' buttons: the odds, and what's inside.
+export const InfoIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 11v5.5" />
+    <path d="M12 7.6v.1" strokeWidth="2.6" />
+  </Line>
+);
+
+export const EyeIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M2.8 12c2-3.9 5.3-6 9.2-6s7.2 2.1 9.2 6c-2 3.9-5.3 6-9.2 6s-7.2-2.1-9.2-6Z" />
+    <circle cx="12" cy="12" r="2.8" />
+  </Line>
+);
+
+export const LockIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path
+      fillRule="evenodd"
+      d="M8 9V7.5a4 4 0 0 1 8 0V9h.5c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2h-9c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2Zm2 0h4V7.5a2 2 0 0 0-4 0Zm2 4.2a1.6 1.6 0 0 0-.8 3V18h1.6v-1.8a1.6 1.6 0 0 0-.8-3Z"
+    />
+  </svg>
+);
+
 // A bet slip, for the bets table's heading.
 export const SlipIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>

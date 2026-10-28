@@ -1,50 +1,42 @@
-import Link from "next/link";
-import { LeafArt, TurkeyArt } from "@/components/home/PromoArt";
+import Image from "next/image";
+import { PRIZE_POOL } from "@/lib/event";
 import Countdown from "./Countdown";
 import styles from "./EventHero.module.css";
 
-// The top of the event: what it is, how long's left, where to start, and
-// the turkey himself, on an angled panel, poking out over the top.
+// The top of the event: the prize pool, what the hunt is, how long's left,
+// and the turkey in his pilgrim's hat, out on the farm at dusk.
 export default function EventHero() {
   return (
     <section className={styles.hero} aria-labelledby="hunt-title">
       <div className={styles.frame}>
-        <span className={styles.bg} aria-hidden>
-          <span className={styles.panel} />
-        </span>
+        <Image
+          className={styles.scene}
+          src="/event/scene.webp"
+          alt=""
+          width={2000}
+          height={680}
+          // Served as-is: already sized for sharp high-DPI screens.
+          unoptimized
+          loading="eager"
+        />
         <div className={styles.copy}>
-          <p className={styles.kicker}>Thanksgiving event</p>
+          <p className={styles.pool}>
+            {PRIZE_POOL}
+            <span className="sr-only"> in prizes</span>
+          </p>
           <h1 id="hunt-title" className={styles.title}>
             Turkey Hunt
           </h1>
           <p className={styles.text}>
-            Turkeys are loose in every game. Catch one when it pops up for 5 leaves, climb the hunters&apos; board, and spend your leaves in
-            the shop before the hunt ends.
+            This Thanksgiving there are three ways to win: the Harvest Calendar, the Leaf Shop and the Hunters&apos; Board.{" "}
+            <b>Pick one below to get started.</b>
           </p>
           <div className={styles.ends}>
             <span className={styles.endsLabel}>Ends in</span>
             <Countdown />
           </div>
-          <div className={styles.actions}>
-            <Link href="/#games" className={styles.primary}>
-              Start hunting
-            </Link>
-            <a href="#shop" className={styles.secondary}>
-              Leaf shop
-            </a>
-          </div>
         </div>
-        <div className={styles.art} aria-hidden>
-          <span className={styles.leafBig}>
-            <LeafArt />
-          </span>
-          <span className={styles.leafSmall}>
-            <LeafArt />
-          </span>
-          <span className={styles.turkey}>
-            <TurkeyArt />
-          </span>
-        </div>
+        <Image className={styles.turkey} src="/event/turkey.webp" alt="" width={950} height={720} unoptimized loading="eager" />
       </div>
     </section>
   );

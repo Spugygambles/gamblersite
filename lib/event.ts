@@ -17,32 +17,54 @@ export function huntEnds() {
   return end > now ? end : endOf(now.getFullYear() + 1);
 }
 
+/** The hunt's prize pool, in dollars, as the banner shows it. */
+export const PRIZE_POOL = "$25K";
+
 /** How the player's hunt is going. */
 export const MY_HUNT = {
   turkeys: 7,
   leaves: PLAYER.leaves,
+  goldenTurkeys: 0,
   rank: 48,
   hunters: 2914,
 };
 
-export type RewardKind = "leaves" | "case" | "coins" | "badge" | "cup";
-
-/** Rewards for turkeys caught, given out as each count is reached. */
-export const MILESTONES: { turkeys: number; reward: string; kind: RewardKind }[] = [
-  { turkeys: 3, reward: "50 leaves", kind: "leaves" },
-  { turkeys: 10, reward: "Harvest Case", kind: "case" },
-  { turkeys: 25, reward: "2.50 coins", kind: "coins" },
-  { turkeys: 50, reward: "Turkey badge", kind: "badge" },
-  { turkeys: 100, reward: "25.00 coins", kind: "cup" },
+/** The leaf shop's cases, cheapest first. Each picture is in
+    public/event/cases, named by the case's id. */
+export const CASES = [
+  { id: "maple-grove", name: "Maple Grove", price: 10 },
+  { id: "cranberry-bog", name: "Cranberry Bog", price: 25 },
+  { id: "pumpkin-patch", name: "Pumpkin Patch", price: 50 },
+  { id: "corn-maze", name: "Corn Maze", price: 100 },
+  { id: "pilgrims-pride", name: "Pilgrim's Pride", price: 250 },
+  { id: "gravy-boat", name: "Gravy Boat", price: 500 },
+  { id: "harvest-moon", name: "Harvest Moon", price: 1000 },
+  { id: "wishbone", name: "Wishbone", price: 2500 },
+  { id: "flannel-season", name: "Flannel Season", price: 5000 },
+  { id: "cornucopia", name: "Cornucopia", price: 10000 },
 ];
 
-/** The shop: what leaves buy. */
-export const SHOP: { name: string; about: string; price: number; kind: RewardKind; panel: string }[] = [
-  { name: "1.00 coins", about: "Straight onto your balance.", price: 60, kind: "coins", panel: "#26443a" },
-  { name: "Race boost", about: "A tenth more race points for a day.", price: 90, kind: "cup", panel: "#33295a" },
-  { name: "Harvest Case", about: "A free case with Thanksgiving skins.", price: 120, kind: "case", panel: "#1d3d4c" },
-  { name: "Turkey badge", about: "A turkey by your name in chat.", price: 250, kind: "badge", panel: "#4f2430" },
+/** The harvest calendar: a gift a day, the last a case. `claimed` days are
+    behind the player, `today` is open, the rest are locked. */
+export const CALENDAR: { day: number; gift: string; leaves?: number; caseId?: string }[] = [
+  { day: 1, gift: "10 leaves", leaves: 10 },
+  { day: 2, gift: "10 leaves", leaves: 10 },
+  { day: 3, gift: "15 leaves", leaves: 15 },
+  { day: 4, gift: "15 leaves", leaves: 15 },
+  { day: 5, gift: "20 leaves", leaves: 20 },
+  { day: 6, gift: "25 leaves", leaves: 25 },
+  { day: 7, gift: "Maple Grove", caseId: "maple-grove" },
+  { day: 8, gift: "25 leaves", leaves: 25 },
+  { day: 9, gift: "30 leaves", leaves: 30 },
+  { day: 10, gift: "30 leaves", leaves: 30 },
+  { day: 11, gift: "35 leaves", leaves: 35 },
+  { day: 12, gift: "40 leaves", leaves: 40 },
+  { day: 13, gift: "50 leaves", leaves: 50 },
+  { day: 14, gift: "Golden Turkey", caseId: "golden-turkey" },
 ];
+
+/** The calendar day the player's on. */
+export const TODAY = 6;
 
 /** The leaderboard's prizes, first to tenth, in coins. */
 export const PRIZES = [750, 500, 300, 200, 150, 150, 125, 125, 100, 100];
@@ -62,10 +84,10 @@ export const HUNTERS = [
 ];
 
 export const RULES = [
-  "Turkeys can turn up in any game, on bets of 0.10 coins or more.",
-  "Click a turkey before it runs off to catch it. Each one pays 5 leaves.",
-  "Milestone rewards land on your account as soon as you reach them.",
-  "Leaderboard prizes are paid within a day of the hunt ending.",
-  "Leaves don't carry over: spend them before the hunt ends.",
+  "Turkeys can turn up in any game, on bets of 0.10 coins or more. Click one before it runs off to catch it.",
+  "You earn 1 leaf for every 5.00 coins wagered, adjusted by game, and 5 leaves for each turkey you catch.",
+  "Golden Turkeys drop from case opens. Each one opens the Golden Turkey case once.",
+  "Calendar gifts open one a day. A day you miss stays locked.",
+  "Leaderboard prizes are paid within a day of the hunt ending. Leaves don't carry over.",
   "One account per player. Accounts that abuse the hunt are removed from it.",
 ];

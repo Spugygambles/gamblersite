@@ -31,7 +31,8 @@ LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turk
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
-    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap"
+    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900"
+    "&family=Saira:ital,wdth,wght@0,50..125,100..900;1,50..125,100..900&display=swap"
 )
 js = (HERE / "preview.js").read_text()
 
@@ -48,7 +49,7 @@ def snapshot(path, title):
     body = re.sub(r"<!--\$\??-->|<!--/\$-->", "", body)
     assert "<script" not in body
     # Public images sit beside the page.
-    body = re.sub(r'src="/(cases|battles|coinflip)/', r'src="\1/', body)
+    body = re.sub(r'src="/(cases|battles|coinflip|event)/', r'src="\1/', body)
     body = re.sub(r'href="(/[^"]*)"', lambda m: f'href="{LINKS.get(m.group(1), m.group(1))}"', body)
 
     css = []
@@ -106,7 +107,7 @@ for path, name, title in PAGES:
     head, main, body = snapshot(path, title)
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
     (OUT / name).write_text(page)
-    used |= set(re.findall(r'src="((?:cases|battles|coinflip)/[^"]+)"', body))
+    used |= set(re.findall(r'src="((?:cases|battles|coinflip|event)/[^"]+)"', body))
     print(name, len(page), "bytes")
 used = sorted(used)
 for rel in used:
