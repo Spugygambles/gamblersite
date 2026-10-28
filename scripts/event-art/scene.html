@@ -1,0 +1,336 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head><body>
+<script type="module">
+// The scene behind the hunt's banner: a harvest field at dusk. A straw
+// scarecrow stands in the corn on the right, a crow on one arm and a lit
+// lantern on the other, with a harvest moon low behind him; bare trees and
+// hills fade into the haze; pumpkins and leaves lie about his pole. The
+// left is kept dim and plain for the banner's words. Rendered wide, then
+// finished in 2D: a soft glow, drifts of fog, a vignette and grain.
+import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
+import { canvasTex, seeded } from "./objects.js";
+import { bareTree, cornStalk, hill, leaf, LEAF_COLORS, pumpkin, scarecrow, soil, wood } from "./harvest.js";
+import { pack } from "./pack.js";
+
+const W = 2600, H = 1100;
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1);
+renderer.setSize(W, H);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.95;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.2;
+scene.fog = new THREE.Fog(0x2a1e38, 16, 150);
+
+// Low and level, so he stands in the top two thirds and the ground, where
+// the tab cards go, fills the rest.
+const camera = new THREE.PerspectiveCamera(22, W / H, 0.1, 1000);
+camera.position.set(0, 1.6, 17.2);
+camera.lookAt(0.9, 1.55, 0);
+camera.updateMatrixWorld();
+
+// where a screen point (0..1 from the left and top) is, `dist` from the camera
+const at = (sx, sy, dist) => {
+  const v = new THREE.Vector3(sx * 2 - 1, 1 - sy * 2, 0.5).unproject(camera).sub(camera.position).normalize();
+  return camera.position.clone().addScaledVector(v, dist);
+};
+// the x on the ground at depth z that lands at screen x `sx`
+const groundX = (sx, z) => {
+  const d = camera.position.z - z;
+  const halfW = d * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
+  return 0.9 * (1 - d / camera.position.z) + (sx - 0.5) * 2 * halfW;
+};
+const rand = seeded(9);
+
+// ---- Sky, moon and stars ----------------------------------------------------------------
+scene.background = canvasTex(16, 1024, (ctx, w, h) => {
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  g.addColorStop(0, "#07091a");
+  g.addColorStop(0.3, "#121430");
+  g.addColorStop(0.52, "#241a3a");
+  g.addColorStop(0.64, "#3f2538");
+  g.addColorStop(0.74, "#6a3a2e");
+  g.addColorStop(0.82, "#8e4d2c");
+  g.addColorStop(1, "#8e4d2c");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+});
+{
+  const n = 320, pos = [], col = [];
+  for (let i = 0; i < n; i++) {
+    const p = at(rand(), Math.pow(rand(), 1.5) * 0.5, 500);
+    pos.push(p.x, p.y, p.z);
+    const b = 0.3 + rand() * 0.7;
+    col.push(b, b * 0.95, b * 0.85);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  const dot = canvasTex(32, 32, (ctx) => {
+    const r = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+    r.addColorStop(0, "rgba(255,255,255,1)");
+    r.addColorStop(0.4, "rgba(255,255,255,0.5)");
+    r.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = r;
+    ctx.fillRect(0, 0, 32, 32);
+  });
+  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 3, sizeAttenuation: false, vertexColors: true, map: dot, transparent: true, depthWrite: false, fog: false })));
+}
+const moonPos = at(0.665, 0.29, 400);
+{
+  const face = canvasTex(512, 512, (ctx, w, h) => {
+    const g = ctx.createRadialGradient(w * 0.45, h * 0.42, 20, w / 2, h / 2, w / 2);
+    g.addColorStop(0, "#fff0cf");
+    g.addColorStop(0.55, "#f7cf8e");
+    g.addColorStop(1, "#e5a35c");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    const r = seeded(4);
+    for (let i = 0; i < 40; i++) {
+      ctx.fillStyle = `rgba(180,110,60,${0.06 + r() * 0.1})`;
+      ctx.beginPath();
+      ctx.arc(70 + r() * 372, 70 + r() * 372, 8 + r() * 34, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+  const moon = new THREE.Mesh(new THREE.CircleGeometry(46, 128), new THREE.MeshBasicMaterial({ map: face, fog: false }));
+  moon.position.copy(moonPos);
+  moon.lookAt(camera.position);
+  scene.add(moon);
+  const glow = canvasTex(256, 256, (ctx) => {
+    const r = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+    r.addColorStop(0, "rgba(255,190,110,0.5)");
+    r.addColorStop(0.35, "rgba(255,160,90,0.18)");
+    r.addColorStop(1, "rgba(255,140,80,0)");
+    ctx.fillStyle = r;
+    ctx.fillRect(0, 0, 256, 256);
+  });
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glow, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, transparent: true }));
+  halo.scale.set(300, 300, 1);
+  halo.position.copy(camera.position).addScaledVector(moonPos.clone().sub(camera.position).normalize(), 700);
+  scene.add(halo);
+}
+
+// ---- Light --------------------------------------------------------------------------------
+scene.add(new THREE.HemisphereLight(0x2f3068, 0x2a1a10, 0.55));
+const key = new THREE.DirectionalLight(0xffb070, 1.25);
+key.position.set(-4, 4, 9);
+key.target.position.set(3.3, 1.8, 0);
+key.castShadow = true;
+key.shadow.mapSize.set(4096, 4096);
+Object.assign(key.shadow.camera, { left: -9, right: 9, top: 7, bottom: -5, near: 1, far: 40 });
+key.shadow.radius = 5;
+key.shadow.bias = -0.0006;
+scene.add(key, key.target);
+const rim = new THREE.DirectionalLight(0x9fb0ff, 2.2);
+rim.position.set(6, 7, -6);
+scene.add(rim);
+const moonlight = new THREE.DirectionalLight(0xffd9a0, 0.45);
+moonlight.position.copy(moonPos).normalize().multiplyScalar(30);
+scene.add(moonlight);
+
+// ---- Ground, hills, trees ---------------------------------------------------------------
+{
+  const tex = soil(5);
+  tex.repeat.set(40, 40);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ map: tex, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+}
+// low hills along the horizon, darker the nearer they are
+for (const [sx, z, w, h, c] of [
+  [0.1, -140, 200, 7, 0x1a1430], [0.5, -148, 240, 9, 0x1a1430], [0.9, -140, 200, 6.5, 0x1a1430],
+  [0.3, -112, 130, 5, 0x141028], [0.78, -118, 150, 5.5, 0x141028],
+]) {
+  const m = hill(w, h, c);
+  m.position.set(groundX(sx, z), -0.5, z);
+  scene.add(m);
+}
+{
+  const r = seeded(33);
+  for (let i = 0; i < 24; i++) {
+    const z = -38 - r() * 40;
+    const t = bareTree(8 + r() * 7, 100 + i);
+    t.position.set(groundX(i / 23, z) + (r() - 0.5) * 6, t.geometry.parameters.height / 2 - 0.2, z);
+    scene.add(t);
+  }
+  // nearer, bigger ones at the edges, framing the picture
+  for (const [sx, z, size, seed] of [[-0.02, -20, 15, 7], [1.02, -22, 16, 8], [0.12, -26, 12, 9]]) {
+    const t = bareTree(size, seed);
+    t.position.set(groundX(sx, z), size / 2 - 0.2, z);
+    scene.add(t);
+  }
+}
+// a farmhouse far off, one window lit
+{
+  const house = new THREE.Mesh(
+    new THREE.PlaneGeometry(9, 5),
+    new THREE.MeshStandardMaterial({
+      map: canvasTex(256, 142, (ctx, w, h) => {
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(40, 60, 180, 82);
+        ctx.beginPath();
+        ctx.moveTo(30, 62);
+        ctx.lineTo(130, 10);
+        ctx.lineTo(230, 62);
+        ctx.fill();
+        ctx.fillRect(170, 18, 14, 30);
+      }),
+      color: 0x0d0b17,
+      alphaTest: 0.5,
+      roughness: 1,
+    }),
+  );
+  house.position.set(groundX(0.3, -85), 2.3, -85);
+  const window = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.55), new THREE.MeshBasicMaterial({ color: 0xffb060, fog: false }));
+  window.position.set(house.position.x + 1.2, 1.5, -84.9);
+  scene.add(house, window);
+}
+
+// ---- The corn: rows of stalks, each row's planes merged, turned to the camera -------------
+{
+  const r = seeded(44);
+  const kinds = Array.from({ length: 6 }, (_, i) => cornStalk(1, 200 + i));
+  const buckets = kinds.map(() => []);
+  for (let row = 0; row < 22; row++) {
+    const z = -3 - row * 1.15 - r() * 0.5;
+    const x0 = groundX(-0.1, z), x1 = groundX(1.1, z);
+    for (let x = x0; x < x1; x += 0.75 + r() * 0.5) {
+      const k = Math.floor(r() * kinds.length);
+      const size = 2.5 + r() * 0.9;
+      const geo = kinds[k].geometry.clone();
+      const px = x + (r() - 0.5) * 0.5;
+      geo.scale(size * (r() > 0.5 ? 1 : -1), size, 1);
+      geo.rotateY(Math.atan2(camera.position.x - px, camera.position.z - z));
+      geo.translate(px, size / 2 - 0.1, z);
+      buckets[k].push(geo);
+    }
+  }
+  kinds.forEach((kind, k) => {
+    if (!buckets[k].length) return;
+    const m = new THREE.Mesh(mergeGeometries(buckets[k]), kind.material);
+    m.castShadow = true;
+    m.receiveShadow = true;
+    scene.add(m);
+  });
+}
+
+// ---- The scarecrow, his fence, pumpkins and leaves ----------------------------------------
+const man = scarecrow();
+man.position.set(groundX(0.7, 0), 0.35, 0);
+man.rotation.y = -0.16;
+scene.add(man);
+{
+  const woodM = new THREE.MeshStandardMaterial({ map: wood(16), roughness: 0.9 });
+  const fence = new THREE.Group();
+  for (let x = -0.4; x <= 7; x += 2.4) {
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.16, 1.25, 0.16), woodM);
+    post.position.set(x, 0.62, 0);
+    fence.add(post);
+  }
+  for (const y of [0.45, 0.95]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.11, 0.08), woodM);
+    rail.position.set(3.3, y, 0.1);
+    fence.add(rail);
+  }
+  fence.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+  fence.position.set(man.position.x - 1.2, 0.3, -2.6);
+  scene.add(fence);
+}
+for (const [dx, z, r, c, k] of [
+  [-1.3, -0.6, 0.42, 0xc96a2a, 9], [1.1, -1.0, 0.5, 0xb85c25, 10], [-0.3, -0.2, 0.28, 0xe3d2b2, 8], [2.3, -1.4, 0.44, 0xd0742c, 9], [1.9, 0.1, 0.26, 0xc96a2a, 9],
+]) {
+  const p = pumpkin(r, c, { lobes: k });
+  p.position.set(man.position.x + dx, 0.35, z);
+  p.rotation.y = rand() * 6;
+  scene.add(p);
+}
+{
+  const r = seeded(77);
+  for (let i = 0; i < 160; i++) {
+    const z = 2 - Math.pow(r(), 0.7) * 9;
+    const l = leaf(0.22 + r() * 0.2, LEAF_COLORS[Math.floor(r() * LEAF_COLORS.length)]);
+    l.rotation.set(-Math.PI / 2 + (r() - 0.5) * 0.4, 0, r() * 6.28);
+    l.position.set(groundX(0.25 + r() * 0.8, z), 0.015 + r() * 0.02, z);
+    scene.add(l);
+  }
+  for (let i = 0; i < 34; i++) {
+    const z = -1 - r() * 9;
+    const p = at(0.35 + r() * 0.62, 0.03 + r() * 0.5, camera.position.z - z);
+    const l = leaf(0.2 + r() * 0.18, LEAF_COLORS[Math.floor(r() * LEAF_COLORS.length)]);
+    l.position.copy(p);
+    l.rotation.set(r() * 6.28, r() * 6.28, r() * 6.28);
+    scene.add(l);
+  }
+}
+
+renderer.render(scene, camera);
+
+// ---- Finishing, in 2D ------------------------------------------------------------------------
+const out = document.createElement("canvas");
+out.width = W;
+out.height = H;
+const ctx = out.getContext("2d");
+ctx.drawImage(renderer.domElement, 0, 0);
+// a soft glow off everything bright: the moon, the lantern, the lit cloth
+ctx.globalCompositeOperation = "lighter";
+ctx.globalAlpha = 0.22;
+ctx.filter = "blur(34px) brightness(0.9) contrast(1.4)";
+ctx.drawImage(renderer.domElement, 0, 0);
+ctx.filter = "none";
+// drifts of fog low over the field
+ctx.globalCompositeOperation = "screen";
+for (const [y0, y1, a] of [[0.5, 0.78, 0.14], [0.62, 0.9, 0.1], [0.74, 1, 0.12]]) {
+  const g = ctx.createLinearGradient(0, H * y0, 0, H * y1);
+  g.addColorStop(0, "rgba(90,70,110,0)");
+  g.addColorStop(0.5, `rgba(110,86,120,${a})`);
+  g.addColorStop(1, "rgba(90,70,110,0)");
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+}
+// the dark edges, and the dim left where the words go
+ctx.globalCompositeOperation = "multiply";
+const vig = ctx.createRadialGradient(W * 0.62, H * 0.5, H * 0.3, W * 0.55, H * 0.5, W * 0.62);
+vig.addColorStop(0, "#ffffff");
+vig.addColorStop(1, "#5a4a62");
+ctx.fillStyle = vig;
+ctx.fillRect(0, 0, W, H);
+const scrim = ctx.createLinearGradient(0, 0, W * 0.5, 0);
+scrim.addColorStop(0, "#4a425a");
+scrim.addColorStop(1, "#ffffff");
+ctx.fillStyle = scrim;
+ctx.fillRect(0, 0, W, H);
+// grain
+ctx.globalCompositeOperation = "overlay";
+const grain = ctx.createImageData(W, H);
+const r = seeded(99);
+for (let i = 0; i < grain.data.length; i += 4) {
+  const v = 110 + r() * 90;
+  grain.data[i] = grain.data[i + 1] = grain.data[i + 2] = v;
+  grain.data[i + 3] = 26;
+}
+const gc = document.createElement("canvas");
+gc.width = W;
+gc.height = H;
+gc.getContext("2d").putImageData(grain, 0, 0);
+ctx.globalAlpha = 1;
+ctx.drawImage(gc, 0, 0);
+ctx.globalCompositeOperation = "source-over";
+
+const picture = pack(out, { quality: 0.84 });
+window.pictures = async () => [{ file: "event/scene.webp", data: picture }];
+</script>
+</body></html>

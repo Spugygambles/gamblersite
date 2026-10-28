@@ -114,50 +114,6 @@
   translate: -50% -50%;
 }
 
-/* ---- Players ----------------------------------------------------------- */
-
-.playing {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--text-soft);
-  font: 500 13px/1 var(--font-ui), sans-serif;
-  white-space: nowrap;
-}
-
-.dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--live);
-}
-
-/* A few of the players, overlapping. */
-.faces {
-  display: flex;
-}
-
-.face {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  margin-right: -8px;
-  border: 2px solid var(--surface);
-  border-radius: 50%;
-  box-sizing: content-box;
-  color: #fff;
-  font: 700 10px/1 var(--font-ui), sans-serif;
-}
-
-.face:last-child {
-  margin-right: 0;
-}
-
-.feature:hover .face {
-  border-color: var(--surface-2);
-}
-
 /* ---- Originals --------------------------------------------------------- */
 
 .originals {
@@ -286,13 +242,6 @@
   }
 }
 
-/* The players count gives the art its room back. */
-@container (max-width: 960px) {
-  .feature .playing {
-    display: none;
-  }
-}
-
 /* Too narrow for the art beside the copy: the two banners put the art over
    the title, and the originals become a row you swipe through, running out
    to the edges of the page. Every game still shows on a phone's first
@@ -327,14 +276,6 @@
   .featureText,
   .button {
     display: none;
-  }
-
-  .featureFoot {
-    margin-top: 6px;
-  }
-
-  .feature .playing {
-    display: inline-flex;
   }
 
   .tileTitle {

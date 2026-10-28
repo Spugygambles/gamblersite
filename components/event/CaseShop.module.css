@@ -161,38 +161,43 @@
 /* ---- The Golden Turkey --------------------------------------------------- */
 
 .golden {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
-  margin-top: 14px;
-  padding: 28px 40px;
-  overflow: hidden;
+  margin-top: 16px;
+  padding: 30px 40px;
   border-radius: 14px;
   background: var(--surface);
-  box-shadow: inset 0 0 0 2px rgba(241, 196, 92, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(241, 196, 92, 0.3);
 }
 
 .goldenWords {
   display: grid;
   justify-items: start;
   gap: 10px;
-  max-width: 500px;
+  max-width: 420px;
+}
+
+.goldenIcon {
+  width: 72px;
+  height: auto;
+  margin-bottom: 6px;
 }
 
 .goldenKicker {
   margin: 0;
   color: #f1c45c;
-  font: 800 12px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.14em;
+  font: 800 11.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .goldenTitle {
   margin: 0;
   color: #f1c45c;
-  font: 900 36px/1 var(--font-ui), sans-serif;
-  text-transform: uppercase;
+  font: 800 32px/1.1 var(--font-ui), sans-serif;
+  letter-spacing: -0.01em;
 }
 
 .goldenText {
@@ -201,49 +206,35 @@
   font: 400 14px/1.55 var(--font-ui), sans-serif;
 }
 
-.goldenHave {
-  margin: 4px 0 4px;
-  color: var(--text-muted);
-  font: 500 13px/1 var(--font-ui), sans-serif;
-}
-
-.goldenHave b {
-  color: #fff;
-  font-weight: 800;
-}
-
-.golden .open,
-.golden .short {
-  align-self: auto;
-  min-width: 150px;
-}
-
-.golden .short {
-  background: var(--surface-2);
-  color: var(--text-muted);
+.goldenCase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: center;
+  width: min(100%, 300px);
 }
 
 .goldenArt {
-  position: relative;
-  flex-shrink: 0;
-  width: 360px;
-  margin: -16px 12px -16px 0;
-}
-
-.goldenCase {
-  display: block;
   width: 100%;
+  max-width: 260px;
+  height: auto;
+  margin-bottom: 4px;
+}
+
+.goldenName {
+  margin: 0;
+  color: var(--text);
+  font: 700 14.5px/1.2 var(--font-ui), sans-serif;
+}
+
+.goldenCase .price img {
+  width: 26px;
   height: auto;
 }
 
-/* The gold foil turkey, stuck on at an angle by the case's corner. */
-.goldenSticker {
-  position: absolute;
-  top: 2px;
-  left: -78px;
-  width: 140px;
-  height: auto;
-  rotate: -10deg;
+.goldenCase .open,
+.goldenCase .short {
+  align-self: stretch;
 }
 
 /* ---- Narrower ------------------------------------------------------------ */
@@ -255,15 +246,6 @@
 
   .golden {
     padding: 24px 28px;
-  }
-
-  .goldenArt {
-    width: 290px;
-  }
-
-  .goldenSticker {
-    left: -60px;
-    width: 116px;
   }
 }
 
@@ -284,30 +266,19 @@
   }
 
   .golden {
-    flex-direction: column-reverse;
-    align-items: stretch;
-    gap: 6px;
-    padding: 18px 20px 22px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 22px 20px 24px;
   }
 
-  .goldenArt {
-    align-self: center;
-    width: min(100% - 70px, 280px);
-    margin: -6px 0 0 60px;
-  }
-
-  .goldenSticker {
-    left: -64px;
-    width: 104px;
+  .goldenWords {
+    justify-items: center;
+    max-width: none;
+    text-align: center;
   }
 
   .goldenTitle {
-    font-size: 28px;
-  }
-
-  .golden .open,
-  .golden .short {
-    align-self: stretch;
+    font-size: 26px;
   }
 }
 

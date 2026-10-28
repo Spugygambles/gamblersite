@@ -12,9 +12,9 @@ const UNITS = [
 ] as const;
 
 // The time left in the hunt, ticking every second: each digit in its own
-// box, in pairs. Dashes until mounted, so the server and the first client
-// render agree.
-export default function Countdown() {
+// box, in pairs, the unit under each pair unless it's `plain`. Dashes
+// until mounted, so the server and the first client render agree.
+export default function Countdown({ plain = false }: { plain?: boolean }) {
   const [left, setLeft] = useState<number[] | null>(null);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function Countdown() {
   }, []);
 
   return (
-    <div className={styles.countdown} role="timer" aria-label="Time left in the hunt" data-countdown>
+    <div className={`${styles.countdown} ${plain ? styles.plain : ""}`} role="timer" aria-label="Time left in the hunt" data-countdown>
       {UNITS.map(([unit, label], i) => (
         <Fragment key={unit}>
           {i > 0 && (
@@ -45,6 +45,7 @@ export default function Countdown() {
               ))}
             </span>
             <span className={styles.label}>{label}</span>
+            {plain && <span className="sr-only">{label}</span>}
           </span>
         </Fragment>
       ))}

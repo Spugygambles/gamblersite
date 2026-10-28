@@ -1,21 +1,20 @@
 "use client";
 
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { CalendarSticker, CaseSticker, TrophySticker } from "./Stickers";
 import styles from "./EventTabs.module.css";
 
 const TABS = [
-  { id: "calendar", title: "Harvest Calendar", note: "A gift every day", Art: CalendarSticker },
-  { id: "shop", title: "Leaf Shop", note: "Thanksgiving cases", Art: CaseSticker },
-  { id: "board", title: "Hunters' Board", note: "Top 10 win coins", Art: TrophySticker },
+  { id: "calendar", title: "Harvest Calendar", note: "A gift every day" },
+  { id: "shop", title: "Leaf Shop", note: "Thanksgiving cases" },
+  { id: "board", title: "Hunters' Board", note: "Top 10 win coins" },
 ] as const;
 
 export type EventTab = (typeof TABS)[number]["id"];
 
 /**
- * The three ways into the hunt, as cards with a sticker each, each opening
- * its panel underneath. The shop's open to start. Arrow keys move between
- * the cards.
+ * The three ways into the hunt, as glass cards over the field, each
+ * opening its panel underneath. The shop's open to start. Arrow keys move
+ * between the cards.
  */
 export default function EventTabs({ panels }: { panels: Record<EventTab, ReactNode> }) {
   const [tab, setTab] = useState<EventTab>("shop");
@@ -50,7 +49,6 @@ export default function EventTabs({ panels }: { panels: Record<EventTab, ReactNo
               <span className={styles.title}>{t.title}</span>
               <span className={styles.note}>{t.note}</span>
             </span>
-            <t.Art className={styles.art} />
           </button>
         ))}
       </div>

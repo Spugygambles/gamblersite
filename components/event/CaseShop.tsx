@@ -4,7 +4,6 @@ import { count } from "@/lib/home";
 import { CASES, MY_HUNT } from "@/lib/event";
 import { EyeIcon, InfoIcon, MapleIcon } from "@/components/home/icons";
 import PanelIntro from "./PanelIntro";
-import { TurkeySticker } from "./Stickers";
 import styles from "./CaseShop.module.css";
 
 const GOLDEN = "/event/cases/golden-turkey.webp";
@@ -12,9 +11,8 @@ const GOLDEN = "/event/cases/golden-turkey.webp";
 /**
  * The leaf shop: how leaves and Golden Turkeys are found, the player's
  * balance, then ten Thanksgiving cases priced in leaves, cheapest first,
- * and the Golden Turkey case at the end, with the gold foil turkey stuck
- * beside it. A case the player can't afford says so in place of its Open
- * button.
+ * and the Golden Turkey case on a wide card of its own at the end. A case
+ * the player can't afford says so in place of its Open button.
  */
 export default function CaseShop() {
   return (
@@ -106,27 +104,26 @@ export default function CaseShop() {
 
       <article className={styles.golden} aria-labelledby="golden-title">
         <div className={styles.goldenWords}>
+          <Image className={styles.goldenIcon} src={GOLDEN} alt="" width={480} height={325} unoptimized />
           <p className={styles.goldenKicker}>Golden</p>
           <h3 id="golden-title" className={styles.goldenTitle}>
             The Golden Turkey
           </h3>
-          <p className={styles.goldenText}>
-            The hunt&apos;s best case, and it can&apos;t be bought: open one with every Golden Turkey you find in a Thanksgiving case.
-          </p>
-          <p className={styles.goldenHave}>
-            You have <b className="tabular">{MY_HUNT.goldenTurkeys}</b> Golden Turkeys
+          <p className={styles.goldenText}>One case, the biggest prizes of the season.</p>
+        </div>
+        <div className={styles.goldenCase}>
+          <Image className={styles.goldenArt} src={GOLDEN} alt="" width={480} height={325} unoptimized />
+          <p className={styles.goldenName}>Golden Turkey</p>
+          <p className={`${styles.price} tabular`}>
+            <Image src={GOLDEN} alt="" width={480} height={325} unoptimized />1<span className="sr-only"> Golden Turkey</span>
           </p>
           {MY_HUNT.goldenTurkeys > 0 ? (
             <Link href="/cases/golden-turkey" className={styles.open}>
               Open
             </Link>
           ) : (
-            <span className={styles.short}>Find a Golden Turkey to open it</span>
+            <span className={styles.short}>Not enough Golden Turkeys</span>
           )}
-        </div>
-        <div className={styles.goldenArt} aria-hidden>
-          <Image className={styles.goldenCase} src={GOLDEN} alt="" width={480} height={325} unoptimized />
-          <TurkeySticker gold className={styles.goldenSticker} />
         </div>
       </article>
     </div>

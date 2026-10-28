@@ -44,6 +44,26 @@
   text-transform: uppercase;
 }
 
+/* Plain: just the boxes, bigger, over a picture. */
+.plain .label {
+  display: none;
+}
+
+.plain .digit {
+  width: 38px;
+  height: 48px;
+  background: rgba(14, 12, 28, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 4px 14px rgba(0, 0, 0, 0.4);
+  font-size: 25px;
+}
+
+.plain .colon {
+  height: 48px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
 @media (max-width: 420px) {
   .countdown {
     gap: 4px;
