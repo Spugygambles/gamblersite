@@ -146,7 +146,7 @@
 }
 
 /* Four narrow cards: the arrow makes way for the title. */
-@container (max-width: 1099px) {
+@container (max-width: 1199px) {
   .go {
     display: none;
   }
@@ -156,8 +156,57 @@
   }
 }
 
-/* Less room: two across, with the arrow back. */
+/* Narrower still: a smaller well and type, so the words fit. */
+@container (max-width: 1099px) {
+  .card {
+    gap: 12px;
+  }
+
+  .well {
+    width: 62px;
+    height: 62px;
+  }
+
+  .daily {
+    width: 52px;
+    height: 52px;
+  }
+
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .title {
+    font-size: 14.5px;
+  }
+}
+
+/* Less room: two across, with the arrow, well and type back to size. */
 @container (max-width: 959px) {
+  .card {
+    gap: 14px;
+  }
+
+  .well {
+    width: 76px;
+    height: 76px;
+  }
+
+  .daily {
+    width: 64px;
+    height: 64px;
+  }
+
+  .kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+
   .go {
     display: block;
   }

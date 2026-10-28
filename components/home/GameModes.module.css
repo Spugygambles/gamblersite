@@ -46,7 +46,7 @@
 .feature {
   display: flex;
   align-items: center;
-  min-height: 196px;
+  min-height: 236px;
   border-radius: 10px;
 }
 
@@ -61,7 +61,7 @@
 }
 
 .featureTitle {
-  font: 800 29px/1 var(--font-ui), sans-serif;
+  font: 800 32px/1 var(--font-ui), sans-serif;
   letter-spacing: 0;
   text-transform: uppercase;
 }
@@ -146,16 +146,16 @@
 /* Tall cards: the art in the upper half, the title at the foot. */
 .tile {
   display: block;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 3 / 5;
   border-radius: 10px;
 }
 
 .tileArt {
   position: absolute;
-  top: calc(var(--art-y) * 0.86);
+  top: calc(var(--art-y) * 0.88);
   left: 50%;
   z-index: 1;
-  width: calc(var(--art-size) * 1.08);
+  width: calc(var(--art-size) * 1.16);
   aspect-ratio: 1;
   translate: -50% -50%;
   transition: scale 0.3s ease;
@@ -169,10 +169,10 @@
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 18px;
+  bottom: 22px;
   z-index: 2;
   overflow: hidden;
-  font: 800 15px/1.1 var(--font-ui), sans-serif;
+  font: 800 16px/1.1 var(--font-ui), sans-serif;
   letter-spacing: 0.02em;
   text-align: center;
   text-overflow: ellipsis;
@@ -202,7 +202,7 @@
 /* ---- Less room --------------------------------------------------------- */
 
 /* Beside chat or in a smaller window: smaller titles and art. */
-@container (max-width: 1099px) {
+@container (max-width: 1149px) {
   .features,
   .originals {
     gap: 10px;
@@ -218,7 +218,7 @@
   }
 
   .featureTitle {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   .featureArt {
@@ -226,7 +226,7 @@
   }
 
   .tileTitle {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   /* A smaller tag, clear of art that runs near the top. */
@@ -325,7 +325,7 @@
    fits. */
 @media (max-height: 720px) {
   .feature {
-    min-height: 172px;
+    min-height: 190px;
   }
 
   .tile {

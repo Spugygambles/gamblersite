@@ -1,7 +1,7 @@
 /*
- * The live bets: tabs and a row count over a table whose rows are flat
- * bars. Wins pay out in green; losses stay quiet. New bets fade in at the
- * top. Narrow, it drops the player and multiplier columns.
+ * The bets: tabs and a row count over a table whose rows are flat bars.
+ * Wins pay out in green; losses stay quiet. Narrow, it drops the player and
+ * multiplier columns.
  */
 
 .bets {
@@ -199,17 +199,6 @@
   color: var(--text-muted) !important;
 }
 
-/* A new bet fades in at the top. */
-.fresh td {
-  animation: in 0.45s ease both;
-}
-
-@keyframes in {
-  from {
-    opacity: 0;
-  }
-}
-
 /* Narrow: game, wager and payout only. */
 @container (max-width: 639px) {
   .player,
@@ -242,9 +231,5 @@
 @media (prefers-reduced-motion: reduce) {
   .tab {
     transition: none;
-  }
-
-  .fresh td {
-    animation: none;
   }
 }

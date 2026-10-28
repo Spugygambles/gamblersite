@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { makeBet, SAMPLE_BETS, type Bet } from "@/lib/home";
+import { useState } from "react";
+import { SAMPLE_BETS, type Bet } from "@/lib/home";
 import { avatarOf } from "./avatar";
 import { CoinIcon, GAME_ICONS } from "./icons";
 import styles from "./LiveBets.module.css";
@@ -24,32 +24,21 @@ const TABS = [
   { id: "lucky", label: "Lucky wins", shows: (b: Bet) => b.multiplier >= 10 },
 ] as const;
 
-const ROWS = [10, 15, 20];
+const ROWS = [8, 15, 20];
 
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 /**
- * The latest bets across the site, newest on top, a new one every couple of
- * seconds. Tabs pick out the big wins (winning $100 or more) and the lucky
- * ones (10x or more). Sample bets until it's wired to the server.
+ * The latest bets across the site, newest on top, eight at a time to start.
+ * Tabs pick out the big wins (winning $100 or more) and the lucky ones (10x
+ * or more). A still list of sample bets until it's wired to the server.
  */
 export default function LiveBets() {
-  const [bets, setBets] = useState<Bet[]>(SAMPLE_BETS);
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("all");
-  const [rows, setRows] = useState(10);
-
-  useEffect(() => {
-    let id = SAMPLE_BETS[0].id;
-    const t = setInterval(() => {
-      id += 1;
-      const bet = makeBet(id, Math.random);
-      setBets((b) => [bet, ...b].slice(0, 200));
-    }, 2200);
-    return () => clearInterval(t);
-  }, []);
+  const [rows, setRows] = useState(ROWS[0]);
 
   const shows = TABS.find((t) => t.id === tab)!.shows;
-  const shown = bets.filter(shows).slice(0, rows);
+  const shown = SAMPLE_BETS.filter(shows).slice(0, rows);
 
   return (
     <div className={styles.bets}>
@@ -104,7 +93,7 @@ export default function LiveBets() {
             const payout = b.wager * b.multiplier;
             const won = b.multiplier >= 1;
             return (
-              <tr key={b.id} className={b.id > SAMPLE_BETS[0].id ? styles.fresh : undefined}>
+              <tr key={b.id}>
                 <td>
                   <span className={styles.game}>
                     <Icon />

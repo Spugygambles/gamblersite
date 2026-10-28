@@ -226,10 +226,9 @@
     });
   }
 
-  // ---- Live bets (components/home/LiveBets.tsx): a new bet every couple of
-  // seconds, tabs for the big and lucky wins, and how many rows to show.
-  // The sample bets come from the same seeded numbers as lib/home.ts, so the
-  // table starts as the site drew it.
+  // ---- Bets (components/home/LiveBets.tsx): tabs for the big and lucky
+  // wins, and how many rows to show. The sample bets come from the same
+  // seeded numbers as lib/home.ts, so the table matches what the site drew.
   const betTable = document.querySelector("main table");
   if (betTable) {
     const cls = (name) => sibling(classOf(betTable, "table"), name);
@@ -272,7 +271,6 @@
     };
     const random = seeded(7);
     const bets = Array.from({ length: 120 }, (_, i) => makeBet(120 - i, random));
-    const newestSample = bets[0].id;
     const SHOWS = {
       all: () => true,
       big: (b) => b.multiplier >= 1 && b.wager * b.multiplier >= 100,
@@ -280,7 +278,7 @@
     };
     const TAB_IDS = ["all", "big", "lucky"];
     let tab = "all";
-    let rows = 10;
+    let rows = 8;
     const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const setAmount = (cell, value) => {
       cell.querySelector("span").lastChild.textContent = money.format(value);
@@ -289,7 +287,6 @@
       const tr = template.cloneNode(true);
       const [game, player, wager, mult, payout] = tr.cells;
       const won = b.multiplier >= 1;
-      tr.classList.toggle(cls("fresh"), b.id > newestSample);
       // The game's icon, borrowed from the menu.
       const icon = document.querySelector(`[data-shell-part="sidebar"] a[href="/${b.game}"] svg`);
       const gameSpan = game.querySelector("span");
@@ -326,14 +323,6 @@
         render();
       });
     }
-    let nextId = newestSample;
-    setInterval(() => {
-      nextId += 1;
-      const bet = makeBet(nextId, Math.random);
-      bets.unshift(bet);
-      if (bets.length > 200) bets.pop();
-      if (SHOWS[tab](bet)) render();
-    }, 2200);
   }
 
   // ---- Links: only the homepage exists so far, so the rest say so
