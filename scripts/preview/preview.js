@@ -359,6 +359,68 @@
     });
   });
 
+  // ---- The account window (components/profile/ProfileModal.tsx): any
+  // [data-profile-open] opens it on the profile; its menu switches sections,
+  // by click or arrow key; the close button, Escape or a click outside
+  // closes it and hands focus back. Inside, switches flip, Save wakes when
+  // its field changes, the bet history's tabs filter the rows, and picking
+  // a break's length wakes the lock button.
+  const account = document.querySelector("[data-profile-dialog]");
+  if (account) {
+    let opener = null;
+    const sections = [...account.querySelectorAll("[data-profile-tab]")];
+    const show = (id, focus) => {
+      for (const tab of sections) {
+        const on = tab.dataset.profileTab === id;
+        tab.setAttribute("aria-selected", String(on));
+        tab.tabIndex = on ? 0 : -1;
+        if (on && focus) tab.focus();
+      }
+      account.querySelectorAll("[data-profile-panel]").forEach((panel) => (panel.hidden = panel.dataset.profilePanel !== id));
+    };
+    document.addEventListener("click", (e) => {
+      const button = e.target.closest && e.target.closest("[data-profile-open]");
+      if (!button || account.open) return;
+      opener = button;
+      show("profile");
+      account.showModal();
+      sections[0].focus();
+    });
+    account.addEventListener("close", () => opener && opener.focus());
+    account.addEventListener("click", (e) => {
+      if (e.target === account || e.target.closest("[data-profile-close]")) return account.close();
+      const to = e.target.closest("[data-profile-tab], [data-profile-goto]");
+      if (to) show(to.dataset.profileTab || to.dataset.profileGoto);
+      const flip = e.target.closest("[data-switch]");
+      if (flip) flip.setAttribute("aria-checked", String(flip.getAttribute("aria-checked") !== "true"));
+      const save = e.target.closest("[data-save]");
+      if (save) {
+        const field = save.parentElement.querySelector("[data-field]");
+        field.defaultValue = field.value;
+        save.disabled = true;
+      }
+      const filter = e.target.closest("[data-bet-filter]");
+      if (filter) {
+        filter.parentElement.querySelectorAll("[data-bet-filter]").forEach((f) => f.setAttribute("aria-pressed", String(f === filter)));
+        account.querySelector("[data-filter]").dataset.filter = filter.dataset.betFilter;
+      }
+    });
+    account.addEventListener("keydown", (e) => {
+      const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+      if (!step || !e.target.closest("[data-profile-tab]")) return;
+      e.preventDefault();
+      const at = sections.findIndex((t) => t.getAttribute("aria-selected") === "true");
+      show(sections[(at + step + sections.length) % sections.length].dataset.profileTab, true);
+    });
+    account.addEventListener("input", (e) => {
+      const field = e.target.closest("[data-field]");
+      if (field) field.parentElement.querySelector("[data-save]").disabled = field.value === field.defaultValue;
+    });
+    account.addEventListener("change", (e) => {
+      if (e.target.matches("[data-break]")) account.querySelector("[data-break-lock]").disabled = false;
+    });
+  }
+
   // ---- Links: only some pages are built so far (their links point at
   // their files); the rest say so instead of leading nowhere. The note
   // shows just under the link, since the Claude app can make the page's
@@ -372,11 +434,16 @@
     const a = e.target.closest && e.target.closest('a[href^="/"]');
     if (!a) return;
     e.preventDefault();
+    // In the account window, the note goes inside it, so it shows over the
+    // darkened page, and is placed from the window's corner.
+    const host = a.closest("dialog[open]");
+    (host || document.body).append(toast);
+    const box = host ? host.getBoundingClientRect() : { left: -scrollX, top: -scrollY, width: document.documentElement.clientWidth };
     const r = a.getBoundingClientRect();
-    const half = Math.min(170, document.documentElement.clientWidth / 2 - 16);
-    const x = Math.min(Math.max(r.left + r.width / 2, half + 16), document.documentElement.clientWidth - half - 16);
-    toast.style.left = `${x + scrollX}px`;
-    toast.style.top = `${r.bottom + scrollY + 8}px`;
+    const half = Math.min(170, box.width / 2 - 16);
+    const x = Math.min(Math.max(r.left - box.left + r.width / 2, half + 16), box.width - half - 16);
+    toast.style.left = `${x}px`;
+    toast.style.top = `${r.bottom - box.top + 8}px`;
     toast.textContent = "Preview: this page isn't built yet. Only the homepage and the Turkey Hunt are.";
     toast.classList.add("show");
     clearTimeout(hide);

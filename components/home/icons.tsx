@@ -251,6 +251,69 @@ export const ClockIcon = (p: IconProps) => (
   </Line>
 );
 
+// ---- The account window ------------------------------------------------------
+
+export const UserIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <circle cx="12" cy="7.6" r="4.4" />
+    <path d="M3.8 20.2c.6-4.3 3.9-7 8.2-7s7.6 2.7 8.2 7c.1.6-.4 1.1-1 1.1H4.8c-.6 0-1.1-.5-1-1.1Z" />
+  </svg>
+);
+
+export const SwapIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M4.5 8.5h14M14.5 4.5l4 4-4 4M19.5 15.5h-14M9.5 11.5l-4 4 4 4" />
+  </Line>
+);
+
+export const PauseIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M10 9v6M14 9v6" />
+  </Line>
+);
+
+export const LogoutIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M14 4.5H7.5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2H14M10.5 12h10M17 8.5l3.5 3.5-3.5 3.5" />
+  </Line>
+);
+
+export const DepositIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7.5v8.5M8.5 12.5 12 16l3.5-3.5" />
+  </Line>
+);
+
+export const WithdrawIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 16.5V8M8.5 11.5 12 8l3.5 3.5" />
+  </Line>
+);
+
+export const StackIcon = (p: IconProps) => (
+  <Line {...p}>
+    <ellipse cx="12" cy="6.5" rx="7" ry="2.6" />
+    <path d="M5 6.5v4.5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6.5M5 11v4.5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V11" />
+  </Line>
+);
+
+export const TrendIcon = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M3.5 16.5 9 11l3.5 3.5 8-8M15 6.5h5.5V12" />
+  </Line>
+);
+
+export const TargetIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="12" cy="12" r="8.5" />
+    <circle cx="12" cy="12" r="4.5" />
+    <circle cx="12" cy="12" r="0.8" fill="currentColor" />
+  </Line>
+);
+
 // The case cards' buttons: the odds, and what's inside.
 export const InfoIcon = (p: IconProps) => (
   <Line {...p}>

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChatBubbleIcon, GamepadIcon, GiftIcon, HomeIcon } from "./icons";
+import { ChatBubbleIcon, GamepadIcon, GiftIcon, HomeIcon, UserIcon } from "./icons";
 import styles from "./MobileBar.module.css";
 
 /**
  * The bar along the bottom on phones, like the big sites' apps: home, the
- * games, rewards and chat. AppShell works the chat button and keeps its
- * aria-expanded up to date.
+ * games, rewards, chat and the player's account. AppShell works the chat
+ * button and keeps its aria-expanded up to date; the account button opens
+ * ProfileModal.
  */
 export default function MobileBar() {
   const path = usePathname();
@@ -30,6 +31,10 @@ export default function MobileBar() {
       <button type="button" className={styles.item} data-shell-toggle="chat">
         <ChatBubbleIcon />
         Chat
+      </button>
+      <button type="button" className={styles.item} aria-haspopup="dialog" aria-controls="profile-dialog" data-profile-open>
+        <UserIcon />
+        Account
       </button>
     </nav>
   );

@@ -75,6 +75,11 @@ body::before {
   background: var(--bg);
 }
 
+/* The page stays put behind a window open over it. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 /* Numbers that change (balances, counters) shouldn't jiggle. */
 .tabular {
   font-variant-numeric: tabular-nums;

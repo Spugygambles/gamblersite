@@ -1,0 +1,946 @@
+/*
+ * The account window's sections. Flat cards a shade lighter than the
+ * window, bets and transactions as bars like the live bets, the accent for
+ * what's on or what to press, and green and red only for money won and
+ * lost. They size to the window, not the screen: narrower, the numbers go
+ * two to a row and the tables drop their less useful columns.
+ */
+
+.title {
+  margin: 0 0 22px;
+  padding: 2px 60px 18px 0;
+  border-bottom: 1px solid var(--line);
+  font: 800 26px/1.1 var(--font-ui), sans-serif;
+}
+
+.subtitle {
+  margin: 34px 0 14px;
+  font: 800 17px/1.2 var(--font-ui), sans-serif;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 34px 0 12px;
+}
+
+.sectionHead .subtitle {
+  margin: 0;
+}
+
+.title + .sectionHead {
+  margin-top: 0;
+}
+
+.lead {
+  max-width: 560px;
+  margin: 0;
+  color: var(--text-soft);
+  font: 400 14px/1.55 var(--font-ui), sans-serif;
+}
+
+.more {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand);
+  font: 700 13.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.more:hover {
+  color: var(--brand-hi);
+}
+
+.hint {
+  display: block;
+  margin-top: 8px;
+  color: var(--text-muted);
+  font: 400 12.5px/1.45 var(--font-ui), sans-serif;
+}
+
+.hint a {
+  color: var(--brand);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hint a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Who the player is ---------------------------------------------------------- */
+
+.identity {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 8px 22px;
+}
+
+.avatar {
+  position: relative;
+  display: grid;
+  grid-row: span 2;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  rotate: -90deg;
+}
+
+.ringTrack {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 5;
+}
+
+.ringFill {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.face {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  color: #fff;
+  font: 800 32px/1 var(--font-ui), sans-serif;
+}
+
+.who {
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 0;
+}
+
+.name {
+  font: 800 22px/1.1 var(--font-ui), sans-serif;
+}
+
+.levelBadge {
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--brand);
+  box-sizing: border-box;
+  color: var(--on-brand);
+  font: 800 13px/1 var(--font-ui), sans-serif;
+}
+
+.id {
+  color: var(--text-muted);
+  font: 600 13px/1 var(--font-ui), sans-serif;
+}
+
+.since {
+  margin: 8px 0 0;
+  color: var(--text-soft);
+  font: 500 14px/1.2 var(--font-ui), sans-serif;
+}
+
+.xpSide {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.verify {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.verify:hover {
+  background: var(--brand-hi);
+}
+
+.xpText {
+  color: var(--text-muted);
+  font: 600 13.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.xpText b {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.xpBar {
+  display: block;
+  grid-column: 2 / -1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--track);
+}
+
+.xpBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand);
+}
+
+/* ---- The player's numbers --------------------------------------------------------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each number on a card: its icon, then the number, what it is, and a
+   note under some. */
+.stat {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 16px 15px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.statIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--surface-3);
+  color: var(--text-soft);
+}
+
+.statIcon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.statText {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.statValue {
+  overflow: hidden;
+  font: 800 20px/1.1 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statValue.up {
+  color: var(--live);
+}
+
+.statValue.down {
+  color: #e0796b;
+}
+
+.statLabel {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 500 12.5px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statNote {
+  overflow: hidden;
+  margin-top: -2px;
+  color: var(--text-muted);
+  opacity: 0.8;
+  font: 500 12px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- Tables: bets and transactions ----------------------------------------------- */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+  margin-top: -6px;
+}
+
+.table th {
+  padding: 4px 14px 0;
+  color: var(--text-muted);
+  font: 600 11px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.08em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table td {
+  height: 44px;
+  padding: 0 14px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 600 13px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.table td:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.table td:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.table .num {
+  text-align: right;
+}
+
+.game,
+.amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  vertical-align: middle;
+}
+
+.amount {
+  gap: 6px;
+}
+
+.game svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.amount svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.chip {
+  display: inline-block;
+  min-width: 52px;
+  padding: 5px 7px;
+  border-radius: 5px;
+  background: var(--surface-3);
+  box-sizing: border-box;
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+.chip.up {
+  color: var(--text);
+}
+
+.win {
+  color: var(--live);
+}
+
+.loss {
+  color: var(--text-muted);
+}
+
+.table .when {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* The bet history's tabs hide the rows they leave out. */
+.betList[data-filter="wins"] tr[data-won="false"],
+.betList[data-filter="losses"] tr[data-won="true"] {
+  display: none;
+}
+
+.filters {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9px;
+  background: var(--bg);
+}
+
+.filter {
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 13px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.filter:hover {
+  color: var(--text);
+}
+
+.filter[aria-pressed="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+/* ---- Transactions ------------------------------------------------------------------ */
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.totals li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font: 500 13px/1 var(--font-ui), sans-serif;
+}
+
+.totals svg {
+  width: 17px;
+  height: 17px;
+}
+
+.totals b {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font: 700 11.5px/1 var(--font-ui), sans-serif;
+}
+
+.done {
+  background: rgba(111, 176, 122, 0.14);
+  color: var(--live);
+}
+
+.pending {
+  background: rgba(219, 166, 74, 0.14);
+  color: var(--coin);
+}
+
+.failed {
+  background: rgba(201, 84, 74, 0.14);
+  color: #e0796b;
+}
+
+/* ---- Account details and privacy ---------------------------------------------------- */
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 16px;
+}
+
+.field {
+  min-width: 0;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-soft);
+  font: 600 13px/1 var(--font-ui), sans-serif;
+}
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+}
+
+.input,
+.readout {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+  box-sizing: border-box;
+  color: var(--text);
+  font: 500 14px/1 var(--font-ui), sans-serif;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--brand);
+}
+
+.readout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  overflow: hidden;
+  color: var(--text-soft);
+}
+
+.unverified {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: rgba(219, 166, 74, 0.14);
+  color: var(--coin);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+}
+
+.save {
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 700 13.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.save:hover {
+  background: var(--brand-hi);
+}
+
+.save:disabled {
+  background: var(--surface-3);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.switches {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.switchRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 12px 0;
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 26px;
+  margin-top: 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: var(--surface-3);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition:
+    translate 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.switch[aria-checked="true"] {
+  background: rgba(var(--brand-rgb), 0.35);
+}
+
+.switch[aria-checked="true"] .knob {
+  translate: 20px 0;
+  background: var(--brand);
+}
+
+.switch:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.switchWords {
+  display: grid;
+  gap: 6px;
+}
+
+.switchTitle {
+  font: 700 15px/1.2 var(--font-ui), sans-serif;
+}
+
+.switchText {
+  color: var(--text-muted);
+  font: 400 13.5px/1.45 var(--font-ui), sans-serif;
+}
+
+/* ---- Buttons ----------------------------------------------------------------------- */
+
+.primary,
+.secondary,
+.danger {
+  display: inline-grid;
+  place-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 9px;
+  font: 700 13.5px/1 var(--font-ui), sans-serif;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.primary:hover {
+  background: var(--brand-hi);
+}
+
+.secondary {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.secondary:hover {
+  background: var(--track);
+}
+
+.danger {
+  margin-top: 22px;
+  background: var(--danger);
+  color: #fff;
+}
+
+.danger:disabled {
+  background: var(--surface-3);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* ---- Inventory -------------------------------------------------------------------- */
+
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 40px 20px 48px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  text-align: center;
+}
+
+.emptyArt {
+  width: 150px;
+  height: auto;
+  margin-bottom: 8px;
+  rotate: -5deg;
+}
+
+.emptyTitle {
+  margin: 0;
+  font: 800 19px/1.2 var(--font-ui), sans-serif;
+}
+
+.emptyText {
+  max-width: 400px;
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font: 400 14px/1.55 var(--font-ui), sans-serif;
+}
+
+/* ---- Security --------------------------------------------------------------------- */
+
+.cards {
+  display: grid;
+  gap: 12px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.cardWords {
+  display: grid;
+  gap: 7px;
+}
+
+.cardTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 700 15px/1.2 var(--font-ui), sans-serif;
+}
+
+.cardText {
+  margin: 0;
+  color: var(--text-muted);
+  font: 400 13.5px/1.45 var(--font-ui), sans-serif;
+}
+
+.off {
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: var(--surface-3);
+  color: var(--text-muted);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+}
+
+.sessions {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.session {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font: 500 13.5px/1.3 var(--font-ui), sans-serif;
+}
+
+.sessionDevice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.here {
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(111, 176, 122, 0.14);
+  color: var(--live);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+}
+
+.sessionPlace,
+.sessionWhen {
+  color: var(--text-muted);
+}
+
+.sessionWhen {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---- Take a break ------------------------------------------------------------------- */
+
+.breaks {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.break {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 56px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  font: 700 14.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.break input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.break:has(input:checked) {
+  box-shadow: inset 0 0 0 2px var(--brand);
+  color: var(--brand);
+}
+
+.break:has(input:focus-visible) {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---- Narrower windows ----------------------------------------------------------------- */
+
+@container (max-width: 720px) {
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .identity {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .avatar {
+    grid-row: auto;
+  }
+
+  .xpSide {
+    grid-column: 1 / -1;
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: space-between;
+    justify-items: start;
+    order: 1;
+  }
+
+  .xpBar {
+    grid-column: 1 / -1;
+    order: 2;
+  }
+
+  .fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .table .wide {
+    display: none;
+  }
+
+  .breaks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .session {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .sessionPlace {
+    display: none;
+  }
+}
+
+@container (max-width: 440px) {
+  .avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .face {
+    width: 58px;
+    height: 58px;
+    font-size: 24px;
+  }
+
+  .name {
+    font-size: 19px;
+  }
+
+  .stat {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .statIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .statValue {
+    font-size: 17px;
+  }
+
+  .sectionHead {
+    flex-wrap: wrap;
+  }
+
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .table td,
+  .table th {
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .switch,
+  .knob {
+    transition: none;
+  }
+}

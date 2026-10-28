@@ -10,8 +10,8 @@ const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximum
 
 // The bar across the top. On the left: the name, the games menu, rewards,
 // and the Thanksgiving event. On the right: withdraw, the wallet, the
-// player and the chat button, which AppShell works and keeps the
-// aria-expanded of up to date.
+// player, which opens their account (ProfileModal), and the chat button,
+// which AppShell works and keeps the aria-expanded of up to date.
 export default function SiteHeader() {
   // The ring round the avatar shows progress through the current level.
   const ring = 2 * Math.PI * 17;
@@ -53,7 +53,14 @@ export default function SiteHeader() {
           <MapleIcon className={styles.leaf} />
           <span className="tabular">{PLAYER.leaves}</span>
         </Link>
-        <button type="button" className={styles.profile} aria-label={`Account, level ${PLAYER.level}`}>
+        <button
+          type="button"
+          className={styles.profile}
+          aria-label={`Your account, level ${PLAYER.level}`}
+          aria-haspopup="dialog"
+          aria-controls="profile-dialog"
+          data-profile-open
+        >
           <span className={styles.avatar}>
             <svg className={styles.ring} viewBox="0 0 40 40" aria-hidden>
               <circle cx="20" cy="20" r="17" className={styles.ringTrack} />
