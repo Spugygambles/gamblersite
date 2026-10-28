@@ -6,8 +6,9 @@ export function PageContent({ children }: { children: ReactNode }) {
   return <div className={styles.content}>{children}</div>;
 }
 
-/** A section with a head: an icon, the title (labelling the section), and
-    whatever goes beside it. `aside` goes to the far end of the head. */
+/** A section with a head: the title (labelling the section), an icon
+    before it if it has one, and whatever goes beside it. `aside` goes to
+    the far end of the head. */
 export default function Section({
   id,
   title,
@@ -18,7 +19,7 @@ export default function Section({
 }: {
   id: string;
   title: string;
-  icon: ReactNode;
+  icon?: ReactNode;
   extra?: ReactNode;
   aside?: ReactNode;
   children: ReactNode;
@@ -26,9 +27,11 @@ export default function Section({
   return (
     <section id={id} className={styles.section} aria-labelledby={`${id}-title`}>
       <div className={styles.head}>
-        <span className={styles.icon} aria-hidden>
-          {icon}
-        </span>
+        {icon && (
+          <span className={styles.icon} aria-hidden>
+            {icon}
+          </span>
+        )}
         <h2 id={`${id}-title`} className={styles.title}>
           {title}
         </h2>
@@ -40,7 +43,23 @@ export default function Section({
   );
 }
 
-/** A small count beside a section's title. */
-export function Count({ children }: { children: ReactNode }) {
-  return <span className={styles.count}>{children}</span>;
+/** A quiet note beside a section's title, with a green dot: something
+    happening right now. */
+export function Note({ children }: { children: ReactNode }) {
+  return (
+    <span className={styles.note}>
+      <span className={styles.noteDot} aria-hidden />
+      {children}
+    </span>
+  );
+}
+
+/** A LIVE tag, its dot pulsing. */
+export function Live() {
+  return (
+    <span className={styles.live}>
+      <span className={styles.liveDot} aria-hidden />
+      Live
+    </span>
+  );
 }

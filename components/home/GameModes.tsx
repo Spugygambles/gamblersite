@@ -10,6 +10,7 @@ import LimboArt from "@/components/LimboArt";
 import MinesArt from "@/components/MinesArt";
 import UpgraderArt from "@/components/UpgraderArt";
 import { count, GAMES, type GameInfo } from "@/lib/home";
+import { avatarOf } from "./avatar";
 import styles from "./GameModes.module.css";
 
 const ART: Record<string, ReactNode> = {
@@ -26,20 +27,46 @@ const ART: Record<string, ReactNode> = {
 
 // Cases and battles get a wide banner each; the originals share a row.
 // art.size is the art's square stage on the banner in px, and art.x where
-// its middle sits, as a share of the banner's width.
+// its middle sits, as a share of the banner's width. faces are a few of
+// the players in the game, shown beside the count.
 const FEATURES = [
-  { slug: "cases", title: "Case Opening", text: "Unbox CS2 skins from $0.49 a case.", cta: "Open cases", art: { size: 180, x: 74.5 } },
-  { slug: "case-battles", title: "Case Battles", text: "Go head to head. The best unbox wins.", cta: "Start a battle", art: { size: 226, x: 71.7 } },
+  {
+    slug: "cases",
+    title: "Case Opening",
+    text: "Unbox CS2 skins from $0.49 a case.",
+    cta: "Open cases",
+    art: { size: 180, x: 74.5 },
+    faces: ["kyro", "nova", "mira"],
+  },
+  {
+    slug: "case-battles",
+    title: "Case Battles",
+    text: "Go head to head. The best unbox wins.",
+    cta: "Start a battle",
+    art: { size: 214, x: 73.2 },
+    faces: ["deadeye", "Spl1t", "Obi"],
+  },
 ];
 
 const bySlug = (slug: string) => GAMES.find((g) => g.slug === slug)!;
 
 const tileVars = (game: GameInfo) => ({ "--art-size": `${game.art.size}%`, "--art-y": `${game.art.y}%` }) as CSSProperties;
 
-function Playing({ n }: { n: number }) {
+// How many are in a game, after a few of their faces, or a green dot.
+function Playing({ n, faces }: { n: number; faces?: string[] }) {
   return (
     <span className={styles.playing}>
-      <span className={styles.dot} aria-hidden />
+      {faces ? (
+        <span className={styles.faces} aria-hidden>
+          {faces.map((name) => (
+            <span key={name} className={styles.face} style={{ background: avatarOf(name) }}>
+              {name[0].toUpperCase()}
+            </span>
+          ))}
+        </span>
+      ) : (
+        <span className={styles.dot} aria-hidden />
+      )}
       {count.format(n)} playing
     </span>
   );
@@ -61,7 +88,7 @@ export default function GameModes() {
                 <span className={styles.featureText}>{f.text}</span>
                 <span className={styles.featureFoot}>
                   <span className={styles.button}>{f.cta}</span>
-                  <Playing n={g.playing} />
+                  <Playing n={g.playing} faces={f.faces} />
                 </span>
               </span>
               <span
@@ -85,6 +112,7 @@ export default function GameModes() {
               </span>
               {g.tag && <span className={`${styles.tag} ${g.tag === "Hot" ? styles.hot : ""}`}>{g.tag}</span>}
               <span className={styles.tileTitle}>{g.title}</span>
+              <span className={`${styles.tilePlaying} tabular`}>{count.format(g.playing)} playing</span>
             </Link>
           </li>
         ))}

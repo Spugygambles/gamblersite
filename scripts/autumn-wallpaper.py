@@ -9,7 +9,7 @@ import random
 import sys
 
 LEAF = "M50 4L58 22 67.5 14.7 64.8 35.1 79.2 31.2 79.2 41 98.3 45.5 80.7 58.3 84.8 66.7 65.8 66.3 65.7 77.2 53.3 65.5 52.2 64 53 92 47 92 47.8 64 46.7 65.5 34.3 77.2 34.2 66.3 15.2 66.7 19.3 58.3 1.7 45.5 20.8 41 20.8 31.2 35.2 35.1 32.5 14.7 42 22Z"
-INK = sys.argv[1] if len(sys.argv) > 1 else "#1e1f40"  # the shapes
+INK = sys.argv[1] if len(sys.argv) > 1 else "#191a36"  # the shapes
 CUT = sys.argv[2] if len(sys.argv) > 2 else "#14152b"  # details cut back to the page colour
 
 def leaf(x, y, s, r):

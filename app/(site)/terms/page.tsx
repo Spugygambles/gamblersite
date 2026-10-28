@@ -19,8 +19,6 @@ export default function Terms() {
           <p className={styles.updated}>Last updated {SITE.updated}</p>
           <p className={styles.lead}>
             Please read these before you play. They&apos;re the rules of {SITE.name}, and by using the Site you&apos;re agreeing to them.
-            The short version: be 18 or over, play fair, keep your account to yourself, and know that coins and skins are for playing
-            with.
           </p>
         </header>
 

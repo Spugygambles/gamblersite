@@ -20,12 +20,12 @@
   margin-top: 0;
 }
 
-/* Section heads: an icon in the accent colour, the title, and a count or a
-   note; a note pushed to the far end sits on the right. */
+/* Section heads: the title, a tag or note beside it, and a note pushed to
+   the far end on the right. */
 .head {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   margin-bottom: 14px;
 }
 
@@ -47,15 +47,52 @@
 .title {
   margin: 0;
   color: var(--text);
-  font: 700 18px/1 var(--font-ui), sans-serif;
+  font: 800 20px/1 var(--font-ui), sans-serif;
+  letter-spacing: -0.01em;
 }
 
-.count {
-  padding: 4px 7px;
+.note {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text-muted);
+  font: 500 13px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.noteDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--live);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
   border-radius: 5px;
-  background: var(--surface-2);
-  color: var(--text-soft);
-  font: 700 11.5px/1 var(--font-ui), sans-serif;
+  background: rgba(111, 176, 122, 0.14);
+  color: var(--live);
+  font: 800 10.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
 }
 
 @media (max-width: 640px) {
@@ -69,7 +106,17 @@
   }
 
   .title {
-    font-size: 16.5px;
+    font-size: 18px;
+  }
+
+  .note {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liveDot {
+    animation: none;
   }
 }
 

@@ -16,12 +16,16 @@
   gap: 14px;
 }
 
+/* A hairline round each card and a lighter line along its top, the way a
+   matte surface catches the light. */
 .feature,
 .tile {
   position: relative;
   overflow: hidden;
   background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--edge);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 1px var(--edge);
   color: var(--text);
   text-decoration: none;
   transition:
@@ -62,7 +66,7 @@
 
 .featureTitle {
   font: 800 32px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
   text-transform: uppercase;
 }
 
@@ -76,7 +80,7 @@
 .featureFoot {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   margin-top: 18px;
 }
 
@@ -128,6 +132,32 @@
   background: var(--live);
 }
 
+/* A few of the players, overlapping. */
+.faces {
+  display: flex;
+}
+
+.face {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: -8px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  box-sizing: content-box;
+  color: #fff;
+  font: 700 10px/1 var(--font-ui), sans-serif;
+}
+
+.face:last-child {
+  margin-right: 0;
+}
+
+.feature:hover .face {
+  border-color: var(--surface-2);
+}
+
 /* ---- Originals --------------------------------------------------------- */
 
 .originals {
@@ -169,7 +199,7 @@
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 22px;
+  bottom: 30px;
   z-index: 2;
   overflow: hidden;
   font: 800 16px/1.1 var(--font-ui), sans-serif;
@@ -177,6 +207,18 @@
   text-align: center;
   text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tilePlaying {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 13px;
+  z-index: 2;
+  color: var(--text-muted);
+  font: 500 11px/1 var(--font-ui), sans-serif;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -226,7 +268,13 @@
   }
 
   .tileTitle {
+    bottom: 26px;
     font-size: 14px;
+  }
+
+  .tilePlaying {
+    bottom: 11px;
+    font-size: 10px;
   }
 
   /* A smaller tag, clear of art that runs near the top. */
@@ -290,7 +338,12 @@
   }
 
   .tileTitle {
+    bottom: 16px;
     font-size: 14px;
+  }
+
+  .tilePlaying {
+    display: none;
   }
 
   .originals {
