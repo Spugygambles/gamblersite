@@ -1,6 +1,6 @@
 // Content for the homepage. Everything below is sample data: swap PLAYER for
-// the signed-in user once auth is wired up, and the cases, prices, odds and
-// drops for the real ones from the backend.
+// the signed-in user once auth is wired up, and the cases, chat and bets for
+// the real ones from the backend.
 
 export type GameInfo = {
   slug: string;
@@ -64,17 +64,6 @@ export const CHAT_SAMPLE: ChatMessage[] = [
 /** The pot in chat's rain, split between the players who join before it falls. */
 export const RAIN_POT = 248.6;
 
-// CS2 rarity colours, as the game shows them.
-export type Rarity = "milspec" | "restricted" | "classified" | "covert" | "gold";
-
-export const RARITY: Record<Rarity, { name: string; color: string }> = {
-  milspec: { name: "Mil-Spec", color: "#4b69ff" },
-  restricted: { name: "Restricted", color: "#8847ff" },
-  classified: { name: "Classified", color: "#d32ce6" },
-  covert: { name: "Covert", color: "#eb4b4b" },
-  gold: { name: "Rare Special", color: "#e4ae39" },
-};
-
 export type CaseInfo = {
   slug: string;
   name: string;
@@ -89,23 +78,6 @@ export const CASES: CaseInfo[] = [
 ];
 
 export const caseBySlug = (slug: string) => CASES.find((c) => c.slug === slug)!;
-
-export type Drop = { weapon: string; skin: string; price: number; rarity: Rarity; from: string };
-
-export const SAMPLE_DROPS: Drop[] = [
-  { weapon: "AK-47", skin: "Redline", price: 42.1, rarity: "classified", from: "toxic" },
-  { weapon: "AWP", skin: "Asiimov", price: 96.3, rarity: "covert", from: "music-box" },
-  { weapon: "Glock-18", skin: "Water Elemental", price: 9.85, rarity: "classified", from: "new-year" },
-  { weapon: "★ Karambit", skin: "Doppler", price: 1240, rarity: "gold", from: "toxic" },
-  { weapon: "AK-47", skin: "Elite Build", price: 3.2, rarity: "milspec", from: "new-year" },
-  { weapon: "M4A1-S", skin: "Printstream", price: 212.4, rarity: "covert", from: "music-box" },
-  { weapon: "AK-47", skin: "Slate", price: 4.2, rarity: "restricted", from: "new-year" },
-  { weapon: "USP-S", skin: "Kill Confirmed", price: 58.7, rarity: "covert", from: "toxic" },
-  { weapon: "M4A4", skin: "Desolate Space", price: 14.8, rarity: "classified", from: "music-box" },
-  { weapon: "MP9", skin: "Starlight Protector", price: 36.2, rarity: "covert", from: "toxic" },
-  { weapon: "UMP-45", skin: "Primal Saber", price: 2.9, rarity: "classified", from: "new-year" },
-  { weapon: "Desert Eagle", skin: "Printstream", price: 47.5, rarity: "covert", from: "music-box" },
-];
 
 // ---- Live bets ------------------------------------------------------------
 

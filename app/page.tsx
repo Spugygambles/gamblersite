@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { GAMES } from "@/lib/home";
 import AppShell from "@/components/home/AppShell";
 import ChatPanel from "@/components/home/ChatPanel";
-import DropTicker from "@/components/home/DropTicker";
 import EventsRow from "@/components/home/EventsRow";
 import GameModes from "@/components/home/GameModes";
 import LiveBets from "@/components/home/LiveBets";
@@ -29,7 +28,6 @@ function SectionHead({ id, title, icon, children }: { id: string; title: string;
 export default function Home() {
   return (
     <AppShell header={<SiteHeader />} sidebar={<Sidebar />} chat={<ChatPanel />}>
-      <DropTicker />
       <div className={styles.content}>
         <h1 className="sr-only">CsgoNeo: CS2 case opening, battles and games</h1>
 
