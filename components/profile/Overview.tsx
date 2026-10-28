@@ -1,34 +1,27 @@
 "use client";
 
-import { useState, type ComponentType, type ReactNode, type SVGProps } from "react";
+import { useState, type ReactNode } from "react";
 import { count, GAMES, PLAYER, usd } from "@/lib/home";
-import { MY_BETS, NET, PROFILE } from "@/lib/profile";
+import { MY_BETS, PROFILE } from "@/lib/profile";
 import { avatarOf } from "@/components/home/avatar";
-import { DepositIcon, GAME_ICONS, SlipIcon, StackIcon, TargetIcon, TrendIcon, TrophyIcon, WithdrawIcon } from "@/components/home/icons";
+import { DepositIcon, StackIcon, WithdrawIcon } from "@/components/home/icons";
 import BetTable from "./BetTable";
 import styles from "./Profile.module.css";
 
-type Stat = { label: string; value: ReactNode; Icon: ComponentType<SVGProps<SVGSVGElement>>; note?: string; tone?: "up" | "down" };
-
-const titleOf = (slug: string) => GAMES.find((g) => g.slug === slug)?.title ?? slug;
-const best = PROFILE.biggestWin;
-
-const STATS: Stat[] = [
-  { label: "Deposited", value: usd.format(PROFILE.deposited), Icon: DepositIcon },
-  { label: "Withdrawn", value: usd.format(PROFILE.withdrawn), Icon: WithdrawIcon },
-  { label: "Wagered", value: usd.format(PROFILE.wagered), Icon: StackIcon },
-  { label: "Profit", value: `${NET < 0 ? "−" : "+"}${usd.format(Math.abs(NET))}`, Icon: TrendIcon, tone: NET < 0 ? "down" : "up" },
-  { label: "Bets placed", value: count.format(PROFILE.bets), Icon: SlipIcon },
-  { label: "Win rate", value: `${((PROFILE.wins / PROFILE.bets) * 100).toFixed(1)}%`, Icon: TargetIcon, note: `${count.format(PROFILE.wins)} wins` },
-  { label: "Biggest win", value: usd.format(best.wager * best.multiplier), Icon: TrophyIcon, note: `${best.multiplier.toFixed(2)}× on ${titleOf(best.game)}` },
-  { label: "Favourite game", value: titleOf(PROFILE.favouriteGame), Icon: GAME_ICONS[PROFILE.favouriteGame] },
+const STATS = [
+  { label: "Deposits", value: PROFILE.deposited, Icon: DepositIcon },
+  { label: "Withdrawals", value: PROFILE.withdrawn, Icon: WithdrawIcon },
+  { label: "Wagered", value: PROFILE.wagered, Icon: StackIcon },
 ];
 
 const SWITCHES = [
-  { id: "hide-stats", title: "Hide my stats", text: "Other players see dashes instead of your wagers and wins.", on: false },
-  { id: "anonymous", title: "Anonymous in live bets", text: "Your bets show as Hidden in the live feed and the leaderboards.", on: false },
-  { id: "mentions", title: "Chat mentions", text: "Let me know when someone mentions me or replies to me in chat.", on: true },
+  { id: "hide-stats", title: "Hide my stats", text: "Hide my wagers and wins from other players.", on: false },
+  { id: "anonymous", title: "Anonymous bets", text: "Show my bets as Hidden in the live feed.", on: false },
+  { id: "mentions", title: "Chat mentions", text: "Notify me when someone mentions me or replies to me in chat.", on: true },
 ];
+
+const best = PROFILE.biggestWin;
+const bestGame = GAMES.find((g) => g.slug === best.game)?.title;
 
 /** A text field with its own Save, which wakes up once the text changes. */
 function SavedField({ label, value, placeholder, hint, wide }: { label: string; value: string; placeholder?: string; hint?: ReactNode; wide?: boolean }) {
@@ -61,29 +54,21 @@ function SavedField({ label, value, placeholder, hint, wide }: { label: string; 
 }
 
 /**
- * The profile: who the player is and how far through their level, their
- * numbers, their last few bets, and their account details and privacy
- * switches.
+ * The profile: who the player is and how far through their level, what's
+ * gone in, out and been wagered, their last few bets, and their account
+ * details and privacy switches.
  */
 export default function Overview({ onAllBets }: { onAllBets: () => void }) {
   const [switches, setSwitches] = useState(() => Object.fromEntries(SWITCHES.map((s) => [s.id, s.on])));
   const progress = Math.round((PROFILE.xp / PROFILE.xpNext) * 100);
-  // The ring round the avatar, like the header's.
-  const ring = 2 * Math.PI * 46;
 
   return (
     <>
       <h2 className={styles.title}>Profile</h2>
 
       <div className={styles.identity}>
-        <span className={styles.avatar} aria-hidden>
-          <svg viewBox="0 0 100 100" className={styles.ring}>
-            <circle cx="50" cy="50" r="46" className={styles.ringTrack} />
-            <circle cx="50" cy="50" r="46" className={styles.ringFill} strokeDasharray={`${(ring * progress) / 100} ${ring}`} />
-          </svg>
-          <span className={styles.face} style={{ background: avatarOf(PLAYER.name) }}>
-            {PLAYER.name[0]}
-          </span>
+        <span className={styles.face} style={{ background: avatarOf(PLAYER.name) }} aria-hidden>
+          {PLAYER.name[0]}
         </span>
         <div className={styles.who}>
           <p className={styles.nameRow}>
@@ -92,7 +77,7 @@ export default function Overview({ onAllBets }: { onAllBets: () => void }) {
               <span className="sr-only">Level </span>
               {PLAYER.level}
             </span>
-            <span className={`${styles.id} tabular`}>ID {PROFILE.id}</span>
+            <span className={`${styles.id} tabular`}>(ID: {PROFILE.id})</span>
           </p>
           <p className={styles.since}>Member since {PROFILE.memberSince}</p>
         </div>
@@ -103,7 +88,7 @@ export default function Overview({ onAllBets }: { onAllBets: () => void }) {
             </button>
           )}
           <span className={`${styles.xpText} tabular`}>
-            <b>{count.format(PROFILE.xp)}</b> / {count.format(PROFILE.xpNext)} XP
+            {count.format(PROFILE.xp)}/{count.format(PROFILE.xpNext)} XP
           </span>
         </div>
         <span className={styles.xpBar} role="progressbar" aria-label={`Level ${PLAYER.level + 1}`} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
@@ -112,22 +97,25 @@ export default function Overview({ onAllBets }: { onAllBets: () => void }) {
       </div>
 
       <ul className={styles.stats}>
-        {STATS.map(({ label, value, Icon, note, tone }) => (
+        {STATS.map(({ label, value, Icon }) => (
           <li key={label} className={styles.stat}>
-            <span className={styles.statIcon}>
-              <Icon />
-            </span>
+            <Icon className={styles.statIcon} />
             <span className={styles.statText}>
-              <span className={`${styles.statValue} ${tone ? styles[tone] : ""} tabular`}>{value}</span>
+              <span className={`${styles.statValue} tabular`}>{usd.format(value)}</span>
               <span className={styles.statLabel}>{label}</span>
-              {note && <span className={styles.statNote}>{note}</span>}
             </span>
           </li>
         ))}
       </ul>
 
       <div className={styles.sectionHead}>
-        <h3 className={styles.subtitle}>Recent bets</h3>
+        <div>
+          <h3 className={styles.subtitle}>Recent bets</h3>
+          <p className={`${styles.summary} tabular`}>
+            {count.format(PROFILE.bets)} bets, {((PROFILE.wins / PROFILE.bets) * 100).toFixed(1)}% won. Best win{" "}
+            {usd.format(best.wager * best.multiplier)} on {bestGame}.
+          </p>
+        </div>
         <button type="button" className={styles.more} onClick={onAllBets} data-profile-goto="bets">
           View all
         </button>
@@ -160,7 +148,6 @@ export default function Overview({ onAllBets }: { onAllBets: () => void }) {
         />
       </div>
 
-      <h3 className={styles.subtitle}>Privacy</h3>
       <ul className={styles.switches}>
         {SWITCHES.map((s) => (
           <li key={s.id}>

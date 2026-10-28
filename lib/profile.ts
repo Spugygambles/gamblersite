@@ -17,12 +17,7 @@ export const PROFILE = {
   bets: 3482,
   wins: 1657,
   biggestWin: { game: "crash", wager: 25, multiplier: 49.6 },
-  favouriteGame: "crash",
 };
-
-/** What the player is up or down: what came out, and what's in the wallet,
-    less what went in. */
-export const NET = PROFILE.withdrawn + PLAYER.balance - PROFILE.deposited;
 
 export type MyBet = Bet & { when: string };
 
@@ -77,5 +72,5 @@ export const SESSIONS = [
   { device: "Firefox on macOS", place: "Denver, US", when: "Oct 12, 2026", current: false },
 ];
 
-/** How long a player can lock their account for. */
-export const BREAKS = ["24 hours", "7 days", "30 days", "6 months"];
+/** How long a player can exclude themselves for. */
+export const EXCLUSIONS = ["24 hours", "7 days", "30 days", "6 months", "Permanently"];

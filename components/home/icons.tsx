@@ -260,16 +260,17 @@ export const UserIcon = (p: IconProps) => (
   </svg>
 );
 
+export const UserXIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <circle cx="10" cy="7.4" r="4.2" />
+    <path d="M2.6 19.6c.6-4.1 3.6-6.6 7.4-6.6 1.5 0 2.9.4 4 1.1-.8 1-1.2 2.2-1.2 3.6 0 1 .2 1.9.6 2.6H3.6c-.6 0-1.1-.5-1-1.1Z" />
+    <path d="m16.2 15.4 4.4 4.4m0-4.4-4.4 4.4" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+  </svg>
+);
+
 export const SwapIcon = (p: IconProps) => (
   <Line {...p}>
     <path d="M4.5 8.5h14M14.5 4.5l4 4-4 4M19.5 15.5h-14M9.5 11.5l-4 4 4 4" />
-  </Line>
-);
-
-export const PauseIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <path d="M10 9v6M14 9v6" />
   </Line>
 );
 
@@ -297,20 +298,6 @@ export const StackIcon = (p: IconProps) => (
   <Line {...p}>
     <ellipse cx="12" cy="6.5" rx="7" ry="2.6" />
     <path d="M5 6.5v4.5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6.5M5 11v4.5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V11" />
-  </Line>
-);
-
-export const TrendIcon = (p: IconProps) => (
-  <Line {...p}>
-    <path d="M3.5 16.5 9 11l3.5 3.5 8-8M15 6.5h5.5V12" />
-  </Line>
-);
-
-export const TargetIcon = (p: IconProps) => (
-  <Line {...p}>
-    <circle cx="12" cy="12" r="8.5" />
-    <circle cx="12" cy="12" r="4.5" />
-    <circle cx="12" cy="12" r="0.8" fill="currentColor" />
   </Line>
 );
 

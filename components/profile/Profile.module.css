@@ -1,9 +1,9 @@
 /*
  * The account window's sections. Flat cards a shade lighter than the
  * window, bets and transactions as bars like the live bets, the accent for
- * what's on or what to press, and green and red only for money won and
- * lost. They size to the window, not the screen: narrower, the numbers go
- * two to a row and the tables drop their less useful columns.
+ * what's on or what to press, and green only for money won. They size to
+ * the window, not the screen: narrower, the numbers stack and the tables
+ * drop their less useful columns.
  */
 
 .title {
@@ -24,6 +24,15 @@
   justify-content: space-between;
   gap: 16px;
   margin: 34px 0 12px;
+}
+
+.sectionHead:has(.summary) {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.sectionHead > div {
+  min-width: 0;
 }
 
 .sectionHead .subtitle {
@@ -82,39 +91,12 @@
   gap: 8px 22px;
 }
 
-.avatar {
-  position: relative;
+.face {
   display: grid;
   grid-row: span 2;
   place-items: center;
-  width: 96px;
-  height: 96px;
-}
-
-.ring {
-  position: absolute;
-  inset: 0;
-  rotate: -90deg;
-}
-
-.ringTrack {
-  fill: none;
-  stroke: var(--track);
-  stroke-width: 5;
-}
-
-.ringFill {
-  fill: none;
-  stroke: var(--brand);
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-
-.face {
-  display: grid;
-  place-items: center;
-  width: 78px;
-  height: 78px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   color: #fff;
   font: 800 32px/1 var(--font-ui), sans-serif;
@@ -151,7 +133,7 @@
 
 .id {
   color: var(--text-muted);
-  font: 600 13px/1 var(--font-ui), sans-serif;
+  font: 500 14px/1 var(--font-ui), sans-serif;
 }
 
 .since {
@@ -182,20 +164,15 @@
 }
 
 .xpText {
-  color: var(--text-muted);
-  font: 600 13.5px/1 var(--font-ui), sans-serif;
-  white-space: nowrap;
-}
-
-.xpText b {
   color: var(--text);
-  font-weight: 800;
+  font: 700 14px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
 }
 
 .xpBar {
   display: block;
   grid-column: 2 / -1;
-  height: 8px;
+  height: 6px;
   overflow: hidden;
   border-radius: 4px;
   background: var(--track);
@@ -212,78 +189,52 @@
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin: 28px 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 30px 0 0;
   padding: 0;
   list-style: none;
 }
 
-/* Each number on a card: its icon, then the number, what it is, and a
-   note under some. */
 .stat {
-  display: grid;
-  align-content: start;
-  gap: 14px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   min-width: 0;
-  padding: 16px 16px 15px;
+  padding: 20px 22px;
   border-radius: 12px;
   background: var(--surface-2);
-  box-shadow: inset 0 0 0 1px var(--edge);
 }
 
 .statIcon {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  background: var(--surface-3);
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
   color: var(--text-soft);
-}
-
-.statIcon svg {
-  width: 19px;
-  height: 19px;
 }
 
 .statText {
   display: grid;
-  gap: 6px;
+  gap: 7px;
   min-width: 0;
 }
 
 .statValue {
   overflow: hidden;
-  font: 800 20px/1.1 var(--font-ui), sans-serif;
+  font: 800 20px/1 var(--font-ui), sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.statValue.up {
-  color: var(--live);
-}
-
-.statValue.down {
-  color: #e0796b;
 }
 
 .statLabel {
-  overflow: hidden;
   color: var(--text-muted);
-  font: 500 12.5px/1.2 var(--font-ui), sans-serif;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font: 500 14px/1 var(--font-ui), sans-serif;
 }
 
-.statNote {
-  overflow: hidden;
-  margin-top: -2px;
+.summary {
+  margin: 8px 0 0;
   color: var(--text-muted);
-  opacity: 0.8;
-  font: 500 12px/1.2 var(--font-ui), sans-serif;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font: 500 13.5px/1.4 var(--font-ui), sans-serif;
 }
 
 /* ---- Tables: bets and transactions ----------------------------------------------- */
@@ -565,7 +516,7 @@
 .switches {
   display: grid;
   gap: 6px;
-  margin: 0;
+  margin: 26px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -680,38 +631,6 @@
   cursor: default;
 }
 
-/* ---- Inventory -------------------------------------------------------------------- */
-
-.empty {
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  padding: 40px 20px 48px;
-  border-radius: 14px;
-  background: var(--surface-2);
-  box-shadow: inset 0 0 0 1px var(--edge);
-  text-align: center;
-}
-
-.emptyArt {
-  width: 150px;
-  height: auto;
-  margin-bottom: 8px;
-  rotate: -5deg;
-}
-
-.emptyTitle {
-  margin: 0;
-  font: 800 19px/1.2 var(--font-ui), sans-serif;
-}
-
-.emptyText {
-  max-width: 400px;
-  margin: 0 0 10px;
-  color: var(--text-muted);
-  font: 400 14px/1.55 var(--font-ui), sans-serif;
-}
-
 /* ---- Security --------------------------------------------------------------------- */
 
 .cards {
@@ -804,57 +723,70 @@
   white-space: nowrap;
 }
 
-/* ---- Take a break ------------------------------------------------------------------- */
+/* ---- Self exclusion ---------------------------------------------------------------- */
 
-.breaks {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin: 22px 0 0;
-  padding: 0;
-  border: 0;
+.narrow {
+  max-width: 360px;
+  margin-top: 24px;
 }
 
-.break {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 56px;
-  border-radius: 10px;
-  background: var(--surface-2);
-  box-shadow: inset 0 0 0 1px var(--edge);
-  font: 700 14.5px/1 var(--font-ui), sans-serif;
+.select {
+  width: 100%;
+  height: 44px;
+  padding: 0 40px 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--bg)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238d90b3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9.5l6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 14px center / 15px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text);
+  font: 500 14px/1 var(--font-ui), sans-serif;
+  appearance: none;
   cursor: pointer;
 }
 
-.break input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+.select:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--brand);
 }
 
-.break:has(input:checked) {
-  box-shadow: inset 0 0 0 2px var(--brand);
-  color: var(--brand);
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  color: var(--text-soft);
+  font: 500 14px/1.4 var(--font-ui), sans-serif;
+  cursor: pointer;
 }
 
-.break:has(input:focus-visible) {
-  outline: 2px solid var(--brand);
-  outline-offset: 2px;
+.check input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--brand);
+  cursor: pointer;
 }
 
 /* ---- Narrower windows ----------------------------------------------------------------- */
 
 @container (max-width: 720px) {
   .stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .stat {
+    padding: 16px 18px;
   }
 
   .identity {
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .avatar {
+  .face {
     grid-row: auto;
   }
 
@@ -880,10 +812,6 @@
     display: none;
   }
 
-  .breaks {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .session {
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -894,33 +822,14 @@
 }
 
 @container (max-width: 440px) {
-  .avatar {
-    width: 72px;
-    height: 72px;
-  }
-
   .face {
-    width: 58px;
-    height: 58px;
-    font-size: 24px;
+    width: 62px;
+    height: 62px;
+    font-size: 25px;
   }
 
   .name {
     font-size: 19px;
-  }
-
-  .stat {
-    gap: 10px;
-    padding: 12px;
-  }
-
-  .statIcon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .statValue {
-    font-size: 17px;
   }
 
   .sectionHead {

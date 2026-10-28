@@ -1,14 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type ComponentType, type KeyboardEvent, type SVGProps } from "react";
-import { PLAYER } from "@/lib/home";
-import { avatarOf } from "@/components/home/avatar";
-import { CaseIcon, CloseIcon, LogoutIcon, PauseIcon, ShieldIcon, SlipIcon, SwapIcon, UserIcon } from "@/components/home/icons";
+import { CloseIcon, LogoutIcon, ShieldIcon, SlipIcon, SwapIcon, UserIcon, UserXIcon } from "@/components/home/icons";
 import BetHistory from "./BetHistory";
-import Inventory from "./Inventory";
 import Overview from "./Overview";
 import Security from "./Security";
-import TakeABreak from "./TakeABreak";
+import SelfExclusion from "./SelfExclusion";
 import Transactions from "./Transactions";
 import styles from "./ProfileModal.module.css";
 
@@ -18,9 +15,8 @@ const SECTIONS: Section[] = [
   { id: "profile", label: "Profile", Icon: UserIcon },
   { id: "bets", label: "Bet history", Icon: SlipIcon },
   { id: "transactions", label: "Transactions", Icon: SwapIcon },
-  { id: "inventory", label: "Inventory", Icon: CaseIcon },
   { id: "security", label: "Security", Icon: ShieldIcon },
-  { id: "break", label: "Take a break", Icon: PauseIcon },
+  { id: "exclusion", label: "Self exclusion", Icon: UserXIcon },
 ];
 
 /**
@@ -73,15 +69,6 @@ export default function ProfileModal() {
       data-profile-dialog
     >
       <nav className={styles.side} aria-label="Account">
-        <div className={styles.me}>
-          <span className={styles.meAvatar} style={{ background: avatarOf(PLAYER.name) }} aria-hidden>
-            {PLAYER.name[0]}
-          </span>
-          <span className={styles.meText}>
-            <span className={styles.meName}>{PLAYER.name}</span>
-            <span className={styles.meLevel}>Level {PLAYER.level}</span>
-          </span>
-        </div>
         <div className={styles.menu} role="tablist" aria-orientation="vertical" onKeyDown={onMenuKey}>
           {SECTIONS.map(({ id, label, Icon }) => (
             <button
@@ -123,9 +110,8 @@ export default function ProfileModal() {
             {id === "profile" && <Overview onAllBets={() => setOpen("bets")} />}
             {id === "bets" && <BetHistory />}
             {id === "transactions" && <Transactions />}
-            {id === "inventory" && <Inventory />}
             {id === "security" && <Security />}
-            {id === "break" && <TakeABreak />}
+            {id === "exclusion" && <SelfExclusion />}
           </section>
         ))}
       </div>

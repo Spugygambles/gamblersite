@@ -363,8 +363,8 @@
   // [data-profile-open] opens it on the profile; its menu switches sections,
   // by click or arrow key; the close button, Escape or a click outside
   // closes it and hands focus back. Inside, switches flip, Save wakes when
-  // its field changes, the bet history's tabs filter the rows, and picking
-  // a break's length wakes the lock button.
+  // its field changes, the bet history's tabs filter the rows, and self
+  // exclusion's button wakes once a length is picked and the box ticked.
   const account = document.querySelector("[data-profile-dialog]");
   if (account) {
     let opener = null;
@@ -417,7 +417,10 @@
       if (field) field.parentElement.querySelector("[data-save]").disabled = field.value === field.defaultValue;
     });
     account.addEventListener("change", (e) => {
-      if (e.target.matches("[data-break]")) account.querySelector("[data-break-lock]").disabled = false;
+      if (!e.target.matches("[data-exclusion-period], [data-exclusion-sure]")) return;
+      const period = account.querySelector("[data-exclusion-period]").value;
+      const sure = account.querySelector("[data-exclusion-sure]").checked;
+      account.querySelector("[data-exclusion-lock]").disabled = !period || !sure;
     });
   }
 
