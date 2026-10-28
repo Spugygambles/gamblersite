@@ -98,79 +98,88 @@ export const HomeIcon = (p: IconProps) => (
   </svg>
 );
 
+// ---- The games: solid, chunky shapes on a 24 grid --------------------------
+
+// Cases: an open box, its back flaps folded up and out.
 export const CaseIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path d="M2.8 8.2 12 3.6l9.2 4.6V10H2.8Z" />
-    <path
-      fillRule="evenodd"
-      d="M4 11.4h16V19a1.6 1.6 0 0 1-1.6 1.6H5.6A1.6 1.6 0 0 1 4 19Zm6.4 1.4v2.6c0 .4.3.7.7.7h1.8c.4 0 .7-.3.7-.7v-2.6Z"
-    />
+    <path d="M2.6 10.2L11.5 14.56L11.5 21.76L2.6 17.4ZM12.5 14.56L21.4 10.2L21.4 17.4L12.5 21.76ZM2.16 9.34L11.56 4.74L10 1.7L0.6 6.3ZM12.44 4.74L21.84 9.34L23.4 6.3L14 1.7Z" />
   </svg>
 );
 
+// Battles: two swords crossed, the one underneath broken where the other
+// passes over it.
 export const SwordsIcon = (p: IconProps) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden {...p}>
-    <path strokeWidth="2.6" d="M5 5l9.2 9.2M19 5l-9.2 9.2" />
-    <path strokeWidth="2.2" d="M11.6 17.4l5.8-5.8M12.4 17.4l-5.8-5.8" />
-    <path strokeWidth="2.6" d="M16.6 16.6l2.6 2.6M7.4 16.6l-2.6 2.6" />
-  </svg>
-);
-
-export const UpgradeIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path fillRule="evenodd" d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 4.4-4.6 4.7h3.1v4.9h3v-4.9h3.1Z" />
+    <path d="M19.35 4.05L18.79 7.16L9.53 16.42L6.98 13.87L16.24 4.61ZM5.35 12.25L11.15 18.05L10.23 18.97L9.1 18.97L4.43 14.3L4.43 13.17ZM5.92 15.78L7.62 17.48L5.78 19.32L4.08 17.62ZM2.42 19.43a1.55 1.55 0 1 0 3.1 0a1.55 1.55 0 1 0 -3.1 0ZM4.65 4.05L7.76 4.61L11.33 8.18L8.78 10.73L5.21 7.16ZM15.22 12.07L17.02 13.87L14.47 16.42L12.67 14.62ZM12.85 18.05L18.65 12.25L19.57 13.17L19.57 14.3L14.9 18.97L13.77 18.97ZM16.38 17.48L18.08 15.78L19.92 17.62L18.22 19.32ZM18.48 19.43a1.55 1.55 0 1 0 3.1 0a1.55 1.55 0 1 0 -3.1 0Z" />
   </svg>
 );
 
+// Upgrader: two chevrons pointing up, the lower one fainter.
+export const UpgradeIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...p}>
+    <path d="M5.4 12.2 12 5.6l6.6 6.6" />
+    <path d="M5.4 19 12 12.4l6.6 6.6" opacity="0.5" />
+  </svg>
+);
+
+// Mines: a bomb with a shine on it, its cap, the fuse and a spark.
 export const BombIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <circle cx="10.5" cy="14" r="6.9" />
-    <path d="m13.9 8.2 2.1-2.1 2.1 2.1-2.1 2.1ZM19.4 2.6l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6Z" />
+    <path fillRule="evenodd" d="M2.7 14.3a7.6 7.6 0 1 0 15.2 0a7.6 7.6 0 1 0 -15.2 0ZM5.65 11.5a1.45 1.45 0 1 0 2.9 0a1.45 1.45 0 1 0 -2.9 0ZM5.2 14.2a0.8 0.8 0 1 0 1.6 0a0.8 0.8 0 1 0 -1.6 0Z" />
+    <path d="M12.74 9.49L15.99 6.24L18.26 8.51L15.01 11.76Z" />
+    <path fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" d="M16.6 7.4c.6-1.7 1.6-2.8 3-3.4" />
+    <path d="M20.9 .8l.6 1.7 1.7.6-1.7.6-.6 1.7-.6-1.7-1.7-.6 1.7-.6Z" />
   </svg>
 );
 
-// Keno: a board with some numbers picked.
+// Keno: a board of nine, four of them picked.
+const KENO_PICKS = [0, 4, 5, 7];
+
 export const KenoIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    {[6, 12, 18].flatMap((y) =>
-      [6, 12, 18].map((x) => <circle key={`${x}${y}`} cx={x} cy={y} r="2.6" opacity={(x + y) % 12 === 0 ? 0.45 : 1} />),
-    )}
+    {Array.from({ length: 9 }, (_, i) => {
+      const x = 2 + (i % 3) * 7.1;
+      const y = 2 + Math.floor(i / 3) * 7.1;
+      return KENO_PICKS.includes(i) ? (
+        <rect key={i} x={x} y={y} width="5.8" height="5.8" rx="1.5" />
+      ) : (
+        <rect key={i} x={x + 0.75} y={y + 0.75} width="4.3" height="4.3" rx="0.9" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      );
+    })}
   </svg>
 );
 
+// Crash: a rocket heading up and away, with a window, fins and a flame.
 export const RocketIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path
-      fillRule="evenodd"
-      d="M12 2.4c3.3 2.2 5 5.6 5 9.7 0 1.4-.2 2.8-.6 4H7.6A12.6 12.6 0 0 1 7 12.1c0-4.1 1.7-7.5 5-9.7Zm0 5.4a1.9 1.9 0 1 0 0 3.8 1.9 1.9 0 0 0 0-3.8Z"
-    />
-    <path d="M6.9 12.6 4.4 15l.8 3.4 2.7-1.7ZM17.1 12.6l2.5 2.4-.8 3.4-2.7-1.7ZM10.2 17.2h3.6l-.6 3a1.2 1.2 0 0 1-2.4 0Z" />
+    <path fillRule="evenodd" d="M19.81 4.19 C19.95 7.86 18.54 10.98 15.99 13.52 L12.32 16.92 L7.08 11.68 L10.48 8.01 C13.02 5.46 16.14 4.05 19.81 4.19 ZM13.4 8.85a1.75 1.75 0 1 0 3.5 0a1.75 1.75 0 1 0 -3.5 0Z" />
+    <path d="M9.52 9.17L4.96 9.84L3.34 11.47L6.45 12.46ZM14.83 14.48L14.16 19.04L12.53 20.66L11.54 17.55ZM7.37 13.24L10.76 16.63L9.42 17.27L6.73 14.58Z" />
+    <path d="M7.51 16.49 C7.72 18.97 6.52 20.31 3.27 20.73 C3.69 17.48 5.03 16.28 7.51 16.49 Z" />
   </svg>
 );
 
-export const TargetIcon = (p: IconProps) => (
+// Limbo: a gauge, its needle up near the top.
+export const GaugeIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path
-      fillRule="evenodd"
-      d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 3a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4Zm0 3.2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"
-    />
+    <path fill="none" stroke="currentColor" strokeWidth="2.9" strokeLinecap="butt" strokeDasharray="7.15 1.7" d="M4.39 18.15A8.4 8.4 0 1 1 19.61 18.15" />
+    <path d="M15.82 8.49L13.14 15.32L10.86 13.88ZM9.7 14.6a2.3 2.3 0 1 0 4.6 0a2.3 2.3 0 1 0 -4.6 0Z" />
   </svg>
 );
 
+// Coinflip: two coins, one behind the other.
 export const CoinflipIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <path fillRule="evenodd" d="M12 2.8a9.2 9.2 0 1 1 0 18.4 9.2 9.2 0 0 1 0-18.4Zm0 2.6a6.6 6.6 0 1 0 0 13.2 6.6 6.6 0 0 0 0-13.2Z" />
-    <path d="M12 7.6l1.3 2.7 2.9.4-2.1 2 .5 2.9-2.6-1.4-2.6 1.4.5-2.9-2.1-2 2.9-.4Z" />
+    <path d="M8.65 6.7A6.7 6.7 0 1 1 17.3 15.35A7.85 7.85 0 0 0 8.65 6.7Z" />
+    <path fillRule="evenodd" d="M2.8 14.5a6.7 6.7 0 1 0 13.4 0a6.7 6.7 0 1 0 -13.4 0ZM4.5 14.5a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM5.9 14.5a3.6 3.6 0 1 0 7.2 0a3.6 3.6 0 1 0 -7.2 0Z" />
   </svg>
 );
 
+// Blackjack: a card tipped behind another, which has a spade cut out of it.
 export const CardsIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
-    <rect x="9.6" y="2.6" width="10.4" height="14.6" rx="2" opacity="0.45" transform="rotate(14 14.8 9.9)" />
-    <path
-      fillRule="evenodd"
-      d="M5.6 6.4h8.4c1.1 0 2 .9 2 2v11c0 1.1-.9 2-2 2H5.6c-1.1 0-2-.9-2-2v-11c0-1.1.9-2 2-2Zm4.2 4.2c-1.4 1.4-2.8 2.4-2.8 3.8 0 .9.7 1.6 1.6 1.6.4 0 .8-.2 1-.5l-.5 1.6h1.4l-.5-1.6c.2.3.6.5 1 .5.9 0 1.6-.7 1.6-1.6 0-1.4-1.4-2.4-2.8-3.8Z"
-    />
+    <path d="M8.15 19.55L7.51 19.72L6.42 19.72L5.48 19.17L4.94 18.23L2.04 7.41L2.04 6.33L2.58 5.39L3.52 4.84L8.15 3.6ZM10.09 3.08L11.18 3.08L12.12 3.63L12.42 4.15L6.11 4.15Z" />
+    <path fillRule="evenodd" d="M11.6 5.4h7.2a2.2 2.2 0 0 1 2.2 2.2v11.4a2.2 2.2 0 0 1 -2.2 2.2h-7.2a2.2 2.2 0 0 1 -2.2 -2.2v-11.4a2.2 2.2 0 0 1 2.2 -2.2ZM15.2 9.7C16.19 10.88 18.3 12.18 18.3 13.79 18.3 14.78 17.56 15.47 16.69 15.47 16.19 15.47 15.76 15.22 15.51 14.85L15.94 16.52L14.46 16.52L14.89 14.85C14.64 15.22 14.21 15.47 13.71 15.47 12.84 15.47 12.1 14.78 12.1 13.79 12.1 12.18 14.21 10.88 15.2 9.7Z" />
   </svg>
 );
 
@@ -182,7 +191,7 @@ export const GAME_ICONS: Record<string, ComponentType<IconProps>> = {
   mines: BombIcon,
   keno: KenoIcon,
   crash: RocketIcon,
-  limbo: TargetIcon,
+  limbo: GaugeIcon,
   coinflip: CoinflipIcon,
   blackjack: CardsIcon,
 };
