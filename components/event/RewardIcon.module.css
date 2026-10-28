@@ -1,0 +1,26 @@
+.icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.case {
+  color: var(--text-soft);
+}
+
+.cup {
+  color: var(--coin);
+}
+
+/* The turkey's drawing has room round it; it's drawn a touch bigger. */
+.badge svg {
+  width: 120%;
+  height: 120%;
+}

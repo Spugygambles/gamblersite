@@ -63,17 +63,13 @@ export function HandCoinIcon(props: IconProps) {
   );
 }
 
-// The rewards currency: a cut purple gem.
-export function GemIcon(props: IconProps) {
+// The event's currency: a maple leaf in autumn orange, its veins picked
+// out in a deeper shade.
+export function MapleIcon(props: IconProps) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden {...props}>
-      <path d="M2.2 9.1 6.4 4h11.2l4.2 5.1L12 20.6Z" fill="#6c33dc" />
-      <path d="M2.2 9.1h19.6L12 20.6Z" fill="#7f45f0" />
-      <path d="M6.4 4 8.6 9.1 12 4Z" fill="#b997ff" />
-      <path d="M12 4l3.4 5.1L17.6 4Z" fill="#9a6bff" />
-      <path d="M8.6 9.1h6.8L12 20.6Z" fill="#9b6cff" />
-      <path d="M2.2 9.1h6.4L12 20.6Z" fill="#5a26c4" />
-      <path d="M8.6 9.1 12 4l3.4 5.1Z" fill="#cfb6ff" />
+    <svg viewBox="0 0 100 100" aria-hidden {...props}>
+      <path d={MAPLE_LEAF} fill="#e37633" stroke="#e37633" strokeWidth="4" strokeLinejoin="round" />
+      <path d="M50 90V22M50 63 16 43.5M50 63l34-19.5M50 75.5 26 68M50 75.5 74 68" fill="none" stroke="#a6461b" strokeWidth="5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -180,6 +176,23 @@ export const CardsIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
     <path d="M8.15 19.55L7.51 19.72L6.42 19.72L5.48 19.17L4.94 18.23L2.04 7.41L2.04 6.33L2.58 5.39L3.52 4.84L8.15 3.6ZM10.09 3.08L11.18 3.08L12.12 3.63L12.42 4.15L6.11 4.15Z" />
     <path fillRule="evenodd" d="M11.6 5.4h7.2a2.2 2.2 0 0 1 2.2 2.2v11.4a2.2 2.2 0 0 1 -2.2 2.2h-7.2a2.2 2.2 0 0 1 -2.2 -2.2v-11.4a2.2 2.2 0 0 1 2.2 -2.2ZM15.2 9.7C16.19 10.88 18.3 12.18 18.3 13.79 18.3 14.78 17.56 15.47 16.69 15.47 16.19 15.47 15.76 15.22 15.51 14.85L15.94 16.52L14.46 16.52L14.89 14.85C14.64 15.22 14.21 15.47 13.71 15.47 12.84 15.47 12.1 14.78 12.1 13.79 12.1 12.18 14.21 10.88 15.2 9.7Z" />
+  </svg>
+);
+
+export const TrophyIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path d="M7 3h10v6a5 5 0 0 1-10 0Z" />
+    <path fill="none" stroke="currentColor" strokeWidth="1.8" d="M7 5H4.6v1.2c0 1.9 1.3 3.4 3.1 3.8M17 5h2.4v1.2c0 1.9-1.3 3.4-3.1 3.8" />
+    <path d="M10.8 13.6h2.4v3h-2.4ZM7.6 17.2h8.8c.6 0 1 .4 1 1v2.4H6.6v-2.4c0-.6.4-1 1-1Z" />
+  </svg>
+);
+
+export const ShieldIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
+    <path
+      fillRule="evenodd"
+      d="M12 2.6 19.6 5.5v5.9c0 4.7-3.1 8.6-7.6 10-4.5-1.4-7.6-5.3-7.6-10V5.5Zm3.7 6.3-4.6 4.6-1.9-1.9-1.4 1.4 3.3 3.3 6-6Z"
+    />
   </svg>
 );
 

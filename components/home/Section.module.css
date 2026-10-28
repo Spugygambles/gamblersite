@@ -1,5 +1,5 @@
-/* The page between the menu and chat: --page-max wide at most, centred,
-   with --gutter either side. */
+/* A page's content, beside chat: --page-max wide at most, centred, with
+   --gutter either side, in sections with a head each. */
 .content {
   --gutter: 24px;
   width: 100%;
@@ -21,12 +21,16 @@
 }
 
 /* Section heads: an icon in the accent colour, the title, and a count or a
-   link. */
+   note; a note pushed to the far end sits on the right. */
 .head {
   display: flex;
   align-items: center;
   gap: 9px;
   margin-bottom: 14px;
+}
+
+.aside {
+  margin-left: auto;
 }
 
 .icon {
@@ -57,9 +61,6 @@
 @media (max-width: 640px) {
   .content {
     --gutter: 16px;
-  }
-
-  .content {
     padding-top: 18px;
   }
 

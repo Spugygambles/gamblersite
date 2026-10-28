@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { PLAYER } from "@/lib/home";
 import GamesMenu from "./GamesMenu";
-import { ChatIcon, CoinIcon, GemIcon, GiftIcon } from "./icons";
+import { ChatIcon, CoinIcon, GiftIcon, MapleIcon } from "./icons";
 import { TurkeyArt } from "./PromoArt";
 import Wordmark from "./Wordmark";
 import styles from "./SiteHeader.module.css";
@@ -49,9 +49,9 @@ export default function SiteHeader() {
             Deposit
           </Link>
         </div>
-        <Link href="/rewards" className={styles.gems} aria-label={`${PLAYER.gems} gems`}>
-          <GemIcon className={styles.gem} />
-          <span className="tabular">{PLAYER.gems}</span>
+        <Link href="/turkey-hunt" className={styles.leaves} aria-label={`${PLAYER.leaves} leaves`}>
+          <MapleIcon className={styles.leaf} />
+          <span className="tabular">{PLAYER.leaves}</span>
         </Link>
         <button type="button" className={styles.profile} aria-label={`Account, level ${PLAYER.level}`}>
           <span className={styles.avatar}>

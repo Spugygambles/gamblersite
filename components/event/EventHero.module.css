@@ -1,0 +1,248 @@
+/*
+ * The event's banner: the copy on the left, and on the right an angled
+ * panel in the event's wine red with the turkey standing on it, poking out
+ * over the top, and two maple leaves blowing past.
+ */
+
+.hero {
+  container: hero / inline-size;
+  margin-top: 18px;
+}
+
+.frame {
+  position: relative;
+  min-height: 330px;
+  border-radius: 16px;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 46%;
+  background: #4f2430;
+  clip-path: polygon(70px 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min(58%, 560px);
+  padding: 38px 0 38px 44px;
+}
+
+.kicker {
+  margin: 0;
+  color: var(--brand);
+  font: 800 12px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 12px 0 0;
+  color: var(--text);
+  font: 800 52px/0.95 var(--font-ui), sans-serif;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+}
+
+.text {
+  max-width: 470px;
+  margin: 14px 0 0;
+  color: var(--text-soft);
+  font: 400 15px/1.55 var(--font-ui), sans-serif;
+}
+
+.ends {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.endsLabel {
+  color: var(--text-muted);
+  font: 700 11px/1.3 var(--font-ui), sans-serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.primary,
+.secondary {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font: 800 13.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.primary:hover {
+  background: var(--brand-hi);
+}
+
+.secondary {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.secondary:hover {
+  background: var(--track);
+}
+
+/* The turkey stands on the panel's floor and pokes out over the top. */
+.art {
+  position: absolute;
+  z-index: 1;
+  right: 4%;
+  bottom: 0;
+  width: 36%;
+  height: calc(100% + 34px);
+  pointer-events: none;
+}
+
+.turkey {
+  position: absolute;
+  inset: 0 6% 4px;
+}
+
+.leafBig,
+.leafSmall {
+  position: absolute;
+}
+
+.leafBig {
+  top: 22%;
+  left: -6%;
+  width: 70px;
+  height: 70px;
+  rotate: -24deg;
+}
+
+.leafSmall {
+  top: 8%;
+  right: -2%;
+  width: 46px;
+  height: 46px;
+  rotate: 32deg;
+}
+
+/* Narrower: the copy takes more of the width and the turkey less. */
+@container hero (max-width: 899px) {
+  .copy {
+    width: 64%;
+    padding-left: 32px;
+  }
+
+  .title {
+    font-size: 44px;
+  }
+
+  .panel {
+    width: 40%;
+  }
+
+  .art {
+    width: 34%;
+    right: 2%;
+  }
+
+  .leafBig {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+/* Phones: the turkey on top, on its panel, then the copy under it. */
+@container hero (max-width: 599px) {
+  .frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .panel {
+    inset: 0 0 auto;
+    width: 100%;
+    height: 170px;
+    clip-path: none;
+  }
+
+  .art {
+    position: relative;
+    right: auto;
+    order: -1;
+    width: 100%;
+    height: 200px;
+    margin-top: -30px;
+  }
+
+  .turkey {
+    inset: 0 22% 0;
+  }
+
+  .leafBig {
+    top: 34%;
+    left: 8%;
+  }
+
+  .leafSmall {
+    top: 18%;
+    right: 12%;
+  }
+
+  .copy {
+    width: auto;
+    padding: 22px 20px 24px;
+  }
+
+  .title {
+    font-size: 38px;
+  }
+
+  .text {
+    font-size: 14px;
+  }
+
+  .ends {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary,
+  .secondary {
+    transition: none;
+  }
+}

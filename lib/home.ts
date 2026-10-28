@@ -28,7 +28,8 @@ export const GAMES: GameInfo[] = [
 export const PLAYER = {
   name: "Spugy",
   balance: 0,
-  gems: 5,
+  /** Maple leaves from the Turkey Hunt, spent in its shop. */
+  leaves: 85,
   level: 70,
   /** Progress through the current level, 0-100. */
   levelProgress: 54,

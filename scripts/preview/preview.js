@@ -1,5 +1,6 @@
-// Brings the static snapshot of the homepage to life without React: the
-// same behaviour as the site's components, in plain script.
+// Brings the static snapshots of the site's pages to life without React:
+// the same behaviour as the site's components, in plain script. Each part
+// looks for what it works on and leaves pages without it alone.
 (() => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -289,9 +290,43 @@
     }
   }
 
-  // ---- Links: only the homepage exists so far, so the rest say so
-  // instead of leading nowhere. The note shows just under the link, since
-  // the Claude app can make the page's window taller than the screen.
+  // ---- The Turkey Hunt (components/event): the hunt's countdown, ticking
+  // every second to the end of the Monday after Thanksgiving (lib/event.ts),
+  // and the shop's Buy buttons, which mark an item bought.
+  const countdown = document.querySelector("[data-countdown]");
+  if (countdown) {
+    const huntEnds = () => {
+      const now = new Date();
+      const endOf = (year) => {
+        const first = new Date(year, 10, 1).getDay();
+        return new Date(year, 10, 1 + ((4 - first + 7) % 7) + 25, 23, 59, 59);
+      };
+      const end = endOf(now.getFullYear());
+      return end > now ? end : endOf(now.getFullYear() + 1);
+    };
+    const units = Object.fromEntries([...countdown.querySelectorAll("[data-unit]")].map((el) => [el.dataset.unit, el]));
+    const tick = () => {
+      const s = Math.max(0, Math.floor((huntEnds().getTime() - Date.now()) / 1000));
+      const parts = { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
+      for (const [unit, el] of Object.entries(units)) el.textContent = String(parts[unit]).padStart(2, "0");
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+  document.querySelectorAll("[data-buy]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.disabled) return;
+      const tick = document.querySelector('[class*="RewardTrack-module"] svg');
+      button.replaceChildren(...(tick ? [tick.cloneNode(true)] : []), "Bought");
+      button.classList.add(sibling(classOf(button, "buy"), "got"));
+      button.disabled = true;
+    });
+  });
+
+  // ---- Links: only some pages are built so far (their links point at
+  // their files); the rest say so instead of leading nowhere. The note
+  // shows just under the link, since the Claude app can make the page's
+  // window taller than the screen.
   const toast = document.createElement("div");
   toast.className = "preview-toast";
   toast.setAttribute("role", "status");
@@ -306,8 +341,7 @@
     const x = Math.min(Math.max(r.left + r.width / 2, half + 16), document.documentElement.clientWidth - half - 16);
     toast.style.left = `${x + scrollX}px`;
     toast.style.top = `${r.bottom + scrollY + 8}px`;
-    toast.textContent =
-      a.getAttribute("href") === "/" ? "You're on the homepage." : "Preview: this page isn't built yet. Only the homepage is.";
+    toast.textContent = "Preview: this page isn't built yet. Only the homepage and the Turkey Hunt are.";
     toast.classList.add("show");
     clearTimeout(hide);
     hide = setTimeout(() => toast.classList.remove("show"), 2600);

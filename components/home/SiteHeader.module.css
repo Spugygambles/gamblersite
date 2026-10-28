@@ -289,7 +289,7 @@
 
 /* ---- The player -------------------------------------------------------- */
 
-.gems {
+.leaves {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -303,11 +303,11 @@
   transition: background-color 0.15s ease;
 }
 
-.gems:hover {
+.leaves:hover {
   background: var(--surface-3);
 }
 
-.gem {
+.leaf {
   width: 18px;
   height: 18px;
 }
@@ -382,7 +382,7 @@
 }
 
 @media (max-width: 900px) {
-  .gems,
+  .leaves,
   .event {
     display: none;
   }
@@ -453,7 +453,7 @@
   .event,
   .withdraw,
   .deposit,
-  .gems,
+  .leaves,
   .profile {
     transition: none;
   }
