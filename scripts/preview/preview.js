@@ -498,7 +498,7 @@
     const x = Math.min(Math.max(r.left - box.left + r.width / 2, half + 16), box.width - half - 16);
     toast.style.left = `${x}px`;
     toast.style.top = `${r.bottom - box.top + 8}px`;
-    toast.textContent = "Preview: this page isn't built yet. Only the homepage and the Turkey Hunt are.";
+    toast.textContent = "Preview: this page isn't built yet. Only the homepage, the Turkey Hunt and the terms are.";
     toast.classList.add("show");
     clearTimeout(hide);
     hide = setTimeout(() => toast.classList.remove("show"), 2600);

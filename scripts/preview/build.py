@@ -24,10 +24,11 @@ def get(path):
 PAGES = [
     ("/", "index.html", "CsgoNeo Homepage"),
     ("/turkey-hunt", "turkey-hunt.html", "Turkey Hunt — CsgoNeo"),
+    ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
 # Links between them point at their files; links elsewhere stay, and
 # preview.js says those pages aren't built yet.
-LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turkey-hunt.html"}
+LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turkey-hunt.html", "/terms": "terms.html"}
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
