@@ -2,7 +2,7 @@
  * The leaf shop: a head, then the cases five to a row, each on a card with
  * its number, odds and contents buttons, its picture, name and price, and
  * Open (or why not) along the bottom. The Golden Turkey case gets a wide
- * card of its own after them, on a dark gold ground with faint rays.
+ * card of its own after them, edged in gold.
  */
 
 .shop {
@@ -68,8 +68,7 @@
 .num {
   margin-right: auto;
   color: var(--text-muted);
-  font: italic 800 15px/1 var(--font-display), var(--font-ui), sans-serif;
-  font-stretch: 110%;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
 .tool {
@@ -121,8 +120,7 @@
   gap: 6px;
   margin: 8px 0 12px;
   color: var(--text);
-  font: italic 800 18px/1 var(--font-display), var(--font-ui), sans-serif;
-  font-stretch: 110%;
+  font: 800 17px/1 var(--font-ui), sans-serif;
 }
 
 .price svg {
@@ -171,10 +169,8 @@
   padding: 28px 40px;
   overflow: hidden;
   border-radius: 14px;
-  background:
-    repeating-conic-gradient(from 0deg at 78% 50%, rgba(241, 196, 92, 0.055) 0deg 7deg, transparent 7deg 14deg),
-    #2a2114;
-  box-shadow: inset 0 0 0 1px rgba(241, 196, 92, 0.2);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px rgba(241, 196, 92, 0.45);
 }
 
 .goldenWords {
@@ -193,27 +189,21 @@
 }
 
 .goldenTitle {
-  width: fit-content;
   margin: 0;
-  padding-right: 0.1em;
-  background: linear-gradient(180deg, #fff3cf 20%, #f1c45c 60%, #c98e26 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font: italic 900 36px/1 var(--font-display), var(--font-ui), sans-serif;
-  font-stretch: 115%;
+  color: #f1c45c;
+  font: 900 36px/1 var(--font-ui), sans-serif;
   text-transform: uppercase;
 }
 
 .goldenText {
   margin: 0;
-  color: #d8ccb2;
+  color: var(--text-soft);
   font: 400 14px/1.55 var(--font-ui), sans-serif;
 }
 
 .goldenHave {
   margin: 4px 0 4px;
-  color: #b3a588;
+  color: var(--text-muted);
   font: 500 13px/1 var(--font-ui), sans-serif;
 }
 
@@ -229,15 +219,31 @@
 }
 
 .golden .short {
-  background: rgba(241, 196, 92, 0.12);
-  color: #d9c08a;
+  background: var(--surface-2);
+  color: var(--text-muted);
 }
 
 .goldenArt {
+  position: relative;
   flex-shrink: 0;
   width: 360px;
+  margin: -16px 12px -16px 0;
+}
+
+.goldenCase {
+  display: block;
+  width: 100%;
   height: auto;
-  margin: -16px 0;
+}
+
+/* The gold foil turkey, stuck on at an angle by the case's corner. */
+.goldenSticker {
+  position: absolute;
+  top: 2px;
+  left: -78px;
+  width: 140px;
+  height: auto;
+  rotate: -10deg;
 }
 
 /* ---- Narrower ------------------------------------------------------------ */
@@ -253,6 +259,11 @@
 
   .goldenArt {
     width: 290px;
+  }
+
+  .goldenSticker {
+    left: -60px;
+    width: 116px;
   }
 }
 
@@ -277,15 +288,17 @@
     align-items: stretch;
     gap: 6px;
     padding: 18px 20px 22px;
-    background:
-      repeating-conic-gradient(from 0deg at 50% 22%, rgba(241, 196, 92, 0.055) 0deg 7deg, transparent 7deg 14deg),
-      #2a2114;
   }
 
   .goldenArt {
     align-self: center;
-    width: min(100%, 300px);
-    margin: -6px 0 0;
+    width: min(100% - 70px, 280px);
+    margin: -6px 0 0 60px;
+  }
+
+  .goldenSticker {
+    left: -64px;
+    width: 104px;
   }
 
   .goldenTitle {

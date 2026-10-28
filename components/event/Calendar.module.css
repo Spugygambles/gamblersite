@@ -105,8 +105,7 @@
   overflow: hidden;
   max-width: 100%;
   color: var(--text);
-  font: italic 800 15px/1.1 var(--font-display), var(--font-ui), sans-serif;
-  font-stretch: 108%;
+  font: 800 14.5px/1.1 var(--font-ui), sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

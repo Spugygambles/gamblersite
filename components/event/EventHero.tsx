@@ -1,24 +1,16 @@
-import Image from "next/image";
 import { PRIZE_POOL } from "@/lib/event";
 import Countdown from "./Countdown";
+import { GGSticker, LeafSticker, PieSticker, TurkeySticker } from "./Stickers";
 import styles from "./EventHero.module.css";
 
-// The top of the event: the prize pool, what the hunt is, how long's left,
-// and the turkey in his pilgrim's hat, out on the farm at dusk.
+// The top of the event: the prize pool, what the hunt is and how long's
+// left on a plain dark card, and on the right the hunt's stickers slapped
+// on over a sniper's crosshair: the turkey in his headset saying GG, a
+// maple leaf in the crosshairs, and a slice of pie.
 export default function EventHero() {
   return (
     <section className={styles.hero} aria-labelledby="hunt-title">
       <div className={styles.frame}>
-        <Image
-          className={styles.scene}
-          src="/event/scene.webp"
-          alt=""
-          width={2000}
-          height={680}
-          // Served as-is: already sized for sharp high-DPI screens.
-          unoptimized
-          loading="eager"
-        />
         <div className={styles.copy}>
           <p className={styles.pool}>
             {PRIZE_POOL}
@@ -36,7 +28,18 @@ export default function EventHero() {
             <Countdown />
           </div>
         </div>
-        <Image className={styles.turkey} src="/event/turkey.webp" alt="" width={950} height={720} unoptimized loading="eager" />
+        <div className={styles.art} aria-hidden>
+          <svg className={styles.scope} viewBox="0 0 400 400" fill="none" stroke="currentColor">
+            <circle cx="200" cy="200" r="168" strokeWidth="2" />
+            <circle cx="200" cy="200" r="118" strokeWidth="1.5" strokeDasharray="3 9" />
+            <path d="M200 0V150M200 250V400M0 200H150M250 200H400" strokeWidth="2" />
+            <path d="M188 70H212M188 330H212M70 188V212M330 188V212" strokeWidth="2" />
+          </svg>
+          <TurkeySticker className={styles.turkey} />
+          <GGSticker className={styles.gg} />
+          <LeafSticker className={styles.leaf} />
+          <PieSticker className={styles.pie} />
+        </div>
       </div>
     </section>
   );

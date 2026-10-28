@@ -1,14 +1,11 @@
 // Renders the Turkey Hunt's 3D pictures (three.js, in headless Chromium)
-// into public/event: the Thanksgiving cases, the turkey, the three tab
-// pictures and the farm behind the banner. Each page here draws its own
-// and hands them back as WebP.
+// into public/event: for now, the Thanksgiving cases. Each page here draws
+// its own and hands them back as WebP. (The hunt's stickers aren't
+// rendered: they're drawn in components/event/Stickers.tsx.)
 //
 //   cd scripts/event-art && npm install && npx playwright install chromium
-//   node render.mjs                # everything
-//   node render.mjs cases turkey   # just some
-//
-// The tab pictures come out trimmed to what's in them: if their sizes
-// change, update them in components/event/EventTabs.tsx.
+//   node render.mjs           # every page
+//   node render.mjs cases     # just some
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
@@ -34,7 +31,7 @@ const base = `http://localhost:${server.address().port}`;
 // WebGL without a GPU: ANGLE on SwiftShader.
 const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
 const which = process.argv.slice(2);
-for (const name of which.length ? which : ["cases", "turkey", "tabs", "scene"]) {
+for (const name of which.length ? which : ["cases"]) {
   const page = await browser.newPage();
   page.on("pageerror", (e) => console.error(`${name}: ${e.message}`));
   await page.goto(`${base}/${name}.html`);

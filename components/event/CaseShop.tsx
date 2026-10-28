@@ -4,6 +4,7 @@ import { count } from "@/lib/home";
 import { CASES, MY_HUNT } from "@/lib/event";
 import { EyeIcon, InfoIcon, MapleIcon } from "@/components/home/icons";
 import PanelIntro from "./PanelIntro";
+import { TurkeySticker } from "./Stickers";
 import styles from "./CaseShop.module.css";
 
 const GOLDEN = "/event/cases/golden-turkey.webp";
@@ -11,8 +12,9 @@ const GOLDEN = "/event/cases/golden-turkey.webp";
 /**
  * The leaf shop: how leaves and Golden Turkeys are found, the player's
  * balance, then ten Thanksgiving cases priced in leaves, cheapest first,
- * and the Golden Turkey case at the end. A case the player can't afford
- * says so in place of its Open button.
+ * and the Golden Turkey case at the end, with the gold foil turkey stuck
+ * beside it. A case the player can't afford says so in place of its Open
+ * button.
  */
 export default function CaseShop() {
   return (
@@ -122,7 +124,10 @@ export default function CaseShop() {
             <span className={styles.short}>Find a Golden Turkey to open it</span>
           )}
         </div>
-        <Image className={styles.goldenArt} src={GOLDEN} alt="" width={480} height={325} unoptimized />
+        <div className={styles.goldenArt} aria-hidden>
+          <Image className={styles.goldenCase} src={GOLDEN} alt="" width={480} height={325} unoptimized />
+          <TurkeySticker gold className={styles.goldenSticker} />
+        </div>
       </article>
     </div>
   );

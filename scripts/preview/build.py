@@ -31,8 +31,7 @@ LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turk
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
-    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900"
-    "&family=Saira:ital,wdth,wght@0,50..125,100..900;1,50..125,100..900&display=swap"
+    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap"
 )
 js = (HERE / "preview.js").read_text()
 

@@ -1,20 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { CalendarSticker, CaseSticker, TrophySticker } from "./Stickers";
 import styles from "./EventTabs.module.css";
 
 const TABS = [
-  { id: "calendar", title: ["Harvest", "Calendar"], note: "A gift every day", art: ["/event/tab-calendar.webp", 395, 330] },
-  { id: "shop", title: ["Leaf", "Shop"], note: "Thanksgiving cases", art: ["/event/tab-shop.webp", 577, 330] },
-  { id: "board", title: ["Hunters'", "Board"], note: "Top 10 win coins", art: ["/event/tab-board.webp", 335, 330] },
+  { id: "calendar", title: "Harvest Calendar", note: "A gift every day", Art: CalendarSticker },
+  { id: "shop", title: "Leaf Shop", note: "Thanksgiving cases", Art: CaseSticker },
+  { id: "board", title: "Hunters' Board", note: "Top 10 win coins", Art: TrophySticker },
 ] as const;
 
 export type EventTab = (typeof TABS)[number]["id"];
 
 /**
- * The three ways into the hunt, as picture cards, each opening its panel
- * underneath. The shop's open to start. Arrow keys move between the cards.
+ * The three ways into the hunt, as cards with a sticker each, each opening
+ * its panel underneath. The shop's open to start. Arrow keys move between
+ * the cards.
  */
 export default function EventTabs({ panels }: { panels: Record<EventTab, ReactNode> }) {
   const [tab, setTab] = useState<EventTab>("shop");
@@ -46,14 +47,10 @@ export default function EventTabs({ panels }: { panels: Record<EventTab, ReactNo
             data-event-tab={t.id}
           >
             <span className={styles.words}>
-              <span className={styles.title}>
-                {t.title[0]}
-                <br />
-                {t.title[1]}
-              </span>
+              <span className={styles.title}>{t.title}</span>
               <span className={styles.note}>{t.note}</span>
             </span>
-            <Image className={styles.art} src={t.art[0]} alt="" width={t.art[1]} height={t.art[2]} unoptimized />
+            <t.Art className={styles.art} />
           </button>
         ))}
       </div>

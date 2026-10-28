@@ -1,8 +1,9 @@
 /*
- * The three ways in, as picture cards in their own colours: the title
- * slanted and wide on the left, a picture standing up out of the card on
- * the right. The open one is ringed in a lighter shade of its colour.
- * Narrow, the picture sits on top and the title under it.
+ * The three ways in, as flat dark cards like the lobby's: the title in
+ * upright capitals at the foot, a note under it, and a sticker stuck on
+ * the right, tipped its own way and standing up over the card's top edge.
+ * The open one is lighter, ringed in the accent. Narrow, the sticker sits
+ * on top and the title under it.
  */
 
 .wrap {
@@ -17,48 +18,42 @@
 }
 
 .calendar {
-  --tab-bg: #4a2346;
-  --tab-ring: #d58bc8;
-  --tab-tint: #f5c8ec;
+  --tilt: -6deg;
 }
 
 .shop {
-  --tab-bg: #25462f;
-  --tab-ring: #84cf94;
-  --tab-tint: #c9f0d0;
+  --tilt: 4deg;
 }
 
 .board {
-  --tab-bg: #74401b;
-  --tab-ring: #f2a65a;
-  --tab-tint: #ffd8a6;
+  --tilt: -3deg;
 }
 
 .tab {
   position: relative;
   display: flex;
   align-items: flex-end;
-  height: 128px;
+  height: 124px;
   padding: 0 0 0 22px;
   border: 0;
-  border-radius: 14px;
-  background: var(--tab-bg);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
   text-align: left;
   cursor: pointer;
-  transition: filter 0.15s ease;
-}
-
-.tab[aria-selected="false"] {
-  filter: saturate(0.8) brightness(0.86);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .tab:hover {
-  filter: none;
+  transform: translateY(-2px);
+  background: var(--surface-2);
 }
 
 .tab[aria-selected="true"] {
-  box-shadow: inset 0 0 0 2px var(--tab-ring);
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 2px var(--brand);
 }
 
 .tab:focus-visible {
@@ -70,39 +65,38 @@
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 9px;
+  gap: 8px;
+  max-width: 55%;
   padding-bottom: 20px;
 }
 
 .title {
-  width: fit-content;
-  padding-right: 0.1em;
-  background: linear-gradient(180deg, #fff 35%, var(--tab-tint) 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font: italic 900 25px/0.94 var(--font-display), var(--font-ui), sans-serif;
-  font-stretch: 112%;
+  color: var(--text);
+  font: 800 21px/1.05 var(--font-ui), sans-serif;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .note {
-  color: rgba(255, 255, 255, 0.7);
-  font: 600 12.5px/1 var(--font-ui), sans-serif;
+  color: var(--text-muted);
+  font: 500 13px/1 var(--font-ui), sans-serif;
 }
 
-/* The picture stands on the card's floor and pokes out over its top,
-   fitted to a box so each sits the same size. */
+/* The sticker stands on the card and over its top edge. */
 .art {
   position: absolute;
-  right: 10px;
-  bottom: 8px;
-  width: 46%;
-  max-width: 210px;
-  height: 150px;
-  object-fit: contain;
-  object-position: center bottom;
+  right: 18px;
+  bottom: 12px;
+  width: auto;
+  height: 132px;
+  rotate: var(--tilt);
+  transition: rotate 0.2s ease;
   pointer-events: none;
+}
+
+.tab:hover .art,
+.tab[aria-selected="true"] .art {
+  rotate: 0deg;
 }
 
 .panel {
@@ -115,21 +109,20 @@
   }
 
   .title {
-    font-size: 21px;
+    font-size: 18px;
   }
 
   .note {
-    font-size: 11.5px;
+    font-size: 12px;
   }
 
   .art {
-    right: 6px;
-    width: 40%;
-    height: 128px;
+    right: 12px;
+    height: 112px;
   }
 }
 
-/* Narrow: picture on top, title under it, no note. */
+/* Narrow: sticker on top, title under it, no note. */
 @container (max-width: 780px) {
   .wrap {
     margin-top: 34px;
@@ -150,12 +143,12 @@
 
   .words {
     justify-items: center;
+    max-width: none;
     padding-bottom: 12px;
   }
 
   .title {
-    font-size: 14px;
-    font-stretch: 105%;
+    font-size: 13px;
   }
 
   .note {
@@ -163,10 +156,17 @@
   }
 
   .art {
-    top: -22px;
-    right: 6%;
+    top: -18px;
+    right: 50%;
     bottom: auto;
-    width: 88%;
-    height: 86px;
+    height: 78px;
+    translate: 50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab,
+  .art {
+    transition: none;
   }
 }
