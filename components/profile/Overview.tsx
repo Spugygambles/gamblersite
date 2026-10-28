@@ -5,7 +5,7 @@ import { count, GAMES, PLAYER, usd } from "@/lib/home";
 import { MY_BETS, PROFILE } from "@/lib/profile";
 import { avatarOf } from "@/components/home/avatar";
 import { DepositIcon, StackIcon, WithdrawIcon } from "@/components/home/icons";
-import BetTable from "./BetTable";
+import BetTable, { BetRow } from "./BetTable";
 import styles from "./Profile.module.css";
 
 const STATS = [
@@ -120,7 +120,11 @@ export default function Overview({ onAllBets }: { onAllBets: () => void }) {
           View all
         </button>
       </div>
-      <BetTable bets={MY_BETS.slice(0, 5)} />
+      <BetTable>
+        {MY_BETS.slice(0, 5).map((b) => (
+          <BetRow key={b.id} bet={b} />
+        ))}
+      </BetTable>
 
       <h3 className={styles.subtitle}>Account details</h3>
       <div className={styles.fields}>

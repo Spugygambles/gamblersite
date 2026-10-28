@@ -363,8 +363,8 @@
   // [data-profile-open] opens it on the profile; its menu switches sections,
   // by click or arrow key; the close button, Escape or a click outside
   // closes it and hands focus back. Inside, switches flip, Save wakes when
-  // its field changes, the bet history's tabs filter the rows, and self
-  // exclusion's button wakes once a length is picked and the box ticked.
+  // its field changes, and self exclusion's button wakes once a length is
+  // picked and the box ticked. The bets are further down.
   const account = document.querySelector("[data-profile-dialog]");
   if (account) {
     let opener = null;
@@ -399,12 +399,63 @@
         field.defaultValue = field.value;
         save.disabled = true;
       }
-      const filter = e.target.closest("[data-bet-filter]");
-      if (filter) {
-        filter.parentElement.querySelectorAll("[data-bet-filter]").forEach((f) => f.setAttribute("aria-pressed", String(f === filter)));
-        account.querySelector("[data-filter]").dataset.filter = filter.dataset.betFilter;
+    });
+    // Bets (BetTable.tsx, BetHistory.tsx): a click on a bet's row opens
+    // what proves it fair, and a click on one of those values copies it.
+    // The history's rows are all on the page; a tab for each game and the
+    // pager pick which eight show.
+    account.addEventListener("click", (e) => {
+      const main = e.target.closest("[data-bet-main]");
+      if (main) {
+        const bet = main.closest("[data-bet]");
+        const details = bet.querySelector("[data-bet-details]");
+        details.hidden = !details.hidden;
+        bet.dataset.open = String(!details.hidden);
+        bet.querySelector("[data-bet-toggle]").setAttribute("aria-expanded", String(!details.hidden));
+      }
+      const copy = e.target.closest("[data-copy]");
+      if (copy) {
+        navigator.clipboard?.writeText(copy.dataset.copy).catch(() => {});
+        copy.dataset.copied = "true";
+        setTimeout(() => (copy.dataset.copied = "false"), 1200);
       }
     });
+    const history = account.querySelector("[data-bet-history]");
+    if (history) {
+      const PER_PAGE = 8;
+      const rows = [...history.querySelectorAll("[data-bet]")];
+      let game = "all";
+      let page = 1;
+      const render = () => {
+        const list = rows.filter((r) => game === "all" || r.dataset.game === game);
+        const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+        page = Math.min(Math.max(page, 1), pages);
+        const shown = new Set(list.slice((page - 1) * PER_PAGE, page * PER_PAGE));
+        rows.forEach((r) => (r.hidden = !shown.has(r)));
+        history.querySelector("[data-bet-empty]").hidden = list.length > 0;
+        history.querySelectorAll("[data-bet-game]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.betGame === game)));
+        const start = Math.max(1, Math.min(page - 1, pages - 2));
+        history.querySelectorAll("[data-page-slot]").forEach((b, i) => {
+          b.textContent = start + i;
+          b.hidden = start + i > pages;
+          if (start + i === page) b.setAttribute("aria-current", "page");
+          else b.removeAttribute("aria-current");
+        });
+        history.querySelector("[data-page-gap]").hidden = start + 2 >= pages;
+        history.querySelector('[data-page="prev"]').disabled = page === 1;
+        history.querySelector('[data-page="next"]').disabled = page === pages;
+      };
+      history.addEventListener("click", (e) => {
+        const tab = e.target.closest("[data-bet-game]");
+        const slot = e.target.closest("[data-page-slot]");
+        const step = e.target.closest("[data-page]");
+        if (tab) [game, page] = [tab.dataset.betGame, 1];
+        else if (slot) page = Number(slot.textContent);
+        else if (step) page += step.dataset.page === "next" ? 1 : -1;
+        else return;
+        render();
+      });
+    }
     account.addEventListener("keydown", (e) => {
       const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
       if (!step || !e.target.closest("[data-profile-tab]")) return;
