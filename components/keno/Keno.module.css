@@ -1,0 +1,195 @@
+/*
+ * Keno's own pieces: the board of forty numbers (eight across), the tally
+ * under it and the strip of payouts. The frame, controls, history and
+ * windows come from the shared game kit.
+ */
+
+.center {
+  display: grid;
+  gap: 14px;
+  align-self: center;
+  width: min(100%, 640px);
+  container-type: inline-size;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+  color: var(--text-soft);
+  font: 800 clamp(12px, 3cqw, 16px) / 1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease,
+    translate 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.tile:not(:disabled):hover {
+  background: var(--surface-3);
+  color: var(--text);
+  translate: 0 -2px;
+}
+
+.tile:not(:disabled):active {
+  translate: 0 1px;
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.tile:disabled {
+  cursor: default;
+}
+
+/* yours */
+.tile[data-picked] {
+  box-shadow:
+    inset 0 0 0 2px var(--brand),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+  color: var(--text);
+}
+
+/* drawn, but not yours */
+.tile[data-drawn] {
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--text-muted);
+  animation: drawn 0.3s ease-out;
+}
+
+/* drawn and yours */
+.tile[data-hit] {
+  background: var(--brand);
+  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.22);
+  color: var(--on-brand);
+  animation: hit 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+/* once the draw's done, your numbers that didn't come up step back */
+[data-phase="done"] .tile[data-picked]:not([data-hit]) {
+  opacity: 0.55;
+}
+
+.check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 12px;
+  height: 12px;
+}
+
+@keyframes drawn {
+  from {
+    scale: 0.8;
+    opacity: 0.4;
+  }
+}
+
+@keyframes hit {
+  0% {
+    scale: 0.7;
+  }
+  60% {
+    scale: 1.12;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+.tally {
+  margin: 0;
+  color: var(--text-muted);
+  font: 600 12.5px/1.4 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+.tally b {
+  color: var(--text);
+  font-weight: 800;
+}
+
+/* what each hit count pays, for the numbers picked */
+.payouts {
+  display: flex;
+  gap: 6px;
+  min-height: 52px;
+  padding-bottom: 2px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.chip {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  min-width: 48px;
+  padding: 9px 6px;
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  text-align: center;
+}
+
+.chipHits {
+  color: var(--text-muted);
+  font: 600 10.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.chipMult {
+  color: var(--text);
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+}
+
+.chip[data-zero] .chipMult {
+  color: var(--text-muted);
+}
+
+.chip[data-active] {
+  background: var(--brand);
+  box-shadow: none;
+}
+
+.chip[data-active] .chipHits,
+.chip[data-active] .chipMult {
+  color: var(--on-brand);
+}
+
+.payoutsHint {
+  align-self: center;
+  width: 100%;
+  color: var(--text-muted);
+  font: 600 12.5px/1.4 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
+
+  .tile[data-drawn],
+  .tile[data-hit] {
+    animation: none;
+  }
+}
