@@ -330,14 +330,14 @@ export default function CaseBattles() {
                           <span className={styles.rowRounds}>
                             {lb.cases.length} round{lb.cases.length === 1 ? "" : "s"}
                           </span>
-                          <span className={`${styles.rowCost} tabular`}>
+                          <span className={`${styles.rowCost} tabular`} data-row-cost={stake.toFixed(2)}>
                             <CoinIcon />
                             {money.format(stake)}
                           </span>
                         </span>
                         <span className={styles.seatChips}>
                           {lb.players.map((p, i) => (
-                            <span key={i} className={`${styles.chip} ${p ? "" : styles.chipOpen}`}>
+                            <span key={i} className={`${styles.chip} ${p ? "" : styles.chipOpen}`} data-chip={p ?? ""}>
                               {p ?? "Open"}
                             </span>
                           ))}
@@ -381,7 +381,7 @@ export default function CaseBattles() {
                           <span className={styles.avatar} aria-hidden>
                             {(name ?? "?")[0]}
                           </span>
-                          <span className={styles.colName}>
+                          <span className={styles.colName} data-name={name ?? ""}>
                             {name ?? "Waiting…"}
                             {you && <small>you</small>}
                             {team !== null && <i>team {team === 0 ? "A" : "B"}</i>}
