@@ -1,0 +1,430 @@
+/*
+ * Coinflip's own pieces: the lobby of open flips on the stage, the arena
+ * with the two players either side of the coin, the coin itself (two
+ * faces on a card that turns in 3D), and the result. Everything else is
+ * the shared game kit.
+ */
+
+/* ---- The side to call -------------------------------------------------------------- */
+
+.sideChoice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.sideCoin {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+/* ---- The lobby ----------------------------------------------------------------------- */
+
+.lobby {
+  width: 100%;
+  align-self: start;
+  display: grid;
+  gap: 8px;
+}
+
+.lobbyHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 2px;
+}
+
+.lobbyTitle {
+  margin: 0;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.lobbyCount {
+  color: var(--text-muted);
+  font: 600 12px/1 var(--font-ui), sans-serif;
+}
+
+.flips {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flip {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 56px;
+  padding: 8px 10px 8px 8px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.flip[data-mine] {
+  box-shadow: inset 0 0 0 1.5px var(--brand);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  color: var(--text);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+  text-transform: uppercase;
+}
+
+.avatar[data-you] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.who {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--text);
+  font: 700 13.5px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font: 600 11.5px/1.2 var(--font-ui), sans-serif;
+}
+
+.waiting::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.called {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px 6px 6px;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text-soft);
+  font: 700 12px/1 var(--font-ui), sans-serif;
+}
+
+.called img {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+}
+
+.amount svg {
+  width: 14px;
+  height: 14px;
+}
+
+.join {
+  height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.join:hover:not(:disabled) {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.join:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* ---- The arena ------------------------------------------------------------------------ */
+
+.arena {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  max-width: 720px;
+  align-self: center;
+}
+
+.player {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 18px 12px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  text-align: center;
+}
+
+.player[data-winner] {
+  box-shadow: inset 0 0 0 2px var(--live);
+}
+
+.player[data-loser] {
+  opacity: 0.55;
+}
+
+.playerAvatar {
+  width: 48px;
+  height: 48px;
+  font-size: 18px;
+}
+
+.playerName {
+  color: var(--text);
+  font: 800 14px/1.2 var(--font-ui), sans-serif;
+}
+
+.playerSide {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font: 700 12px/1 var(--font-ui), sans-serif;
+}
+
+.playerSide img {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.pot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+}
+
+.pot svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* the coin: a card with a face on each side, turned in 3D */
+.coinBox {
+  display: grid;
+  place-items: center;
+  width: 220px;
+  height: 240px;
+  perspective: 900px;
+}
+
+.hop {
+  display: grid;
+  place-items: center;
+}
+
+.hop[data-flying] {
+  animation: hop var(--flip-ms) ease-in-out;
+}
+
+@keyframes hop {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  45% {
+    translate: 0 -44px;
+  }
+}
+
+.coin {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  transform: rotateY(var(--turn));
+  transform-style: preserve-3d;
+  transition: transform var(--flip-ms) cubic-bezier(0.2, 0.75, 0.25, 1);
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.55));
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.faceBack {
+  transform: rotateY(180deg);
+}
+
+.arenaFoot {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.result {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  min-width: 220px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--live);
+  text-align: center;
+  animation: resultIn 0.3s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+.result[data-lost] {
+  box-shadow: inset 0 0 0 2px var(--danger);
+}
+
+.resultBig {
+  font: 900 26px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.result[data-lost] .resultBig {
+  color: #e0796b;
+}
+
+.result:not([data-lost]) .resultBig {
+  color: var(--live);
+}
+
+.resultSub {
+  color: var(--text-soft);
+  font: 600 13px/1.3 var(--font-ui), sans-serif;
+}
+
+@keyframes resultIn {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+.again {
+  height: 40px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 800 13px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.again:hover {
+  background: var(--surface-3);
+}
+
+/* ---- Narrower --------------------------------------------------------------------------- */
+
+@container (max-width: 820px) {
+  .flip {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+  }
+
+  .flip .called {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .flip .amount {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .flip .join {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+  }
+
+  .arena {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .coinBox {
+    grid-column: 1 / -1;
+    order: -1;
+    width: 180px;
+    height: 200px;
+    justify-self: center;
+  }
+
+  .coin {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin {
+    transition: none;
+  }
+
+  .hop[data-flying],
+  .waiting::before,
+  .result {
+    animation: none;
+  }
+}
