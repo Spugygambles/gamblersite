@@ -2,7 +2,7 @@
  * Mines, matte like the rest of the site: the bet controls down a column
  * on the left, the board on a darker stage beside them. Tiles are flat
  * raised squares that press in when turned over; a gem lights its tile
- * green, the mine the player hit lights its tile red and jolts the board.
+ * green, the mine the player hit lights its tile red.
  * Below 820px the board goes on top and the controls under it.
  */
 
@@ -556,28 +556,6 @@
   opacity: 0.85;
 }
 
-.board[data-hit] {
-  animation: jolt 0.45s ease-out;
-}
-
-@keyframes jolt {
-  10% {
-    translate: -5px 2px;
-  }
-  30% {
-    translate: 5px -3px;
-  }
-  50% {
-    translate: -4px 1px;
-  }
-  70% {
-    translate: 3px -2px;
-  }
-  90% {
-    translate: -2px 1px;
-  }
-}
-
 .tile {
   position: relative;
   display: grid;
@@ -926,7 +904,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .board[data-hit],
   .tile .gem,
   .tile .bomb,
   .tile[data-look="mine"],

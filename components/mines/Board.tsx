@@ -176,7 +176,6 @@ export default function Board({
       aria-label={`${n} by ${n} board`}
       data-board
       data-phase={phase}
-      data-hit={hit !== null ? "" : undefined}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerEnd}
