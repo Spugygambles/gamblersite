@@ -831,8 +831,12 @@
 
 .silhouette {
   fill: var(--rarity);
-  opacity: 0.8;
+  opacity: 0.82;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+.silhouetteDark {
+  fill: color-mix(in srgb, var(--rarity) 55%, #0f1022);
 }
 
 .art[data-art="loaded"] .silhouette,
