@@ -293,7 +293,7 @@
   // ---- The Turkey Hunt (components/event): the countdown, a box per digit,
   // ticking every second to the end of the Monday after Thanksgiving
   // (lib/event.ts); the picture cards switching panels, by click or arrow
-  // key; and the calendar's Claim button, which marks today claimed.
+  // key; and the calendar's Open box, which opens today's.
   const countdown = document.querySelector("[data-countdown]");
   if (countdown) {
     const huntEnds = () => {
@@ -341,21 +341,31 @@
     });
   }
 
-  document.querySelectorAll("[data-claim]").forEach((button) => {
+  // The calendar's Open box (Calendar.tsx): today's tile shows what came
+  // out, drawn by the day's odds, and the count of opened boxes goes up.
+  document.querySelectorAll("[data-open-box]").forEach((button) => {
     button.addEventListener("click", () => {
+      if (button.disabled) return;
       const day = button.closest("[data-day-state]");
-      const done = document.querySelector('[data-day-state="claimed"]');
+      const done = document.querySelector('[data-day-state="opened"]');
       if (!day || !done) return;
+      // the odds are in lib/event.ts: today is day 6 there
+      const odds = [["15 leaves", 55], ["35 leaves", 35], ["Pumpkin Patch case", 10]];
+      let roll = Math.random() * 100;
+      const reward = (odds.find(([, chance]) => (roll -= chance) < 0) || odds[0])[0];
       day.className = done.className;
-      day.dataset.dayState = "claimed";
+      day.dataset.dayState = "opened";
+      // copy an opened tile's reward, the leaf kind or the case kind
+      const kind = reward.endsWith("case") ? '[class*="__rewardCase"]' : '[class*="__rewardIcon"]';
+      const sample = [...document.querySelectorAll('[data-day-state="opened"] [class*="__reward"]')].find((r) => r.querySelector(kind)) || done.querySelector('[class*="__reward"]');
+      day.querySelector('[class*="__pic"]').replaceChildren(sample.cloneNode(true));
+      day.querySelector("[data-reward]").textContent = reward;
+      const pic = day.querySelector('[class*="__rewardCase"]');
+      if (pic) pic.src = pic.src.replace(/[^/]+\.webp$/, reward.replace(/ case$/, "").toLowerCase().replace(/'/g, "").replace(/\s+/g, "-") + ".webp");
+      day.querySelectorAll('[class*="__asks"]').forEach((el) => el.remove());
       button.replaceWith(done.querySelector("[data-status]").cloneNode(true));
-      // one more day claimed, and its leaves added to the total under it
-      const claimed = document.querySelector("[data-claimed-count]");
-      if (!claimed) return;
-      claimed.textContent = String(Number(claimed.textContent) + 1);
-      const leaves = parseInt(day.querySelector('[class*="__gift"]')?.textContent ?? "", 10) || 0;
-      const note = claimed.closest("p")?.lastElementChild;
-      if (note) note.textContent = note.textContent.replace(/^[\d,]+/, (n) => (Number(n.replace(/,/g, "")) + leaves).toLocaleString("en-US"));
+      const opened = document.querySelector("[data-opened-count]");
+      if (opened) opened.textContent = String(Number(opened.textContent) + 1);
     });
   });
 

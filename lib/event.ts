@@ -44,27 +44,65 @@ export const CASES = [
   { id: "cornucopia", name: "Cornucopia", price: 10000 },
 ];
 
-/** The harvest calendar: a gift a day, the last a case. `claimed` days are
-    behind the player, `today` is open, the rest are locked. */
-export const CALENDAR: { day: number; gift: string; leaves?: number; caseId?: string }[] = [
-  { day: 1, gift: "10 leaves", leaves: 10 },
-  { day: 2, gift: "10 leaves", leaves: 10 },
-  { day: 3, gift: "15 leaves", leaves: 15 },
-  { day: 4, gift: "15 leaves", leaves: 15 },
-  { day: 5, gift: "20 leaves", leaves: 20 },
-  { day: 6, gift: "25 leaves", leaves: 25 },
-  { day: 7, gift: "Maple Grove", caseId: "maple-grove" },
-  { day: 8, gift: "25 leaves", leaves: 25 },
-  { day: 9, gift: "30 leaves", leaves: 30 },
-  { day: 10, gift: "30 leaves", leaves: 30 },
-  { day: 11, gift: "35 leaves", leaves: 35 },
-  { day: 12, gift: "40 leaves", leaves: 40 },
-  { day: 13, gift: "50 leaves", leaves: 50 },
-  { day: 14, gift: "Golden Turkey", caseId: "golden-turkey" },
+/** A day on the harvest calendar: what it takes to unlock its box (how
+    much to wager and to deposit that day, either may be 0), and the odds
+    of what's inside. The box is a mystery until it's opened. */
+export type CalendarDay = {
+  day: number;
+  wager: number;
+  deposit: number;
+  /** What might be in the box, best last, with each one's chance in %. */
+  odds: { reward: string; chance: number }[];
+};
+
+const LEAVES_OR_CASE = (low: number, high: number, caseName: string) => [
+  { reward: `${low} leaves`, chance: 55 },
+  { reward: `${high} leaves`, chance: 35 },
+  { reward: `${caseName} case`, chance: 10 },
 ];
 
-/** The calendar day the player's on. */
+/** Two weeks of boxes. The asks climb through the hunt, with a deposit
+    only on some days, and the last day's box can hold a Golden Turkey. */
+export const CALENDAR: CalendarDay[] = [
+  { day: 1, wager: 5, deposit: 0, odds: LEAVES_OR_CASE(5, 15, "Maple Grove") },
+  { day: 2, wager: 10, deposit: 0, odds: LEAVES_OR_CASE(5, 15, "Maple Grove") },
+  { day: 3, wager: 15, deposit: 0, odds: LEAVES_OR_CASE(10, 20, "Maple Grove") },
+  { day: 4, wager: 20, deposit: 10, odds: LEAVES_OR_CASE(10, 25, "Cranberry Bog") },
+  { day: 5, wager: 25, deposit: 0, odds: LEAVES_OR_CASE(15, 30, "Cranberry Bog") },
+  { day: 6, wager: 40, deposit: 0, odds: LEAVES_OR_CASE(15, 35, "Pumpkin Patch") },
+  { day: 7, wager: 50, deposit: 25, odds: LEAVES_OR_CASE(25, 50, "Pumpkin Patch") },
+  { day: 8, wager: 50, deposit: 0, odds: LEAVES_OR_CASE(20, 40, "Pumpkin Patch") },
+  { day: 9, wager: 75, deposit: 0, odds: LEAVES_OR_CASE(25, 50, "Corn Maze") },
+  { day: 10, wager: 100, deposit: 25, odds: LEAVES_OR_CASE(30, 60, "Corn Maze") },
+  { day: 11, wager: 100, deposit: 0, odds: LEAVES_OR_CASE(30, 75, "Pilgrim's Pride") },
+  { day: 12, wager: 150, deposit: 0, odds: LEAVES_OR_CASE(40, 100, "Pilgrim's Pride") },
+  { day: 13, wager: 200, deposit: 50, odds: LEAVES_OR_CASE(50, 125, "Gravy Boat") },
+  {
+    day: 14,
+    wager: 250,
+    deposit: 50,
+    odds: [
+      { reward: "100 leaves", chance: 50 },
+      { reward: "250 leaves", chance: 30 },
+      { reward: "Harvest Moon case", chance: 15 },
+      { reward: "Golden Turkey", chance: 5 },
+    ],
+  },
+];
+
+/** The calendar day the player's on, and how far they've got today. */
 export const TODAY = 6;
+export const TODAY_SO_FAR = { wagered: 27.5, deposited: 0 };
+
+/** What the days behind the player gave them. A day with nothing was
+    missed: its box stays sealed. */
+export const OPENED: Record<number, string> = {
+  1: "5 leaves",
+  2: "15 leaves",
+  3: "Maple Grove case",
+  5: "15 leaves",
+};
+
 
 /** The leaderboard's prizes, first to tenth, in coins. */
 export const PRIZES = [750, 500, 300, 200, 150, 150, 125, 125, 100, 100];
