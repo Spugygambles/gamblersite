@@ -9,7 +9,20 @@ import { subscribeWallet, walletBalance } from "@/lib/wallet";
 const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const whole = new Intl.NumberFormat("en-US");
 // the built pages, by the site's paths (see build.py LINKS)
-const PAGES: Record<string, string> = { "/": "index.html", "/mines": "mines.html", "/upgrader": "upgrader.html", "/gems": "gems.html", "/terms": "terms.html" };
+const PAGES: Record<string, string> = {
+  "/": "index.html",
+  "/mines": "mines.html",
+  "/upgrader": "upgrader.html",
+  "/gems": "gems.html",
+  "/cases": "cases.html",
+  "/case-battles": "case-battles.html",
+  "/crash": "crash.html",
+  "/limbo": "limbo.html",
+  "/keno": "keno.html",
+  "/coinflip": "coinflip.html",
+  "/blackjack": "blackjack.html",
+  "/terms": "terms.html",
+};
 
 export function mount(selector: string, element: ReactElement) {
   const root = document.querySelector(selector);

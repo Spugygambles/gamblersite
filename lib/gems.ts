@@ -60,3 +60,14 @@ export function claimCase(slug: string, price: number): boolean {
   gemStore.set(save({ ...s, gems: s.gems - price, claimed: { ...s.claimed, [slug]: (s.claimed[slug] ?? 0) + 1 } }));
   return true;
 }
+
+/** Uses up one claimed case of this kind, for opening; false if there's none. */
+export function consumeClaimed(slug: string): boolean {
+  const s = gemStore.get();
+  const have = s.claimed[slug] ?? 0;
+  if (have < 1) return false;
+  const claimed = { ...s.claimed, [slug]: have - 1 };
+  if (claimed[slug] === 0) delete claimed[slug];
+  gemStore.set(save({ ...s, claimed }));
+  return true;
+}
