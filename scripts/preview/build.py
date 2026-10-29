@@ -30,13 +30,23 @@ PAGES = [
     ("/mines", "mines.html", "Mines — CsgoNeo"),
     ("/upgrader", "upgrader.html", "Upgrader — CsgoNeo"),
     ("/gems", "gems.html", "Gem Vault — CsgoNeo"),
+    ("/cases", "cases.html", "Cases — CsgoNeo"),
+    ("/case-battles", "case-battles.html", "Case Battles — CsgoNeo"),
+    ("/crash", "crash.html", "Crash — CsgoNeo"),
+    ("/limbo", "limbo.html", "Limbo — CsgoNeo"),
+    ("/keno", "keno.html", "Keno — CsgoNeo"),
+    ("/coinflip", "coinflip.html", "Coinflip — CsgoNeo"),
+    ("/blackjack", "blackjack.html", "Blackjack — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
-# The games, each bundled from its entry and put into its page.
-BUNDLES = {"mines.html": HERE / "mines-entry.tsx", "upgrader.html": HERE / "upgrader-entry.tsx", "gems.html": HERE / "gems-entry.tsx"}
+# The games, each bundled from its entry and put into its page. A game
+# without an entry yet isn't built.
+BUNDLES = {name: HERE / f"{name[:-5]}-entry.tsx" for _, name, _ in PAGES if name not in ("index.html", "terms.html")}
+PAGES = [p for p in PAGES if p[1] not in BUNDLES or BUNDLES[p[1]].exists()]
+BUNDLES = {k: v for k, v in BUNDLES.items() if v.exists()}
 # Links between them point at their files; links elsewhere stay, and
 # preview.js says those pages aren't built yet.
-LINKS = {"/": "index.html", "/#games": "index.html#games", "/mines": "mines.html", "/upgrader": "upgrader.html", "/gems": "gems.html", "/terms": "terms.html"}
+LINKS = {"/": "index.html", "/#games": "index.html#games", **{path: name for path, name, _ in PAGES if path != "/"}}
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
