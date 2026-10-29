@@ -1,0 +1,142 @@
+/* The reel: a dark track, the strip of tiles, and the marker down the middle. */
+
+.reel {
+  --tile: 150px;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* the ends fade so the strip reads as passing through */
+.reel::before,
+.reel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 60px;
+  pointer-events: none;
+}
+
+.reel::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg), transparent);
+}
+
+.reel::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--bg), transparent);
+}
+
+.strip {
+  display: flex;
+  gap: 8px;
+  padding: 12px 0 12px 12px;
+  will-change: transform;
+}
+
+.tile {
+  position: relative;
+  display: grid;
+  flex: 0 0 var(--tile);
+  gap: 4px;
+  width: var(--tile);
+  padding: 10px 10px 11px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  text-align: center;
+}
+
+.tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--rarity);
+}
+
+.tileArt {
+  display: block;
+  width: 100%;
+  height: 72px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--rarity) 20%, transparent), transparent 78%);
+}
+
+.tileArt > * {
+  width: 100%;
+  height: 100%;
+}
+
+.tileName {
+  overflow: hidden;
+  color: var(--text);
+  font: 700 12.5px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileWeapon {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 600 11px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tilePrice {
+  color: var(--text-soft);
+  font: 800 12px/1 var(--font-ui), sans-serif;
+}
+
+.marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  width: 2px;
+  background: var(--brand);
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.marker::before,
+.marker::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  border: 7px solid transparent;
+  translate: -50% 0;
+}
+
+.marker::before {
+  top: 0;
+  border-top: 9px solid var(--brand);
+  border-bottom: 0;
+}
+
+.marker::after {
+  bottom: 0;
+  border-bottom: 9px solid var(--brand);
+  border-top: 0;
+}
+
+@container (max-width: 640px) {
+  .reel {
+    --tile: 118px;
+  }
+
+  .tileArt {
+    height: 56px;
+  }
+}
