@@ -156,7 +156,7 @@ export function History({ items, label = "Last games" }: { items: { id: number; 
   return (
     <ol className={styles.history} aria-label={label} data-history>
       {items.map((h) => (
-        <li key={h.id} className={`${styles.past} ${h.won === true ? styles.pastWon : h.won === false ? styles.pastLost : ""} tabular`}>
+        <li key={h.id} className={`${styles.past} ${h.won === true ? styles.pastWon : h.won === false ? styles.pastLost : ""} tabular`} data-won={h.won === true ? "true" : h.won === false ? "false" : undefined}>
           {h.text}
         </li>
       ))}

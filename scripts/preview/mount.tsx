@@ -30,11 +30,16 @@ export function mount(selector: string, element: ReactElement) {
     root.replaceChildren();
     createRoot(root).render(element);
     root.setAttribute("data-mounted", "");
-    // React writes an href only when it changes, so a rewritten one holds
-    const relink = () => root.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((a) => {
-      const to = PAGES[a.getAttribute("href") ?? ""];
-      if (to) a.setAttribute("href", to);
-    });
+    // React writes an href or src only when it changes, so a rewritten one
+    // holds: links point at the built pages, the site's own images at the
+    // copies beside them.
+    const relink = () => {
+      root.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((a) => {
+        const to = PAGES[a.getAttribute("href") ?? ""];
+        if (to) a.setAttribute("href", to);
+      });
+      root.querySelectorAll<HTMLImageElement>('img[src^="/"]').forEach((img) => img.setAttribute("src", (img.getAttribute("src") ?? "").slice(1)));
+    };
     relink();
     new MutationObserver(relink).observe(root, { childList: true, subtree: true });
   }
