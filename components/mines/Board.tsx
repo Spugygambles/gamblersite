@@ -18,19 +18,21 @@ function lookOf(i: number, phase: Phase, positions: number[], revealed: number[]
   return positions.includes(i) ? "mineDim" : "gemDim";
 }
 
-// Hold the pointer down this long and it starts turning tiles over as it
-// moves, until it's let go. The trace shows the last stretch of its path.
-const HOLD_MS = 240;
+// Press a tile and move the pointer this far, and from there it turns over
+// every sealed tile it passes until it's let go. Holding still does
+// nothing, and a plain click is still a click. The trace shows the last
+// stretch of the path.
+const START_PX = 8;
 const TRAIL = 48;
 
-type Sweep = { pointerId: number; x: number; y: number; timer: number; active: boolean; points: string[]; fade: number; suppressUntil: number };
+type Sweep = { pointerId: number; x0: number; y0: number; active: boolean; points: string[]; fade: number; suppressUntil: number };
 
 /**
  * The board: `tiles` square buttons. While a game's on, a click turns a
- * tile over, and holding the pointer down then sweeping it across the
- * board turns over every sealed tile it passes. Between games in auto
- * mode, a click marks a tile for the autobet. Each tile says what it
- * shows for screen readers.
+ * tile over, and pressing then sweeping the pointer across the board
+ * turns over every sealed tile it passes. Between games in auto mode, a
+ * click marks a tile for the autobet. Each tile says what it shows for
+ * screen readers.
  */
 export default function Board({
   tiles,
@@ -65,13 +67,12 @@ export default function Board({
   useEffect(() => {
     latest.current = { playing, onPick };
   });
-  const sweep = useRef<Sweep>({ pointerId: -1, x: 0, y: 0, timer: 0, active: false, points: [], fade: 0, suppressUntil: 0 });
+  const sweep = useRef<Sweep>({ pointerId: -1, x0: 0, y0: 0, active: false, points: [], fade: 0, suppressUntil: 0 });
 
   const draw = useCallback(() => lineRef.current?.setAttribute("points", sweep.current.points.join(" ")), []);
 
   const stop = useCallback(() => {
     const s = sweep.current;
-    clearTimeout(s.timer);
     if (s.active) {
       s.active = false;
       // the click the browser fires on release isn't another pick
@@ -103,15 +104,15 @@ export default function Board({
     draw();
   };
 
-  // the hold's up: from here the pointer turns tiles over as it goes
+  // the pointer's moved far enough: from here it turns tiles over as it goes
   const begin = () => {
     const s = sweep.current;
     const board = boardRef.current;
-    if (!latest.current.playing || s.pointerId < 0 || !board) return;
+    if (!board) return;
     try {
       board.setPointerCapture(s.pointerId);
     } catch {}
-    // no capture means the pointer's already gone (let go off the board)
+    // no capture means the pointer's already gone
     if (!board.hasPointerCapture(s.pointerId)) {
       s.pointerId = -1;
       return;
@@ -121,8 +122,8 @@ export default function Board({
     traceRef.current?.removeAttribute("data-fading");
     s.points = [];
     board.setAttribute("data-dragging", "");
-    addPoint(s.x, s.y);
-    reveal(tileUnder(s.x, s.y));
+    // the trace starts where the press was
+    addPoint(s.x0, s.y0);
   };
 
   const onPointerDown = (e: ReactPointerEvent) => {
@@ -132,20 +133,21 @@ export default function Board({
     stop();
     const s = sweep.current;
     s.pointerId = e.pointerId;
-    s.x = e.clientX;
-    s.y = e.clientY;
-    s.timer = window.setTimeout(begin, HOLD_MS);
+    s.x0 = e.clientX;
+    s.y0 = e.clientY;
   };
 
   const onPointerMove = (e: ReactPointerEvent) => {
     const s = sweep.current;
     if (e.pointerId !== s.pointerId) return;
-    s.x = e.clientX;
-    s.y = e.clientY;
-    if (!s.active) return;
     if (!latest.current.playing) {
       stop();
       return;
+    }
+    if (!s.active) {
+      if (Math.hypot(e.clientX - s.x0, e.clientY - s.y0) < START_PX) return;
+      begin();
+      if (!s.active) return;
     }
     addPoint(e.clientX, e.clientY);
     reveal(tileUnder(e.clientX, e.clientY));
@@ -162,10 +164,7 @@ export default function Board({
 
   useEffect(() => {
     const s = sweep.current;
-    return () => {
-      clearTimeout(s.timer);
-      clearTimeout(s.fade);
-    };
+    return () => clearTimeout(s.fade);
   }, []);
 
   return (

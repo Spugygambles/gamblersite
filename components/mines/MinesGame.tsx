@@ -116,7 +116,7 @@ export default function MinesGame() {
     setHistory((h) => [{ id, mult: m, won }, ...h].slice(0, HISTORY));
     const cleared = g.revealed.length === g.tiles - g.mines;
     setNote(won ? `${cleared ? "Cleared the board" : "Cashed out"} at ${times(m)} for ${money.format(payout)}` : "You hit a mine");
-    play(won ? "win" : "mine");
+    if (won) play("win");
     return payout;
   };
 

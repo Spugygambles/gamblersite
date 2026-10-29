@@ -188,8 +188,8 @@ export function HowToDialog({ onClose }: { onClose: () => void }) {
       <ol className={styles.steps}>
         <li>Choose your bet, a board size and how many mines are hidden in it. More mines, bigger multipliers.</li>
         <li>
-          Place your bet, then turn over tiles. Every gem you find raises the multiplier on your bet. Hold the mouse down for a moment and sweep
-          across the board to turn tiles over as you go.
+          Place your bet, then turn over tiles. Every gem you find raises the multiplier on your bet. Or press and sweep across the board to
+          turn tiles over as you go.
         </li>
         <li>Cash out whenever you like and take the multiplier. Turn over a mine and the bet&apos;s gone.</li>
         <li>Auto lets you mark tiles once and play them round after round, raising or resetting the bet as you win or lose.</li>

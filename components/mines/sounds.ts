@@ -2,12 +2,15 @@ import { settingsStore } from "./stores";
 
 /*
  * The game's sounds, made on the spot with the Web Audio API rather than
- * loaded from files: a thud for the bet, a chime for each gem (a step
- * higher each time), a thump and crackle for a mine, a run of notes for a
- * cash out. The Sound switch in the settings turns them off.
+ * loaded from files, and kept soft: a low tock for the bet, a bell-like
+ * pluck for each gem that climbs a pentatonic scale (so a sweep plays a
+ * run), a short chime for a cash out. A mine makes no sound. Everything
+ * goes through a gentle low-pass and a compressor so a quick sweep never
+ * gets loud or harsh. The Sound switch in the settings turns it all off.
  */
 
 let ctx: AudioContext | null = null;
+let out: GainNode | null = null;
 
 function context(): AudioContext | null {
   if (typeof window === "undefined") return null;
@@ -23,41 +26,57 @@ function context(): AudioContext | null {
   return ctx;
 }
 
-function tone(c: AudioContext, type: OscillatorType, from: number, to: number | null, at: number, length: number, gain: number) {
+// master: a little quieter, rounded off above 4.5 kHz, then squeezed
+function output(c: AudioContext): GainNode {
+  if (out) return out;
+  const soften = c.createBiquadFilter();
+  soften.type = "lowpass";
+  soften.frequency.value = 4500;
+  soften.Q.value = 0.5;
+  const squeeze = c.createDynamicsCompressor();
+  squeeze.threshold.value = -20;
+  squeeze.knee.value = 14;
+  squeeze.ratio.value = 4;
+  squeeze.attack.value = 0.003;
+  squeeze.release.value = 0.15;
+  out = c.createGain();
+  out.gain.value = 0.55;
+  out.connect(soften).connect(squeeze).connect(c.destination);
+  return out;
+}
+
+/** One sine partial: a quick rise, then a natural (exponential) die-away. */
+function partial(c: AudioContext, f: number, to: number | null, at: number, length: number, gain: number) {
   const osc = c.createOscillator();
   const g = c.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(from, at);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(f, at);
   if (to) osc.frequency.exponentialRampToValueAtTime(to, at + length);
-  g.gain.setValueAtTime(0.0001, at);
-  g.gain.exponentialRampToValueAtTime(gain, at + 0.006);
-  g.gain.exponentialRampToValueAtTime(0.0001, at + length);
-  osc.connect(g).connect(c.destination);
+  g.gain.setValueAtTime(0, at);
+  g.gain.linearRampToValueAtTime(gain, at + 0.004);
+  g.gain.setTargetAtTime(0, at + 0.004, length / 6);
+  osc.connect(g).connect(output(c));
   osc.start(at);
-  osc.stop(at + length + 0.02);
+  osc.stop(at + length + 0.05);
 }
 
-function crackle(c: AudioContext, at: number, length: number, gain: number, cutoff: number) {
-  const buffer = c.createBuffer(1, Math.ceil(c.sampleRate * length), c.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
-  const src = c.createBufferSource();
-  src.buffer = buffer;
-  const filter = c.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.setValueAtTime(cutoff, at);
-  filter.frequency.exponentialRampToValueAtTime(Math.max(80, cutoff / 10), at + length);
-  const g = c.createGain();
-  g.gain.setValueAtTime(gain, at);
-  g.gain.exponentialRampToValueAtTime(0.0001, at + length);
-  src.connect(filter).connect(g).connect(c.destination);
-  src.start(at);
-  src.stop(at + length);
+/** A soft bell: the note, a touch of its octave gone sooner, a hint of the twelfth. */
+function pluck(c: AudioContext, f: number, at: number, length: number, gain: number) {
+  partial(c, f, null, at, length, gain);
+  partial(c, f * 2, null, at, length * 0.4, gain * 0.22);
+  partial(c, f * 3, null, at, length * 0.22, gain * 0.06);
 }
 
-export type Sound = "bet" | "gem" | "mine" | "win" | "tick";
+// gems climb a pentatonic scale from C5, an octave every five gems
+const SCALE = [0, 2, 4, 7, 9];
+const gemNote = (step: number) => {
+  const i = Math.min(Math.max(step, 1), 15) - 1;
+  return 523.25 * Math.pow(2, (12 * Math.floor(i / 5) + SCALE[i % 5]) / 12);
+};
 
-/** Plays a sound, if sound is on. `step` is which gem this is, for the rising chime. */
+export type Sound = "bet" | "gem" | "win" | "tick";
+
+/** Plays a sound, if sound is on. `step` is which gem this is, for the rising run. */
 export function play(sound: Sound, step = 1) {
   if (!settingsStore.get().sound) return;
   const c = context();
@@ -65,26 +84,16 @@ export function play(sound: Sound, step = 1) {
   const t = c.currentTime;
   switch (sound) {
     case "bet":
-      tone(c, "sine", 300, 170, t, 0.1, 0.3);
-      crackle(c, t, 0.04, 0.08, 3000);
+      partial(c, 190, 130, t, 0.11, 0.22);
       break;
-    case "gem": {
-      const f = 660 * Math.pow(2, Math.min(step - 1, 16) / 12);
-      tone(c, "sine", f, null, t, 0.18, 0.22);
-      tone(c, "triangle", f * 2, null, t + 0.015, 0.12, 0.07);
-      crackle(c, t, 0.025, 0.05, 7000);
-      break;
-    }
-    case "mine":
-      tone(c, "sine", 160, 36, t, 0.5, 0.55);
-      crackle(c, t, 0.45, 0.4, 1600);
+    case "gem":
+      pluck(c, gemNote(step), t, 0.3, 0.16);
       break;
     case "win":
-      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(c, "triangle", f, null, t + i * 0.085, 0.24, 0.2));
-      tone(c, "sine", 1046.5, null, t + 0.34, 0.4, 0.12);
+      [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => pluck(c, f, t + i * 0.075, 0.55, 0.14));
       break;
     case "tick":
-      tone(c, "sine", 880, null, t, 0.04, 0.08);
+      pluck(c, 880, t, 0.14, 0.1);
       break;
   }
 }
