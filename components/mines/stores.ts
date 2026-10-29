@@ -1,48 +1,9 @@
 import { useSyncExternalStore } from "react";
-import { randomHex } from "@/lib/sha256";
+import { createStore } from "@/lib/store";
 
-export type Seeds = {
-  serverSeed: string;
-  clientSeed: string;
-  /** Counts the games played under these seeds. */
-  nonce: number;
-  /** The seeds before the last rotation, revealed so those games can be checked. */
-  previous: { serverSeed: string; clientSeed: string; nonces: number } | null;
-};
+export { seedStore, useSeeds, type Seeds } from "@/lib/seeds";
 
 export type Settings = { sound: boolean; animations: boolean; hotkeys: boolean };
-
-/**
- * A value shared by whoever reads it, kept outside React: the server (and
- * so the first paint) sees `onServer`, the browser makes its own on first
- * read, and `set` tells every subscriber. It outlives the component, so
- * the seeds and settings hold while the player moves about the site.
- */
-function createStore<T>(onServer: T, onClient: () => T) {
-  let value: T | undefined;
-  const listeners = new Set<() => void>();
-  return {
-    get: (): T => (value ??= onClient()),
-    server: () => onServer,
-    set(next: T) {
-      value = next;
-      listeners.forEach((l) => l());
-    },
-    subscribe(l: () => void) {
-      listeners.add(l);
-      return () => {
-        listeners.delete(l);
-      };
-    },
-  };
-}
-
-// The seeds are random, so the browser draws them; until then (and on the
-// server) there are none. Once the game is wired to the server, the server
-// seed stays there and only its hash comes down.
-const NO_SEEDS: Seeds = { serverSeed: "", clientSeed: "", nonce: 0, previous: null };
-export const seedStore = createStore<Seeds>(NO_SEEDS, () => ({ serverSeed: randomHex(32), clientSeed: randomHex(8), nonce: 0, previous: null }));
-export const useSeeds = () => useSyncExternalStore(seedStore.subscribe, seedStore.get, seedStore.server);
 
 const SETTINGS_KEY = "mines.settings";
 const DEFAULT_SETTINGS: Settings = { sound: true, animations: true, hotkeys: false };

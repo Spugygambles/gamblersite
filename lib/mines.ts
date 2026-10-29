@@ -9,8 +9,9 @@ import { hmacSha256, sha256, toHex, utf8 } from "./sha256";
 export const GRIDS = [25, 36, 49, 64] as const;
 export type Grid = (typeof GRIDS)[number];
 
-/** How much of a fair payout the player keeps: a 10% house edge. */
-export const KEEP = 0.9;
+import { KEEP } from "./house";
+
+export { KEEP };
 
 export const MIN_BET = 0.01;
 
