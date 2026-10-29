@@ -12,6 +12,10 @@ const COLUMNS = [
       ["Upgrader", "/upgrader"],
       ["Mines", "/mines"],
       ["Crash", "/crash"],
+      ["Keno", "/keno"],
+      ["Limbo", "/limbo"],
+      ["Coinflip", "/coinflip"],
+      ["Blackjack", "/blackjack"],
     ],
   },
   {
