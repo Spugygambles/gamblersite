@@ -1,0 +1,8 @@
+{
+  "name": "preview",
+  "private": true,
+  "description": "Builds the static preview of the site: python3 build.py. esbuild bundles the games, which run as they are in the preview.",
+  "dependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

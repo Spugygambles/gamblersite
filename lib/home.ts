@@ -27,7 +27,8 @@ export const GAMES: GameInfo[] = [
 
 export const PLAYER = {
   name: "Spugy",
-  balance: 0,
+  /** Sample money to try the games with. */
+  balance: 1000,
   /** Maple leaves from the Turkey Hunt, spent in its shop. */
   leaves: 85,
   level: 70,

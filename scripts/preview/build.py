@@ -4,11 +4,15 @@ Run the site first (npm run dev, on http://localhost:3000), then this. For
 each page it takes the server-rendered HTML and its CSS, swaps the
 self-hosted fonts for Google Fonts, points links between the built pages at
 each other's files, copies the images beside them, and runs preview.js in
-place of React. The result lands in out/: index.html is the homepage.
+place of React. The games are the exception: each is bundled with React by
+esbuild (npm install here first) and mounted over its snapshot, so the
+preview plays the real thing. The result lands in out/: index.html is the
+homepage.
 """
 import pathlib
 import re
 import shutil
+import subprocess
 import urllib.request
 
 HERE = pathlib.Path(__file__).parent
@@ -24,11 +28,14 @@ def get(path):
 PAGES = [
     ("/", "index.html", "CsgoNeo Homepage"),
     ("/turkey-hunt", "turkey-hunt.html", "Turkey Hunt — CsgoNeo"),
+    ("/mines", "mines.html", "Mines — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
+# The games, each bundled from its entry and put into its page.
+BUNDLES = {"mines.html": HERE / "mines-entry.tsx"}
 # Links between them point at their files; links elsewhere stay, and
 # preview.js says those pages aren't built yet.
-LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turkey-hunt.html", "/terms": "terms.html"}
+LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turkey-hunt.html", "/mines": "mines.html", "/terms": "terms.html"}
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
@@ -81,6 +88,33 @@ def snapshot(path, title):
     return head, main, body
 
 
+def bundle(entry):
+    """esbuild's JS and CSS for a game's entry, inlined into the page."""
+    out = OUT / "_bundle.js"
+    subprocess.run(
+        [
+            str(HERE / "node_modules" / ".bin" / "esbuild"),
+            str(entry),
+            "--bundle",
+            "--minify",
+            "--format=iife",
+            "--jsx=automatic",
+            "--define:process.env.NODE_ENV=\"production\"",
+            "--log-level=warning",
+            f"--outfile={out}",
+        ],
+        check=True,
+        cwd=SITE,
+    )
+    js = out.read_text()
+    css = out.with_suffix(".css").read_text()
+    out.unlink()
+    out.with_suffix(".css").unlink()
+    # a closing script tag inside the code would end the inline script early
+    js = js.replace("</script", "<\\/script")
+    return f"<style>\n{css}\n</style>\n<script>\n{js}\n</script>"
+
+
 def document(head, main):
     # The artifact's own page (index.html) is published as a fragment and
     # given its document round it; any other page is served as it is, so
@@ -105,6 +139,8 @@ OUT.mkdir()
 used = set()
 for path, name, title in PAGES:
     head, main, body = snapshot(path, title)
+    if name in BUNDLES:
+        main += "\n" + bundle(BUNDLES[name])
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
     (OUT / name).write_text(page)
     used |= set(re.findall(r'src="((?:cases|battles|coinflip|event)/[^"]+)"', body))

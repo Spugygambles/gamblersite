@@ -3,10 +3,9 @@ import { PLAYER } from "@/lib/home";
 import GamesMenu from "./GamesMenu";
 import { ChatIcon, CoinIcon, GiftIcon, MapleIcon } from "./icons";
 import { TurkeyArt } from "./PromoArt";
+import WalletBalance from "./WalletBalance";
 import Wordmark from "./Wordmark";
 import styles from "./SiteHeader.module.css";
-
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // The bar across the top. On the left: the name, the games menu, rewards,
 // and the Thanksgiving event. On the right: withdraw, the wallet, the
@@ -43,7 +42,7 @@ export default function SiteHeader() {
           <span className={styles.balance}>
             <span className="sr-only">Balance:</span>
             <CoinIcon className={styles.coin} />
-            <span className="tabular">{money.format(PLAYER.balance)}</span>
+            <WalletBalance />
           </span>
           <Link href="/deposit" className={styles.deposit}>
             Deposit
