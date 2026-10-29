@@ -44,7 +44,7 @@ export default function MinesGame() {
 
   const [mode, setMode] = useState<Mode>("manual");
   const [grid, setGrid] = useState<Grid>(25);
-  const [mines, setMines] = useState(3);
+  const [minesText, setMinesText] = useState("3");
   const [betText, setBetText] = useState("10.00");
   const [phase, setPhase] = useState<Phase>("idle");
   const [game, setGame] = useState<Game>(NO_GAME);
@@ -75,7 +75,12 @@ export default function MinesGame() {
   const mult = multiplier(game.tiles, game.mines, picks);
   const next = multiplier(game.tiles, game.mines, picks + 1);
   const short = bet > balance;
-  const canBet = !busy && bet > 0 && !short;
+  // the mines count is typed; anything outside 1 to one less than the tiles holds the bet
+  const minesMax = maxMines(grid);
+  const minesNum = /^\d+$/.test(minesText) ? Number(minesText) : NaN;
+  const minesOk = minesNum >= 1 && minesNum <= minesMax;
+  const mines = minesOk ? minesNum : 1;
+  const canBet = !busy && bet > 0 && !short && minesOk;
 
   const setLive = (ph: Phase, g: Game) => {
     live.current = { phase: ph, game: g };
@@ -245,7 +250,7 @@ export default function MinesGame() {
   const chooseGrid = (g: Grid) => {
     if (busy) return;
     setGrid(g);
-    setMines((n) => Math.min(n, maxMines(g)));
+    if (minesNum > maxMines(g)) setMinesText(String(maxMines(g)));
     setSelected([]);
     resetBoard(g);
   };
@@ -364,14 +369,22 @@ export default function MinesGame() {
           </div>
 
           <label className={styles.field}>
-            <span className={styles.fieldLabel}>Number of mines</span>
-            <select className={styles.select} value={mines} disabled={busy} onChange={(e) => setMines(Number(e.target.value))} data-mines-count>
-              {Array.from({ length: maxMines(grid) }, (_, i) => i + 1).map((n) => (
-                <option key={n} value={n}>
-                  {n}
-                </option>
-              ))}
-            </select>
+            <span className={styles.fieldHead}>
+              <span className={styles.fieldLabel}>Number of mines</span>
+              <span className={`${styles.fieldMax} ${minesOk ? "" : styles.fieldBad}`} data-mines-max>
+                1 to {minesMax}
+              </span>
+            </span>
+            <input
+              className={styles.input}
+              inputMode="numeric"
+              value={minesText}
+              disabled={busy}
+              aria-invalid={minesOk ? undefined : true}
+              onChange={(e) => setMinesText(e.target.value.replace(/\D/g, "").slice(0, 2))}
+              onBlur={() => setMinesText(String(Math.min(Math.max(minesNum || 1, 1), minesMax)))}
+              data-mines-count
+            />
           </label>
 
           {mode === "manual" ? (

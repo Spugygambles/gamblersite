@@ -80,6 +80,24 @@
   letter-spacing: 0.04em;
 }
 
+/* a label with a note at its far end, like the mines' range */
+.fieldHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.fieldMax {
+  color: var(--text-muted);
+  font: 600 11px/1 var(--font-ui), sans-serif;
+  opacity: 0.8;
+}
+
+.fieldBad {
+  color: #e0796b;
+  opacity: 1;
+}
+
 .fieldHint,
 .problem {
   margin: 0;
@@ -126,6 +144,10 @@
 .input:disabled,
 .select:disabled {
   color: var(--text-muted);
+}
+
+.input[aria-invalid="true"] {
+  box-shadow: inset 0 0 0 1.5px #c9544a;
 }
 
 .mono {
@@ -577,6 +599,11 @@
 
 .tile:not(:disabled) {
   cursor: pointer;
+}
+
+/* a press on a tile that's done passes through to the board, so a sweep can start anywhere */
+.tile:disabled {
+  pointer-events: none;
 }
 
 .tile:not(:disabled):hover {
