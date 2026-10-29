@@ -25,6 +25,8 @@ const PAGES: Record<string, string> = {
 };
 
 export function mount(selector: string, element: ReactElement) {
+  // files the games fetch themselves (sounds) are beside the page here; see lib/assets.ts
+  document.documentElement.setAttribute("data-preview", "");
   const root = document.querySelector(selector);
   if (root) {
     root.replaceChildren();

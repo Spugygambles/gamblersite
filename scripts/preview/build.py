@@ -162,3 +162,8 @@ for rel in used:
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(SITE / "public" / rel, dst)
 print(len(used), "images:", ", ".join(used))
+# the sounds the games fetch themselves
+sfx = SITE / "public" / "sfx"
+if sfx.exists():
+    shutil.copytree(sfx, OUT / "sfx")
+    print("sounds:", ", ".join(str(p.relative_to(sfx)) for p in sorted(sfx.rglob("*")) if p.is_file()))

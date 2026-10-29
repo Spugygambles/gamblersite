@@ -6,8 +6,12 @@ import { shuffle } from "./fair";
  * draws to 17 and stands on every 17, blackjack pays 3 to 2, a win pays
  * even money, a push gives the bet back, the dealer's blackjack beats
  * everything but the player's (a push). Double on the first two cards,
- * one split of a pair (split aces take one card each). The functions
- * here never change the game they're given; each hands back a new one.
+ * one split of a pair (split aces take one card each). Insurance is
+ * offered when the dealer shows an ace: half the bet, paying 2 to 1 if
+ * the dealer has blackjack. A Perfect Pairs side bet on the first two
+ * cards pays 6 to 1 for a mixed pair, 12 to 1 for one of a colour and 25
+ * to 1 for one of a suit. The functions here never change the game
+ * they're given; each hands back a new one.
  */
 
 export type Suit = "S" | "H" | "D" | "C";
@@ -50,25 +54,70 @@ export const isBlackjack = (cards: Card[]) => cards.length === 2 && handValue(ca
 export const isBust = (cards: Card[]) => handValue(cards).total > 21;
 
 export type Hand = { cards: Card[]; bet: number; doubled: boolean; done: boolean; split: boolean };
-export type Phase = "playing" | "done";
-export type Game = { shoe: Card[]; next: number; dealer: Card[]; hands: Hand[]; active: number; phase: Phase };
+export type Phase = "insurance" | "playing" | "done";
+export type Game = { shoe: Card[]; next: number; dealer: Card[]; hands: Hand[]; active: number; phase: Phase; insurance: number };
 
 const clone = (g: Game): Game => ({ ...g, dealer: [...g.dealer], hands: g.hands.map((h) => ({ ...h, cards: [...h.cards] })) });
 const draw = (g: Game): Card => g.shoe[g.next++];
 
-/** Two cards each, the dealer's second face down. A natural on either side ends the hand at once. */
+/**
+ * Two cards each, the dealer's second face down. The dealer showing an
+ * ace offers insurance first (unless the player has a natural); then a
+ * natural on either side ends the hand at once.
+ */
 export function deal(shoe: Card[], bet: number): Game {
-  const g: Game = { shoe, next: 0, dealer: [], hands: [{ cards: [], bet, doubled: false, done: false, split: false }], active: 0, phase: "playing" };
+  const g: Game = { shoe, next: 0, dealer: [], hands: [{ cards: [], bet, doubled: false, done: false, split: false }], active: 0, phase: "playing", insurance: 0 };
   g.hands[0].cards.push(draw(g));
   g.dealer.push(draw(g));
   g.hands[0].cards.push(draw(g));
   g.dealer.push(draw(g));
+  if (g.dealer[0].rank === "A" && !isBlackjack(g.hands[0].cards)) {
+    g.phase = "insurance";
+    return g;
+  }
   if (isBlackjack(g.hands[0].cards) || isBlackjack(g.dealer)) {
     g.hands[0].done = true;
     g.phase = "done";
   }
   return g;
 }
+
+export const offersInsurance = (g: Game) => g.phase === "insurance";
+export const insuranceCost = (g: Game) => Math.round((g.hands[0].bet / 2) * 100) / 100;
+
+/** The player's answer to insurance; then the dealer peeks for blackjack. */
+export function insure(g0: Game, take: boolean): Game {
+  const g = clone(g0);
+  if (g.phase !== "insurance") return g;
+  g.insurance = take ? insuranceCost(g) : 0;
+  if (isBlackjack(g.dealer)) {
+    g.hands[0].done = true;
+    g.phase = "done";
+  } else {
+    g.phase = "playing";
+  }
+  return g;
+}
+
+/** What insurance pays back: the stake and 2 to 1 on it, when the dealer has blackjack. */
+export const insurancePayout = (g: Game) => (g.insurance > 0 && isBlackjack(g.dealer) ? Math.round(g.insurance * 3 * 100) / 100 : 0);
+
+export type Pair = { name: string; odds: number };
+
+/** The Perfect Pairs side bet on two cards: the kind of pair, if any, and what it pays to 1. */
+export function perfectPair(cards: Card[]): Pair | null {
+  const [a, b] = cards;
+  if (!a || !b || a.rank !== b.rank) return null;
+  if (a.suit === b.suit) return { name: "Perfect pair", odds: 25 };
+  const red = (c: Card) => c.suit === "H" || c.suit === "D";
+  return red(a) === red(b) ? { name: "Coloured pair", odds: 12 } : { name: "Mixed pair", odds: 6 };
+}
+
+/** What a side bet pays back, stake included. */
+export const sidePayout = (sideBet: number, cards: Card[]) => {
+  const pair = perfectPair(cards);
+  return pair ? Math.round(sideBet * (pair.odds + 1) * 100) / 100 : 0;
+};
 
 export const canHit = (g: Game) => g.phase === "playing" && !g.hands[g.active].done;
 export const canDouble = (g: Game) => g.phase === "playing" && g.hands[g.active].cards.length === 2 && !g.hands[g.active].done;
