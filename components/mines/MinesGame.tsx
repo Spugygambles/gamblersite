@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { GRIDS, maxMines, minePositions, money, multiplier, payoutOf, times, type Grid } from "@/lib/mines";
+import { wagered } from "@/lib/gems";
 import { randomHex } from "@/lib/sha256";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import { CoinIcon, GearIcon, InfoIcon, ShieldIcon } from "@/components/home/icons";
@@ -103,6 +104,7 @@ export default function MinesGame() {
     const positions = minePositions(s.serverSeed, s.clientSeed, s.nonce, grid, mines);
     seedStore.set({ ...s, nonce: s.nonce + 1 });
     addToBalance(-betNow);
+    wagered(betNow);
     const fresh: Game = { tiles: grid, mines, bet: betNow, positions, revealed: [], hit: null };
     setLive("playing", fresh);
     setResult(null);

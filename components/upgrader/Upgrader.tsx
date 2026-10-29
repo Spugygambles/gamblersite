@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { wagered } from "@/lib/gems";
 import { rotateSeeds, takeNonce, useSeeds } from "@/lib/seeds";
 import { SKINS, WEARS, skinBySlug, type Skin } from "@/lib/skins";
 import { MAX_ITEMS, MAX_MULT, MIN_BET, chanceOf, isWin, money, multiplierOf, percent, rollOf, times } from "@/lib/upgrader";
@@ -179,6 +180,7 @@ export default function Upgrader() {
     const roll = rollOf(s.serverSeed, s.clientSeed, s.nonce);
     const won = isWin(roll, ch, zones);
     addToBalance(-betNow);
+    wagered(betNow);
     const pending: Spin = { won, bet: betNow, target: t, mult: multiplierOf(betNow, t), chance: ch, roll, items };
     live.current = { phase: "spinning", pending };
     setPhase("spinning");

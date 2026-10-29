@@ -324,6 +324,15 @@ export const GearIcon = (p: IconProps) => (
   </Line>
 );
 
+/** A faceted gem, in the current colour: the site's second currency. */
+export const GemIcon = (p: IconProps) => (
+  <svg viewBox="0 0 24 24" aria-hidden {...p}>
+    <path d="M7 3h10l4 5.5L12 21 3 8.5Z" fill="currentColor" />
+    <path d="M7 3h10l4 5.5H3Z" fill="#fff" fillOpacity="0.22" />
+    <path d="M3 8.5h18M7 3l2.5 5.5L12 21l2.5-12.5L17 3M9.5 8.5 12 3l2.5 5.5" fill="none" stroke="#120826" strokeOpacity="0.4" strokeWidth="1.1" strokeLinejoin="round" />
+  </svg>
+);
+
 export const EyeIcon = (p: IconProps) => (
   <Line {...p}>
     <path d="M2.8 12c2-3.9 5.3-6 9.2-6s7.2 2.1 9.2 6c-2 3.9-5.3 6-9.2 6s-7.2-2.1-9.2-6Z" />

@@ -166,17 +166,6 @@
   white-space: nowrap;
 }
 
-.tilePlaying {
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  bottom: 13px;
-  z-index: 2;
-  color: var(--text-muted);
-  font: 500 11px/1 var(--font-ui), sans-serif;
-  text-align: center;
-  white-space: nowrap;
-}
 
 .tag {
   position: absolute;

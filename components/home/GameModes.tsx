@@ -9,7 +9,7 @@ import KenoArt from "@/components/KenoArt";
 import LimboArt from "@/components/LimboArt";
 import MinesArt from "@/components/MinesArt";
 import UpgraderArt from "@/components/UpgraderArt";
-import { count, GAMES, type GameInfo } from "@/lib/home";
+import { GAMES, type GameInfo } from "@/lib/home";
 import styles from "./GameModes.module.css";
 
 const ART: Record<string, ReactNode> = {
@@ -75,7 +75,6 @@ export default function GameModes() {
               </span>
               {g.tag && <span className={`${styles.tag} ${g.tag === "Hot" ? styles.hot : ""}`}>{g.tag}</span>}
               <span className={styles.tileTitle}>{g.title}</span>
-              <span className={`${styles.tilePlaying} tabular`}>{count.format(g.playing)} playing</span>
             </Link>
           </li>
         ))}

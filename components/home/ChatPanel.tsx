@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { CHAT_SAMPLE, PLAYER, RAIN_POT, type ChatMessage } from "@/lib/home";
 import { avatarOf } from "./avatar";
-import { CheckIcon, ClockIcon, CloseIcon, CoinIcon, HandCoinIcon, LeafIcon, RainIcon, SendIcon } from "./icons";
+import { CheckIcon, ClockIcon, CloseIcon, CoinIcon, GemIcon, HandCoinIcon, RainIcon, SendIcon } from "./icons";
 import { RainWord } from "./PromoArt";
 import { useOnlineCount } from "./useOnlineCount";
 import styles from "./ChatPanel.module.css";
@@ -117,7 +117,7 @@ export default function ChatPanel() {
           {messages.map((m, i) =>
             "system" in m ? (
               <li key={i} className={styles.system}>
-                {m.system === "rain" ? <RainIcon /> : <LeafIcon />}
+                {m.system === "rain" ? <RainIcon /> : <GemIcon />}
                 {m.text}
               </li>
             ) : (

@@ -156,44 +156,6 @@
 
 /* The Thanksgiving event: a pill with the turkey standing in it, poking
    out over the top. The turkey keeps still until you point at it. */
-.event {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 36px;
-  margin-left: 8px;
-  padding: 0 14px 0 48px;
-  border-radius: 8px;
-  background: #4a2329;
-  color: var(--text);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: background-color 0.15s ease;
-}
-
-.event:hover {
-  background: #5a2b32;
-}
-
-.eventArt {
-  position: absolute;
-  bottom: 2px;
-  left: 3px;
-  width: 42px;
-  height: 46px;
-}
-
-.eventArt * {
-  animation-play-state: paused;
-}
-
-.event:hover .eventArt * {
-  animation-play-state: running;
-}
-
 /* ---- Withdraw ------------------------------------------------------------ */
 
 .withdraw {
@@ -289,7 +251,7 @@
 
 /* ---- The player -------------------------------------------------------- */
 
-.leaves {
+.gems {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -303,13 +265,14 @@
   transition: background-color 0.15s ease;
 }
 
-.leaves:hover {
+.gems:hover {
   background: var(--surface-3);
 }
 
-.leaf {
+.gem {
   width: 18px;
   height: 18px;
+  color: var(--gem);
 }
 
 .profile {
@@ -382,8 +345,7 @@
 }
 
 @media (max-width: 900px) {
-  .leaves,
-  .event {
+  .gems {
     display: none;
   }
 }
@@ -450,10 +412,9 @@
   .navItem .caret,
   .menuItem,
   .menuIcon,
-  .event,
   .withdraw,
   .deposit,
-  .leaves,
+  .gems,
   .profile {
     transition: none;
   }

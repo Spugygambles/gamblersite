@@ -9,28 +9,27 @@ export type GameInfo = {
       middle is (% down the art area). */
   art: { size: number; y: number };
   /** Players in the game right now. */
-  playing: number;
   tag?: "Hot" | "New";
 };
 
 export const GAMES: GameInfo[] = [
-  { slug: "case-battles", title: "Battles", art: { size: 62, y: 50 }, playing: 342 },
-  { slug: "cases", title: "Cases", art: { size: 56, y: 50 }, playing: 1284 },
-  { slug: "upgrader", title: "Upgrader", art: { size: 62, y: 50 }, playing: 214, tag: "New" },
-  { slug: "mines", title: "Mines", art: { size: 56, y: 50 }, playing: 509 },
-  { slug: "keno", title: "Keno", art: { size: 56, y: 50 }, playing: 77 },
-  { slug: "crash", title: "Crash", art: { size: 64, y: 48 }, playing: 1032, tag: "Hot" },
-  { slug: "limbo", title: "Limbo", art: { size: 68, y: 50 }, playing: 168 },
-  { slug: "coinflip", title: "Coinflip", art: { size: 66, y: 50 }, playing: 251 },
-  { slug: "blackjack", title: "Blackjack", art: { size: 62, y: 50 }, playing: 133 },
+  { slug: "case-battles", title: "Battles", art: { size: 62, y: 50 } },
+  { slug: "cases", title: "Cases", art: { size: 56, y: 50 } },
+  { slug: "upgrader", title: "Upgrader", art: { size: 62, y: 50 }, tag: "New" },
+  { slug: "mines", title: "Mines", art: { size: 56, y: 50 } },
+  { slug: "keno", title: "Keno", art: { size: 56, y: 50 } },
+  { slug: "crash", title: "Crash", art: { size: 64, y: 48 }, tag: "Hot" },
+  { slug: "limbo", title: "Limbo", art: { size: 68, y: 50 } },
+  { slug: "coinflip", title: "Coinflip", art: { size: 66, y: 50 } },
+  { slug: "blackjack", title: "Blackjack", art: { size: 62, y: 50 } },
 ];
 
 export const PLAYER = {
   name: "Spugy",
   /** Sample money to try the games with. */
   balance: 1000,
-  /** Maple leaves from the Turkey Hunt, spent in its shop. */
-  leaves: 85,
+  /** Gems to start with: earned as the player wagers (lib/gems.ts), spent in the Gem Vault. */
+  gems: 12,
   level: 70,
   /** Progress through the current level, 0-100. */
   levelProgress: 54,
@@ -65,9 +64,9 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "Wren", level: 38, text: "when does the race reset" },
   { name: "lunar", level: 51, text: "monday. it's close this week" },
   { name: "MaxiM", level: 18, text: "2v2 is up in battles, join" },
-  { name: "zenn", level: 34, text: "found a turkey in mines lol" },
+  { name: "zenn", level: 34, text: "swept a whole row in mines lol" },
   { name: "dusk", level: 70, text: "got one in keno, 3 left to find" },
-  { system: "event", text: "Happy Thanksgiving! The Turkey Hunt is on until Monday." },
+  { system: "event", text: "Gems are live: every 10.00 you wager earns one. Spend them in the Gem Vault." },
   { name: "ghostR", level: 31, text: "who else is waiting on the rain" },
   { name: "Obi", level: 88, text: "happy thanksgiving all, good luck" },
 ];

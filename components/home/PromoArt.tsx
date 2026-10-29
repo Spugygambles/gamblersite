@@ -1,11 +1,10 @@
 import { MAPLE_LEAF } from "./icons";
 import styles from "./PromoArt.module.css";
 
-// Seasonal art, drawn as a set: cartoon style, flat colour with a dark
+// Promo art, drawn as a set: cartoon style, flat colour with a dark
 // outline round every shape, each boxed tight so it fills the space it's
-// given. The Turkey Hunt's turkey (it bobs a little and its tail opens and
-// closes), its maple leaf, and the prizes: a cup, coins and a case. And
-// chat's rain, its name in pixel letters.
+// given. The prizes: a cup, coins and a case. And chat's rain, its name in
+// pixel letters.
 
 const LINE = "#170f1c";
 const GOLD = "#e3a845";
@@ -13,59 +12,9 @@ const GOLD_DARK = "#c48a35";
 const RED = "#c2503e";
 const ORANGE = "#d9773f";
 const CREAM = "#f6e9d6";
-const BROWN = "#7d5034";
 
 // The outline, drawn behind each shape's fill.
 const ink = { stroke: LINE, strokeWidth: 3.4, paintOrder: "stroke", strokeLinejoin: "round" } as const;
-
-// The Turkey Hunt: a turkey with its tail fanned up behind it.
-export function TurkeyArt() {
-  const feathers = [RED, ORANGE, GOLD];
-  return (
-    <svg className={styles.scene} viewBox="14 10 152 150" preserveAspectRatio="xMidYMax meet" aria-hidden>
-      <g className={styles.bob}>
-        <g transform="translate(90 104) scale(0.8 1)">
-          <g className={styles.fan}>
-            {[-80, -60, -40, -20, 0, 20, 40, 60, 80].map((a, i) => (
-              <ellipse key={a} cy="-52" rx="15" ry="41" transform={`rotate(${a})`} fill={feathers[i % 3]} {...ink} />
-            ))}
-            {[-60, -40, -20, 0, 20, 40, 60].map((a, i) => (
-              <ellipse key={a} cy="-38" rx="11" ry="27" transform={`rotate(${a})`} fill={feathers[(i + 1) % 3]} {...ink} />
-            ))}
-            {[-40, -20, 0, 20, 40].map((a) => (
-              <ellipse key={a} cy="-27" rx="7.5" ry="17" transform={`rotate(${a})`} fill={CREAM} {...ink} />
-            ))}
-          </g>
-        </g>
-        <path d="M80 144v10m-6 0h12M100 144v10m-6 0h12" stroke={LINE} strokeWidth="7" strokeLinecap="round" />
-        <path d="M80 144v10m-6 0h12M100 144v10m-6 0h12" stroke={GOLD} strokeWidth="3.4" strokeLinecap="round" />
-        <ellipse cx="90" cy="116" rx="37" ry="34" fill={BROWN} {...ink} />
-        <ellipse cx="90" cy="124" rx="23" ry="22" fill="#9b6a46" />
-        <ellipse cx="59" cy="116" rx="12" ry="21" transform="rotate(18 59 116)" fill="#5f3d29" {...ink} />
-        <ellipse cx="121" cy="116" rx="12" ry="21" transform="rotate(-18 121 116)" fill="#5f3d29" {...ink} />
-        <circle cx="90" cy="76" r="18" fill={BROWN} {...ink} />
-        <circle cx="83" cy="72" r="5" fill="#fff" />
-        <circle cx="97" cy="72" r="5" fill="#fff" />
-        <circle cx="84.2" cy="73" r="2.6" fill={LINE} />
-        <circle cx="98.2" cy="73" r="2.6" fill={LINE} />
-        <path d="M84 80h12l-6 8.5Z" fill={GOLD} {...ink} />
-        <path d="M94 84c4 1 6 4.6 5.4 9.2-.5 3.8-5 4-6 .6-.8-2.8-.4-6.8.6-9.8Z" fill={RED} {...ink} />
-      </g>
-    </svg>
-  );
-}
-
-// A maple leaf, tipped a little, its veins in a deeper orange.
-export function LeafArt() {
-  return (
-    <svg className={styles.scene} viewBox="-8 -8 116 116" aria-hidden>
-      <g transform="rotate(-12 50 50)">
-        <path d={MAPLE_LEAF} fill={ORANGE} {...ink} strokeWidth="5" />
-        <path d="M50 90V22M50 63 16 43.5M50 63l34-19.5M50 75.5 26 68M50 75.5 74 68" fill="none" stroke="#a6461b" strokeWidth="4.5" strokeLinecap="round" />
-      </g>
-    </svg>
-  );
-}
 
 // A gold cup with a star.
 export function TrophyArt() {

@@ -290,85 +290,6 @@
     }
   }
 
-  // ---- The Turkey Hunt (components/event): the countdown, a box per digit,
-  // ticking every second to the end of the Monday after Thanksgiving
-  // (lib/event.ts); the picture cards switching panels, by click or arrow
-  // key; and the calendar's Open box, which opens today's.
-  const countdown = document.querySelector("[data-countdown]");
-  if (countdown) {
-    const huntEnds = () => {
-      const now = new Date();
-      const endOf = (year) => {
-        const first = new Date(year, 10, 1).getDay();
-        return new Date(year, 10, 1 + ((4 - first + 7) % 7) + 25, 23, 59, 59);
-      };
-      const end = endOf(now.getFullYear());
-      return end > now ? end : endOf(now.getFullYear() + 1);
-    };
-    const units = Object.fromEntries([...countdown.querySelectorAll("[data-unit]")].map((el) => [el.dataset.unit, el]));
-    const tick = () => {
-      const s = Math.max(0, Math.floor((huntEnds().getTime() - Date.now()) / 1000));
-      const parts = { d: Math.floor(s / 86400), h: Math.floor((s % 86400) / 3600), m: Math.floor((s % 3600) / 60), s: s % 60 };
-      for (const [unit, el] of Object.entries(units)) {
-        const digits = [...String(parts[unit]).padStart(2, "0")];
-        while (el.children.length < digits.length) el.append(el.firstElementChild.cloneNode(true));
-        while (el.children.length > digits.length) el.lastElementChild.remove();
-        digits.forEach((digit, i) => (el.children[i].textContent = digit));
-      }
-    };
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  const tabs = [...document.querySelectorAll("[data-event-tab]")];
-  const selectTab = (id, focus) => {
-    for (const tab of tabs) {
-      const on = tab.dataset.eventTab === id;
-      tab.setAttribute("aria-selected", String(on));
-      tab.tabIndex = on ? 0 : -1;
-      if (on && focus) tab.focus();
-    }
-    document.querySelectorAll("[data-event-panel]").forEach((panel) => (panel.hidden = panel.dataset.eventPanel !== id));
-  };
-  for (const tab of tabs) {
-    tab.addEventListener("click", () => selectTab(tab.dataset.eventTab));
-    tab.addEventListener("keydown", (e) => {
-      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
-      if (!step) return;
-      e.preventDefault();
-      const at = tabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
-      selectTab(tabs[(at + step + tabs.length) % tabs.length].dataset.eventTab, true);
-    });
-  }
-
-  // The calendar's Open box (Calendar.tsx): today's tile shows what came
-  // out, drawn by the day's odds, and the count of opened boxes goes up.
-  document.querySelectorAll("[data-open-box]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (button.disabled) return;
-      const day = button.closest("[data-day-state]");
-      const done = document.querySelector('[data-day-state="opened"]');
-      if (!day || !done) return;
-      // the odds are in lib/event.ts: today is day 6 there
-      const odds = [["15 leaves", 55], ["35 leaves", 35], ["Pumpkin Patch case", 10]];
-      let roll = Math.random() * 100;
-      const reward = (odds.find(([, chance]) => (roll -= chance) < 0) || odds[0])[0];
-      day.className = done.className;
-      day.dataset.dayState = "opened";
-      // copy an opened tile's reward, the leaf kind or the case kind
-      const kind = reward.endsWith("case") ? '[class*="__rewardCase"]' : '[class*="__rewardIcon"]';
-      const sample = [...document.querySelectorAll('[data-day-state="opened"] [class*="__reward"]')].find((r) => r.querySelector(kind)) || done.querySelector('[class*="__reward"]');
-      day.querySelector('[class*="__pic"]').replaceChildren(sample.cloneNode(true));
-      day.querySelector("[data-reward]").textContent = reward;
-      const pic = day.querySelector('[class*="__rewardCase"]');
-      if (pic) pic.src = pic.src.replace(/[^/]+\.webp$/, reward.replace(/ case$/, "").toLowerCase().replace(/'/g, "").replace(/\s+/g, "-") + ".webp");
-      day.querySelectorAll('[class*="__asks"]').forEach((el) => el.remove());
-      button.replaceWith(done.querySelector("[data-status]").cloneNode(true));
-      const opened = document.querySelector("[data-opened-count]");
-      if (opened) opened.textContent = String(Number(opened.textContent) + 1);
-    });
-  });
-
   // ---- The account window (components/profile/ProfileModal.tsx): any
   // [data-profile-open] opens it on the profile; its menu switches sections,
   // by click or arrow key; the close button, Escape or a click outside
@@ -485,6 +406,21 @@
     });
   }
 
+  // ---- The wallet and gems (lib/wallet.ts, lib/gems.ts): the games keep
+  // them in the browser; the header shows what they left.
+  try {
+    const saved = localStorage.getItem("csgoneo.balance");
+    const balance = Number(saved);
+    if (saved !== null && Number.isFinite(balance)) {
+      const money = balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.querySelectorAll("[data-wallet-balance]").forEach((el) => (el.textContent = money));
+    }
+    const gems = JSON.parse(localStorage.getItem("csgoneo.gems") || "null");
+    if (gems && typeof gems.gems === "number") {
+      document.querySelectorAll("[data-gem-count]").forEach((el) => (el.textContent = gems.gems.toLocaleString("en-US")));
+    }
+  } catch {}
+
   // ---- Links: only some pages are built so far (their links point at
   // their files); the rest say so instead of leading nowhere. The note
   // shows just under the link, since the Claude app can make the page's
@@ -508,7 +444,7 @@
     const x = Math.min(Math.max(r.left - box.left + r.width / 2, half + 16), box.width - half - 16);
     toast.style.left = `${x}px`;
     toast.style.top = `${r.bottom - box.top + 8}px`;
-    toast.textContent = "Preview: this page isn't built yet. Only the homepage, the Turkey Hunt and the terms are.";
+    toast.textContent = "Preview: this page isn't built yet. Only the homepage, Mines, the Upgrader, the Gem Vault and the terms are.";
     toast.classList.add("show");
     clearTimeout(hide);
     hide = setTimeout(() => toast.classList.remove("show"), 2600);

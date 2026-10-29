@@ -27,16 +27,16 @@ def get(path):
 # The pages built so far: path, file, title.
 PAGES = [
     ("/", "index.html", "CsgoNeo Homepage"),
-    ("/turkey-hunt", "turkey-hunt.html", "Turkey Hunt — CsgoNeo"),
     ("/mines", "mines.html", "Mines — CsgoNeo"),
     ("/upgrader", "upgrader.html", "Upgrader — CsgoNeo"),
+    ("/gems", "gems.html", "Gem Vault — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
 # The games, each bundled from its entry and put into its page.
-BUNDLES = {"mines.html": HERE / "mines-entry.tsx", "upgrader.html": HERE / "upgrader-entry.tsx"}
+BUNDLES = {"mines.html": HERE / "mines-entry.tsx", "upgrader.html": HERE / "upgrader-entry.tsx", "gems.html": HERE / "gems-entry.tsx"}
 # Links between them point at their files; links elsewhere stay, and
 # preview.js says those pages aren't built yet.
-LINKS = {"/": "index.html", "/#games": "index.html#games", "/turkey-hunt": "turkey-hunt.html", "/mines": "mines.html", "/upgrader": "upgrader.html", "/terms": "terms.html"}
+LINKS = {"/": "index.html", "/#games": "index.html#games", "/mines": "mines.html", "/upgrader": "upgrader.html", "/gems": "gems.html", "/terms": "terms.html"}
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
@@ -57,7 +57,7 @@ def snapshot(path, title):
     body = re.sub(r"<!--\$\??-->|<!--/\$-->", "", body)
     assert "<script" not in body
     # Public images sit beside the page.
-    body = re.sub(r'src="/(cases|battles|coinflip|event|skins)/', r'src="\1/', body)
+    body = re.sub(r'src="/(cases|battles|coinflip|gems|skins)/', r'src="\1/', body)
     body = re.sub(r'href="(/[^"]*)"', lambda m: f'href="{LINKS.get(m.group(1), m.group(1))}"', body)
 
     css = []
@@ -144,7 +144,7 @@ for path, name, title in PAGES:
         main += "\n" + bundle(BUNDLES[name])
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
     (OUT / name).write_text(page)
-    used |= set(re.findall(r'src="((?:cases|battles|coinflip|event|skins)/[^"]+)"', body))
+    used |= set(re.findall(r'src="((?:cases|battles|coinflip|gems|skins)/[^"]+)"', body))
     print(name, len(page), "bytes")
 used = sorted(used)
 for rel in used:

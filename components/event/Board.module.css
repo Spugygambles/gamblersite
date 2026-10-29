@@ -1,8 +1,0 @@
-/* The board's trophy in gold, and room above the table. */
-.trophy {
-  color: var(--coin);
-}
-
-.board {
-  margin-top: 16px;
-}
