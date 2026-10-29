@@ -1,0 +1,296 @@
+/*
+ * The blackjack table, on the kit's stage: the dealer's hand at the top,
+ * the outcome between, the player's hand or hands below. Cards are drawn
+ * in CSS: a pale face with the rank and suit in two corners and the suit
+ * large in the middle, a navy back for the hole card. They slide in as
+ * they're dealt and the hole card turns over when the dealer plays.
+ */
+
+.table {
+  display: grid;
+  grid-template-rows: auto minmax(64px, auto) auto;
+  gap: 18px;
+  align-content: center;
+  align-self: center;
+  width: 100%;
+  max-width: 640px;
+  padding: 10px 0;
+}
+
+.seat {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.seatHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font: 700 11.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.total,
+.stake,
+.handResult {
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.total[data-bust] {
+  color: #e0796b;
+}
+
+.total[data-bj] {
+  color: var(--brand);
+}
+
+.stake {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-soft);
+}
+
+.stake svg {
+  width: 12px;
+  height: 12px;
+}
+
+.handResult {
+  color: var(--text-soft);
+}
+
+.hands {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px 36px;
+}
+
+.hand {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 10px 14px 12px;
+  border-radius: 12px;
+}
+
+.hand[data-active] {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 104px;
+  padding-left: 28px;
+}
+
+.empty {
+  margin-left: -28px;
+  color: var(--text-muted);
+  font: 600 13px/1 var(--font-ui), sans-serif;
+}
+
+/* ---- A card ----------------------------------------------------------------------- */
+
+.card {
+  position: relative;
+  flex-shrink: 0;
+  width: 72px;
+  height: 104px;
+  margin-left: -28px;
+  border-radius: 8px;
+  background: #f5f2ea;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+  color: #1b1b2c;
+  animation: dealIn 0.32s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  animation-delay: calc(var(--d) * 250ms);
+}
+
+.card[data-red] {
+  color: #c4302b;
+}
+
+.card[data-back] {
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0 5px, transparent 5px 10px),
+    var(--surface-2);
+  box-shadow:
+    inset 0 0 0 4px #f5f2ea,
+    inset 0 0 0 5px var(--surface-3),
+    0 6px 14px rgba(0, 0, 0, 0.45);
+}
+
+.corner {
+  position: absolute;
+  top: 6px;
+  left: 7px;
+  display: grid;
+  justify-items: center;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+}
+
+.corner small {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.cornerBottom {
+  top: auto;
+  right: 7px;
+  bottom: 6px;
+  left: auto;
+  rotate: 180deg;
+}
+
+.pip {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.flip {
+  animation: flip 0.42s ease-out both;
+}
+
+@keyframes dealIn {
+  from {
+    opacity: 0;
+    translate: 60px -40px;
+    rotate: 10deg;
+  }
+}
+
+@keyframes flip {
+  from {
+    transform: rotateY(90deg);
+  }
+  to {
+    transform: rotateY(0);
+  }
+}
+
+/* ---- The outcome, between the hands ----------------------------------------------------- */
+
+.middle {
+  display: grid;
+  place-items: center;
+}
+
+.banner {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px 26px;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  animation: bannerIn 0.3s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+.bannerText {
+  color: var(--text);
+  font: 900 24px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.banner[data-result="win"] .bannerText,
+.banner[data-result="blackjack"] .bannerText {
+  color: var(--live);
+}
+
+.banner[data-result="blackjack"] .bannerText {
+  color: var(--brand);
+}
+
+.banner[data-result="lose"] .bannerText,
+.banner[data-result="bust"] .bannerText {
+  color: #e0796b;
+}
+
+.bannerPay {
+  color: var(--text-soft);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+}
+
+@keyframes bannerIn {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+/* ---- The actions in the controls ----------------------------------------------------- */
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.actions button {
+  height: 48px;
+}
+
+/* ---- Narrower ------------------------------------------------------------------------- */
+
+@container (max-width: 820px) {
+  .card {
+    width: 56px;
+    height: 82px;
+    margin-left: -22px;
+  }
+
+  .cards {
+    min-height: 82px;
+    padding-left: 22px;
+  }
+
+  .empty {
+    margin-left: -22px;
+  }
+
+  .corner {
+    font-size: 12px;
+  }
+
+  .corner small {
+    font-size: 10px;
+  }
+
+  .pip {
+    font-size: 28px;
+  }
+
+  .bannerText {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .flip,
+  .banner {
+    animation: none;
+  }
+}
