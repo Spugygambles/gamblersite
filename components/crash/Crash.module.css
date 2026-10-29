@@ -1,0 +1,162 @@
+/*
+ * Crash's own looks: the chart (the climb drawn on axes that rescale as
+ * it goes, the tip a dot, the line red once it bursts) and what sits over
+ * its middle: the countdown to the next round, the multiplier climbing
+ * huge, or the crash point in red.
+ */
+
+.chartWrap {
+  position: relative;
+  align-self: center;
+  width: 100%;
+  max-width: 860px;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.grid line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.labels text {
+  fill: var(--text-muted);
+  font: 600 11px/1 var(--font-ui), sans-serif;
+}
+
+.area {
+  fill: var(--brand);
+  fill-opacity: 0.12;
+}
+
+.line {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dot {
+  fill: var(--brand);
+}
+
+[data-phase="crashed"] .area {
+  fill: var(--danger);
+  fill-opacity: 0.1;
+}
+
+[data-phase="crashed"] .line,
+[data-phase="crashed"] .dot {
+  stroke: var(--danger);
+  fill: var(--danger);
+}
+
+[data-phase="crashed"] .line {
+  fill: none;
+}
+
+/* what sits over the middle of the chart */
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: min(80%, 420px);
+  pointer-events: none;
+  text-align: center;
+  translate: -50% -50%;
+}
+
+.lead {
+  color: var(--text-muted);
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.big {
+  color: var(--text);
+  font: 900 clamp(36px, 9cqw, 64px)/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.red {
+  color: #e0796b;
+}
+
+.green {
+  color: var(--live);
+}
+
+.sub {
+  color: var(--text-soft);
+  font: 700 13px/1.3 var(--font-ui), sans-serif;
+}
+
+.bar {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--surface-2);
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--brand);
+}
+
+/* the live-bet pill in the corner of the chart */
+.stake {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: 700 12px/1 var(--font-ui), sans-serif;
+}
+
+.stake svg {
+  width: 13px;
+  height: 13px;
+}
+
+.stake b {
+  color: var(--text);
+}
+
+@container (max-width: 820px) {
+  .chartWrap {
+    max-width: none;
+  }
+
+  /* the chart shrinks with the screen; its labels shouldn't */
+  .labels text {
+    font-size: 14px;
+  }
+
+  .line {
+    stroke-width: 4;
+  }
+
+  .dot {
+    r: 7;
+  }
+}
