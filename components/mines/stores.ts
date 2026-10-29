@@ -10,7 +10,7 @@ export type Seeds = {
   previous: { serverSeed: string; clientSeed: string; nonces: number } | null;
 };
 
-export type Settings = { animations: boolean; hotkeys: boolean };
+export type Settings = { sound: boolean; animations: boolean; hotkeys: boolean };
 
 /**
  * A value shared by whoever reads it, kept outside React: the server (and
@@ -45,7 +45,7 @@ export const seedStore = createStore<Seeds>(NO_SEEDS, () => ({ serverSeed: rando
 export const useSeeds = () => useSyncExternalStore(seedStore.subscribe, seedStore.get, seedStore.server);
 
 const SETTINGS_KEY = "mines.settings";
-const DEFAULT_SETTINGS: Settings = { animations: true, hotkeys: false };
+const DEFAULT_SETTINGS: Settings = { sound: true, animations: true, hotkeys: false };
 export const settingsStore = createStore<Settings>(DEFAULT_SETTINGS, () => {
   try {
     const saved = localStorage.getItem(SETTINGS_KEY);

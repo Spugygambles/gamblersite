@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { GRIDS, maxMines, minePositions, money, multiplier, payoutOf, times, type Grid } from "@/lib/mines";
 import { randomHex } from "@/lib/sha256";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import { CoinIcon, GearIcon, InfoIcon, ShieldIcon } from "@/components/home/icons";
 import Board, { type Phase } from "./Board";
 import { FairnessDialog, HowToDialog } from "./Dialogs";
-import { Bomb, Gem } from "./pieces";
+import { play } from "./sounds";
 import { saveSettings, seedStore, useSeeds, useSettings } from "./stores";
 import styles from "./Mines.module.css";
 
@@ -23,6 +23,7 @@ const AUTO_PAUSE = 700;
 const NO_GAME: Game = { tiles: 25, mines: 3, bet: 0, positions: [], revealed: [], hit: null };
 
 const toCents = (n: number) => Math.round(n * 100) / 100;
+const oneOf = (list: number[]) => list[Math.floor(Math.random() * list.length)];
 const parseBet = (text: string) => {
   const n = Number(text);
   return Number.isFinite(n) && n > 0 ? toCents(n) : 0;
@@ -47,6 +48,9 @@ export default function MinesGame() {
   const [betText, setBetText] = useState("10.00");
   const [phase, setPhase] = useState<Phase>("idle");
   const [game, setGame] = useState<Game>(NO_GAME);
+  // The game as it stands this instant, ahead of React's render: a sweep
+  // turns tiles over faster than renders come, so every pick reads this.
+  const live = useRef({ phase: "idle" as Phase, game: NO_GAME });
   const [result, setResult] = useState<{ mult: number; payout: number } | null>(null);
   const [history, setHistory] = useState<Past[]>([]);
   const [dialog, setDialog] = useState<"fair" | "how" | null>(null);
@@ -72,86 +76,92 @@ export default function MinesGame() {
   const next = multiplier(game.tiles, game.mines, picks + 1);
   const short = bet > balance;
   const canBet = !busy && bet > 0 && !short;
-  // what's on the board: the next game's setup, or the game on it
-  const onBoard = phase === "idle" ? { tiles: grid, mines } : game;
-  const gemsLeft = onBoard.tiles - onBoard.mines - (phase === "idle" ? 0 : picks);
+
+  const setLive = (ph: Phase, g: Game) => {
+    live.current = { phase: ph, game: g };
+    setPhase(ph);
+    setGame(g);
+  };
 
   // ---- Starting and ending games ---------------------------------------------------
 
-  const resetBoard = useCallback((tiles?: number) => {
-    setPhase("idle");
-    setGame((g) => ({ ...g, tiles: tiles ?? g.tiles, positions: [], revealed: [], hit: null }));
+  const resetBoard = (tiles?: number) => {
+    const g = live.current.game;
+    setLive("idle", { ...g, tiles: tiles ?? g.tiles, positions: [], revealed: [], hit: null });
     setResult(null);
     setNote("");
-  }, []);
+  };
 
   // Draws a board for the next nonce and takes the bet.
-  const start = useCallback(
-    (betNow: number): Game => {
-      const s = seedStore.get();
-      const positions = minePositions(s.serverSeed, s.clientSeed, s.nonce, grid, mines);
-      seedStore.set({ ...s, nonce: s.nonce + 1 });
-      addToBalance(-betNow);
-      const fresh: Game = { tiles: grid, mines, bet: betNow, positions, revealed: [], hit: null };
-      setGame(fresh);
-      setResult(null);
-      setPhase("playing");
-      setNote("");
-      return fresh;
-    },
-    [grid, mines],
-  );
+  const start = (betNow: number): Game => {
+    const s = seedStore.get();
+    const positions = minePositions(s.serverSeed, s.clientSeed, s.nonce, grid, mines);
+    seedStore.set({ ...s, nonce: s.nonce + 1 });
+    addToBalance(-betNow);
+    const fresh: Game = { tiles: grid, mines, bet: betNow, positions, revealed: [], hit: null };
+    setLive("playing", fresh);
+    setResult(null);
+    setNote("");
+    play("bet");
+    return fresh;
+  };
 
-  const finish = useCallback((g: Game, won: boolean) => {
+  const finish = (g: Game, won: boolean) => {
     const m = won ? multiplier(g.tiles, g.mines, g.revealed.length) : 0;
     const payout = won ? payoutOf(g.bet, m) : 0;
     if (won) addToBalance(payout);
     const id = ++pastId.current;
-    setPhase(won ? "won" : "lost");
+    setLive(won ? "won" : "lost", g);
     setResult(won ? { mult: m, payout } : null);
     setHistory((h) => [{ id, mult: m, won }, ...h].slice(0, HISTORY));
     const cleared = g.revealed.length === g.tiles - g.mines;
     setNote(won ? `${cleared ? "Cleared the board" : "Cashed out"} at ${times(m)} for ${money.format(payout)}` : "You hit a mine");
+    play(won ? "win" : "mine");
     return payout;
-  }, []);
+  };
 
   const placeBet = () => {
-    if (!canBet) return;
+    if (!canBet || live.current.phase === "playing") return;
     start(bet);
   };
 
   const pick = (i: number) => {
-    if (!playing || game.revealed.includes(i)) return;
-    if (game.positions.includes(i)) {
-      const g = { ...game, hit: i };
-      setGame(g);
-      finish(g, false);
+    const { phase: ph, game: g0 } = live.current;
+    if (ph !== "playing" || g0.revealed.includes(i)) return;
+    if (g0.positions.includes(i)) {
+      finish({ ...g0, hit: i }, false);
       return;
     }
-    const g = { ...game, revealed: [...game.revealed, i] };
-    setGame(g);
+    const g = { ...g0, revealed: [...g0.revealed, i] };
     // every safe tile turned over: nothing left to risk
-    if (g.revealed.length === g.tiles - g.mines) finish(g, true);
+    if (g.revealed.length === g.tiles - g.mines) {
+      finish(g, true);
+    } else {
+      setLive("playing", g);
+      play("gem", g.revealed.length);
+    }
   };
 
   const cashout = () => {
-    if (!playing || picks === 0) return;
-    finish(game, true);
+    const { phase: ph, game: g } = live.current;
+    if (ph !== "playing" || g.revealed.length === 0) return;
+    finish(g, true);
   };
 
   const random = () => {
-    if (!playing) return;
-    const hidden = Array.from({ length: game.tiles }, (_, i) => i).filter((i) => !game.revealed.includes(i));
-    pick(hidden[Math.floor(Math.random() * hidden.length)]);
+    const { phase: ph, game: g } = live.current;
+    if (ph !== "playing") return;
+    const hidden = Array.from({ length: g.tiles }, (_, i) => i).filter((i) => !g.revealed.includes(i));
+    pick(oneOf(hidden));
   };
 
   // ---- Auto -------------------------------------------------------------------------
 
-  const stopAuto = useCallback(() => {
+  const stopAuto = () => {
     auto.current.running = false;
     clearTimeout(auto.current.timer);
     setRunning(false);
-  }, []);
+  };
 
   // Plays one round over the marked tiles, then (through the ref, so each
   // round sees the latest settings) the next.
@@ -191,16 +201,15 @@ export default function MinesGame() {
       if (!a.running) return;
       const i = order[step];
       if (cur.positions.includes(i)) {
-        cur = { ...cur, hit: i };
-        setGame(cur);
-        finish(cur, false);
+        finish({ ...cur, hit: i }, false);
         after(-betNow, false);
         return;
       }
       cur = { ...cur, revealed: [...cur.revealed, i] };
-      setGame(cur);
       step += 1;
       if (step < order.length && cur.revealed.length < cur.tiles - cur.mines) {
+        setLive("playing", cur);
+        play("gem", cur.revealed.length);
         a.timer = window.setTimeout(turn, AUTO_STEP);
       } else {
         const payout = finish(cur, true);
@@ -214,7 +223,7 @@ export default function MinesGame() {
   });
 
   const startAuto = () => {
-    if (!canBet || selected.length === 0) return;
+    if (!canBet || selected.length === 0 || auto.current.running) return;
     Object.assign(auto.current, { running: true, timer: 0, done: 0, profit: 0, startBet: bet });
     setRunning(true);
     runRound(bet);
@@ -254,6 +263,11 @@ export default function MinesGame() {
     });
   };
 
+  const setSound = (on: boolean) => {
+    saveSettings({ ...settings, sound: on });
+    if (on) play("tick");
+  };
+
   // ---- Hotkeys ---------------------------------------------------------------------------
 
   useEffect(() => {
@@ -279,13 +293,6 @@ export default function MinesGame() {
   const setBet = (n: number) => setBetText(Math.max(0.01, toCents(n)).toFixed(2));
   const profitNow = toCents(payoutOf(game.bet, mult) - game.bet);
   const profitNext = toCents(payoutOf(game.bet, next) - game.bet);
-
-  // The payouts ladder: what each count of gems pays on this board, the
-  // first six steps and the full clear, for the bet that's typed in.
-  const safe = onBoard.tiles - onBoard.mines;
-  const ladder = Array.from({ length: Math.max(0, Math.min(6, safe - 1)) }, (_, i) => i + 1).map((n) => ({ picks: n, mult: multiplier(onBoard.tiles, onBoard.mines, n) }));
-  const ladderGap = ladder.length + 1 < safe;
-  const clear = { picks: safe, mult: multiplier(onBoard.tiles, onBoard.mines, safe) };
 
   return (
     <div className={styles.wrap} data-mines data-phase={phase} data-mode={mode} data-animations={settings.animations}>
@@ -394,27 +401,9 @@ export default function MinesGame() {
                 </button>
               </>
             ) : (
-              <>
-                <button type="button" className={styles.primary} disabled={!canBet} onClick={placeBet} data-place-bet>
-                  Place bet
-                </button>
-                <div className={styles.ladder} data-ladder>
-                  <div className={styles.ladderHead}>
-                    <span>Payouts</span>
-                    <span className="tabular">{bet > 0 ? `on ${money.format(bet)}` : ""}</span>
-                  </div>
-                  <ol className={styles.ladderRows}>
-                    {[...ladder, clear].map((row) => (
-                      <li key={row.picks} className={styles.ladderRow} data-clear={row.picks === safe ? "" : undefined}>
-                        {ladderGap && row.picks === safe && <span className={styles.ladderGap} aria-hidden />}
-                        <span>{row.picks === safe && safe > 1 ? `All ${safe} gems` : `${row.picks} gem${row.picks === 1 ? "" : "s"}`}</span>
-                        <span className={`${styles.ladderMult} tabular`}>{times(row.mult)}</span>
-                        <span className={`${styles.ladderPay} tabular`}>{bet > 0 ? money.format(payoutOf(bet, row.mult)) : ""}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </>
+              <button type="button" className={styles.primary} disabled={!canBet} onClick={placeBet} data-place-bet>
+                Place bet
+              </button>
             )
           ) : (
             <>
@@ -523,6 +512,10 @@ export default function MinesGame() {
               {settingsOpen && (
                 <div className={styles.settings} role="group" aria-label="Settings">
                   <label className={styles.setting}>
+                    <input type="checkbox" checked={settings.sound} onChange={(e) => setSound(e.target.checked)} data-sound />
+                    Sound
+                  </label>
+                  <label className={styles.setting}>
                     <input type="checkbox" checked={settings.animations} onChange={(e) => saveSettings({ ...settings, animations: e.target.checked })} />
                     Animations
                   </label>
@@ -555,7 +548,7 @@ export default function MinesGame() {
           </ol>
           <div className={styles.boardWrap}>
             <Board
-              tiles={onBoard.tiles}
+              tiles={phase === "idle" ? grid : game.tiles}
               phase={phase}
               positions={game.positions}
               revealed={game.revealed}
@@ -574,20 +567,6 @@ export default function MinesGame() {
                 </span>
               </div>
             )}
-          </div>
-          <div className={styles.counts}>
-            <span className={styles.count}>
-              <Gem className={styles.countIcon} />
-              <b className="tabular" data-gems-left>
-                {gemsLeft}
-              </b>
-              gems
-            </span>
-            <span className={styles.count}>
-              <Bomb className={styles.countIcon} />
-              <b className="tabular">{onBoard.mines}</b>
-              mines
-            </span>
           </div>
           <p className={styles.stageNote} aria-live="polite" data-note>
             {note}

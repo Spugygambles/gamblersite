@@ -187,11 +187,14 @@ export function HowToDialog({ onClose }: { onClose: () => void }) {
     <Modal title="How to play Mines" onClose={onClose}>
       <ol className={styles.steps}>
         <li>Choose your bet, a board size and how many mines are hidden in it. More mines, bigger multipliers.</li>
-        <li>Place your bet, then turn over tiles. Every gem you find raises the multiplier on your bet.</li>
+        <li>
+          Place your bet, then turn over tiles. Every gem you find raises the multiplier on your bet. Hold the mouse down for a moment and sweep
+          across the board to turn tiles over as you go.
+        </li>
         <li>Cash out whenever you like and take the multiplier. Turn over a mine and the bet&apos;s gone.</li>
         <li>Auto lets you mark tiles once and play them round after round, raising or resetting the bet as you win or lose.</li>
       </ol>
-      <p className={styles.modalText}>The house keeps 1%: a board&apos;s multipliers are the fair odds of surviving your picks, less that.</p>
+      <p className={styles.modalText}>The house keeps 10%: a board&apos;s multipliers are the fair odds of surviving your picks, less that.</p>
     </Modal>
   );
 }

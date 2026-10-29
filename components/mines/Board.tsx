@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useCallback, useEffect, useRef, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { Bomb, Gem } from "./pieces";
 import styles from "./Mines.module.css";
 
@@ -16,10 +18,19 @@ function lookOf(i: number, phase: Phase, positions: number[], revealed: number[]
   return positions.includes(i) ? "mineDim" : "gemDim";
 }
 
+// Hold the pointer down this long and it starts turning tiles over as it
+// moves, until it's let go. The trace shows the last stretch of its path.
+const HOLD_MS = 240;
+const TRAIL = 48;
+
+type Sweep = { pointerId: number; x: number; y: number; timer: number; active: boolean; points: string[]; fade: number; suppressUntil: number };
+
 /**
  * The board: `tiles` square buttons. While a game's on, a click turns a
- * tile over; between games in auto mode, a click marks a tile for the
- * autobet to turn over. Each tile says what it shows for screen readers.
+ * tile over, and holding the pointer down then sweeping it across the
+ * board turns over every sealed tile it passes. Between games in auto
+ * mode, a click marks a tile for the autobet. Each tile says what it
+ * shows for screen readers.
  */
 export default function Board({
   tiles,
@@ -46,8 +57,120 @@ export default function Board({
 }) {
   const n = Math.sqrt(tiles);
   const playing = phase === "playing";
+  const boardRef = useRef<HTMLDivElement>(null);
+  const traceRef = useRef<SVGSVGElement>(null);
+  const lineRef = useRef<SVGPolylineElement>(null);
+  // what the pointer handlers need from the latest render
+  const latest = useRef({ playing, onPick });
+  useEffect(() => {
+    latest.current = { playing, onPick };
+  });
+  const sweep = useRef<Sweep>({ pointerId: -1, x: 0, y: 0, timer: 0, active: false, points: [], fade: 0, suppressUntil: 0 });
+
+  const draw = useCallback(() => lineRef.current?.setAttribute("points", sweep.current.points.join(" ")), []);
+
+  const stop = useCallback(() => {
+    const s = sweep.current;
+    clearTimeout(s.timer);
+    if (s.active) {
+      s.active = false;
+      // the click the browser fires on release isn't another pick
+      s.suppressUntil = performance.now() + 400;
+      try {
+        boardRef.current?.releasePointerCapture(s.pointerId);
+      } catch {}
+      boardRef.current?.removeAttribute("data-dragging");
+      traceRef.current?.setAttribute("data-fading", "");
+      s.fade = window.setTimeout(() => {
+        s.points = [];
+        draw();
+        traceRef.current?.removeAttribute("data-fading");
+      }, 700);
+    }
+    s.pointerId = -1;
+  }, [draw]);
+
+  const tileUnder = (x: number, y: number) => document.elementFromPoint(x, y)?.closest<HTMLElement>("[data-tile]") ?? null;
+  const reveal = (el: HTMLElement | null) => {
+    if (el?.dataset.look === "sealed") latest.current.onPick(Number(el.dataset.tile));
+  };
+  const addPoint = (x: number, y: number) => {
+    const r = boardRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const s = sweep.current;
+    s.points.push(`${(x - r.left).toFixed(1)},${(y - r.top).toFixed(1)}`);
+    if (s.points.length > TRAIL) s.points.shift();
+    draw();
+  };
+
+  // the hold's up: from here the pointer turns tiles over as it goes
+  const begin = () => {
+    const s = sweep.current;
+    const board = boardRef.current;
+    if (!latest.current.playing || s.pointerId < 0 || !board) return;
+    try {
+      board.setPointerCapture(s.pointerId);
+    } catch {}
+    // no capture means the pointer's already gone (let go off the board)
+    if (!board.hasPointerCapture(s.pointerId)) {
+      s.pointerId = -1;
+      return;
+    }
+    s.active = true;
+    clearTimeout(s.fade);
+    traceRef.current?.removeAttribute("data-fading");
+    s.points = [];
+    board.setAttribute("data-dragging", "");
+    addPoint(s.x, s.y);
+    reveal(tileUnder(s.x, s.y));
+  };
+
+  const onPointerDown = (e: ReactPointerEvent) => {
+    if (!playing || e.button !== 0 || !e.isPrimary) return;
+    const el = (e.target as HTMLElement).closest<HTMLElement>("[data-tile]");
+    if (el?.dataset.look !== "sealed") return;
+    stop();
+    const s = sweep.current;
+    s.pointerId = e.pointerId;
+    s.x = e.clientX;
+    s.y = e.clientY;
+    s.timer = window.setTimeout(begin, HOLD_MS);
+  };
+
+  const onPointerMove = (e: ReactPointerEvent) => {
+    const s = sweep.current;
+    if (e.pointerId !== s.pointerId) return;
+    s.x = e.clientX;
+    s.y = e.clientY;
+    if (!s.active) return;
+    if (!latest.current.playing) {
+      stop();
+      return;
+    }
+    addPoint(e.clientX, e.clientY);
+    reveal(tileUnder(e.clientX, e.clientY));
+  };
+
+  const onPointerEnd = (e: ReactPointerEvent) => {
+    if (e.pointerId === sweep.current.pointerId) stop();
+  };
+
+  // the game ending (a mine, a cash out) ends a sweep in progress
+  useEffect(() => {
+    if (!playing) stop();
+  }, [playing, stop]);
+
+  useEffect(() => {
+    const s = sweep.current;
+    return () => {
+      clearTimeout(s.timer);
+      clearTimeout(s.fade);
+    };
+  }, []);
+
   return (
     <div
+      ref={boardRef}
       className={styles.board}
       style={{ "--n": n } as CSSProperties}
       role="grid"
@@ -55,6 +178,12 @@ export default function Board({
       data-board
       data-phase={phase}
       data-hit={hit !== null ? "" : undefined}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerEnd}
+      onPointerCancel={onPointerEnd}
+      onLostPointerCapture={onPointerEnd}
+      onContextMenu={(e) => playing && e.preventDefault()}
     >
       {Array.from({ length: tiles }, (_, i) => {
         const look = lookOf(i, phase, positions, revealed, hit);
@@ -74,7 +203,11 @@ export default function Board({
             disabled={!pickable && !selecting}
             aria-label={`Tile ${i + 1}, ${label}${marked ? ", marked" : ""}`}
             aria-pressed={selecting ? marked : undefined}
-            onClick={() => (pickable ? onPick(i) : selecting ? onToggle(i) : undefined)}
+            onClick={() => {
+              if (performance.now() < sweep.current.suppressUntil) return;
+              if (pickable) onPick(i);
+              else if (selecting) onToggle(i);
+            }}
           >
             <span className={styles.face} aria-hidden>
               {(look === "gem" || look === "gemDim") && <Gem className={styles.gem} />}
@@ -83,6 +216,9 @@ export default function Board({
           </button>
         );
       })}
+      <svg ref={traceRef} className={styles.trace} aria-hidden>
+        <polyline ref={lineRef} className={styles.traceLine} points="" />
+      </svg>
     </div>
   );
 }

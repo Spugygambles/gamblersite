@@ -368,80 +368,6 @@
   translate: 0 -50%;
 }
 
-/* the payouts ladder: gems found, the multiplier, what the bet would pay */
-.ladder {
-  display: grid;
-  gap: 8px;
-}
-
-.ladderHead {
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-muted);
-  font: 700 11.5px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.04em;
-}
-
-.ladderRows {
-  display: grid;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ladderRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(52px, auto);
-  gap: 10px;
-  align-items: center;
-  padding: 7px 10px;
-  border-radius: 6px;
-  color: var(--text-soft);
-  font: 600 12.5px/1 var(--font-ui), sans-serif;
-}
-
-.ladderRow:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.ladderRow[data-clear] {
-  margin-top: 2px;
-  background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--line);
-}
-
-/* the rows skipped between the sixth gem and the clear */
-.ladderGap {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--text-muted);
-  box-shadow:
-    -8px 0 0 var(--text-muted),
-    8px 0 0 var(--text-muted);
-  translate: -50% -50%;
-  opacity: 0.6;
-}
-
-.ladderRow[data-clear] {
-  position: relative;
-  margin-top: 8px;
-}
-
-.ladderMult {
-  color: var(--text);
-  font-weight: 800;
-}
-
-.ladderPay {
-  color: var(--text-muted);
-  text-align: right;
-}
-
 /* settings, fairness and how to play, along the bottom */
 .tools {
   display: flex;
@@ -532,7 +458,7 @@
 .stage {
   position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   justify-items: center;
   min-height: 560px;
   padding: 18px 28px 20px;
@@ -584,12 +510,50 @@
 }
 
 .board {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(var(--n), minmax(0, 1fr));
   gap: 8px;
   /* as big as the stage allows, and never taller than the screen */
   width: min(100%, 660px, calc(100vh - 290px));
   aspect-ratio: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* while a game's on, a finger on the board sweeps tiles rather than scrolling */
+.board[data-phase="playing"] {
+  touch-action: none;
+}
+
+.board[data-dragging],
+.board[data-dragging] .tile {
+  cursor: crosshair;
+}
+
+/* the sweep's trace, drawn over the tiles and gone soon after it ends */
+.trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.trace[data-fading] {
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.traceLine {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
 }
 
 .board[data-hit] {
@@ -812,35 +776,6 @@
     translate: -50% -40%;
     scale: 0.8;
   }
-}
-
-/* what's on the board: gems still hidden, and the mines among them */
-.counts {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 4px 0 10px;
-}
-
-.count {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 12px 7px 10px;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text-muted);
-  font: 600 12.5px/1 var(--font-ui), sans-serif;
-}
-
-.count b {
-  color: var(--text);
-  font-weight: 800;
-}
-
-.countIcon {
-  width: 15px;
-  height: 15px;
 }
 
 .stageNote {
