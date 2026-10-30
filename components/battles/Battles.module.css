@@ -271,96 +271,76 @@
   list-style: none;
 }
 
-/* a battle: who's in it, the cases, the cost, the way in */
+/* a battle: the mode and who's in it, the cases, the cost, the way in */
 .row {
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr) 170px 160px;
+  grid-template-columns: 236px minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 24px;
-  padding: 16px 20px;
+  gap: 26px;
+  padding: 14px 22px 14px 20px;
+  border: 1px solid transparent;
   border-radius: 14px;
-  background: linear-gradient(90deg, var(--surface), color-mix(in srgb, var(--surface) 72%, var(--bg-raised)));
-  box-shadow: inset 0 0 0 1px var(--edge);
+  /* the edge lit at the left, in the brand colour */
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(90deg, var(--brand), var(--edge) 40%) border-box;
   transition:
     translate 0.15s ease,
-    box-shadow 0.15s ease;
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .row:hover {
   translate: 0 -2px;
-  box-shadow:
-    inset 0 0 0 1px var(--edge),
-    0 10px 24px rgba(3, 4, 14, 0.35);
+  box-shadow: 0 10px 24px rgba(3, 4, 14, 0.35);
 }
 
-/* a finished battle sits toned down under the live ones, and comes back on hover */
+/* a finished battle sits in the dark until it's pointed at */
 .row[data-status="done"] {
-  filter: grayscale(0.6);
-  opacity: 0.72;
-  transition:
-    opacity 0.15s ease,
-    filter 0.15s ease,
-    translate 0.15s ease;
+  opacity: 0.38;
 }
 
 .row[data-status="done"]:hover {
-  filter: grayscale(0.2);
-  opacity: 0.92;
+  opacity: 0.8;
 }
 
 .who {
   display: grid;
-  gap: 9px;
+  gap: 12px;
   justify-items: start;
 }
 
-.tags {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.modePill {
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: var(--surface-2);
-  color: var(--text-soft);
-  font: 800 11px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* live, open, ended */
-.state {
+.modeLine {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  border-radius: 6px;
-  color: var(--text-muted);
+  gap: 8px;
+  font: 800 14px/1 var(--font-ui), sans-serif;
+}
+
+.modeLine > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--brand-hi);
+}
+
+.liveTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 4px;
+  color: var(--live);
   font: 800 11px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.state::before {
+.liveTag::before {
   content: "";
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: currentColor;
-}
-
-.state[data-state="live"] {
-  color: var(--live);
-}
-
-.state[data-state="live"]::before {
   animation: beat 1.4s ease-in-out infinite;
-}
-
-.state[data-state="open"] {
-  color: var(--brand-hi);
 }
 
 @keyframes beat {
@@ -370,51 +350,48 @@
   }
 }
 
-.teamRow {
+/* the seats, swords between opponents and a link between partners */
+.seats {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px 5px;
 }
 
-/* the seats, as a stack of avatars */
-.team {
-  display: flex;
+.sep {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
 }
 
 .seatChip {
   position: relative;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--surface-3);
-  box-shadow: 0 0 0 2px var(--surface);
   color: #fff;
-  font: 800 13px/1 var(--font-ui), sans-serif;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
 /* the winner's crown */
 .crown {
   position: absolute;
-  top: -9px;
+  top: -10px;
   left: 50%;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   translate: -50% 0;
   color: #e9b949;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
 }
 
-.seatChip + .seatChip {
-  margin-left: -8px;
-}
-
 .seatOpen {
   background: var(--bg);
-  box-shadow:
-    0 0 0 2px var(--surface),
-    inset 0 0 0 1.5px var(--surface-3);
+  box-shadow: inset 0 0 0 1.5px var(--surface-3);
   color: var(--text-muted);
 }
 
@@ -424,37 +401,31 @@
 }
 
 .seatWon {
-  box-shadow:
-    0 0 0 2px var(--surface),
-    0 0 0 3.5px #e9b949;
+  box-shadow: 0 0 0 2.5px #e9b949;
 }
 
-.vs {
-  color: var(--brand-hi);
-  font: 900 italic 12px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.whoLine {
-  color: var(--text-muted);
-  font: 600 12px/1.3 var(--font-ui), sans-serif;
-}
-
+/* the cases, a round each, on a dark strip; the one being opened is marked */
 .strip {
-  display: grid;
-  gap: 8px;
-  justify-self: start;
-  width: fit-content;
+  position: relative;
+  align-self: stretch;
   min-width: 0;
-  max-width: 100%;
+  border-radius: 12px;
+  background: var(--bg);
 }
 
-.thumbs {
-  display: flex;
-  gap: 8px;
-  min-width: 0;
+.reelWrap {
+  height: 100%;
   overflow: hidden;
+  mask-image: linear-gradient(90deg, #000 68%, transparent 96%);
+}
+
+.reel {
+  --step: 108px;
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  translate: calc(var(--shift, 0) * var(--step) * -1) 0;
+  transition: translate 0.4s ease;
 }
 
 .thumb {
@@ -462,105 +433,106 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 80px;
-  height: 62px;
-  border-radius: 10px;
-  background: var(--bg-raised);
-  box-shadow: inset 0 0 0 1px var(--edge);
+  width: 96px;
+  height: 76px;
+  opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.thumb[data-played] {
+  opacity: 0.85;
+}
+
+.thumb[data-now],
+.row[data-status="done"] .thumb {
+  opacity: 1;
+}
+
+.thumb[data-now]::before,
+.thumb[data-now]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  border: 6px solid transparent;
+  translate: -50% 0;
+}
+
+.thumb[data-now]::before {
+  top: -14px;
+  border-top: 7px solid var(--brand);
+}
+
+.thumb[data-now]::after {
+  bottom: -14px;
+  border-bottom: 7px solid var(--brand);
 }
 
 .thumb img {
-  width: 64px;
+  width: 88px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
 }
 
-.thumb b {
+.roundsPill {
   position: absolute;
-  right: 5px;
-  bottom: 4px;
-  padding: 2px 5px;
-  border-radius: 4px;
-  background: var(--surface-3);
-  color: var(--text);
-  font: 800 10.5px/1 var(--font-ui), sans-serif;
-}
-
-/* how far the battle's got: a word or two, and a block a round */
-.roundMeta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.roundText {
+  top: 9px;
+  right: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
   color: var(--text-muted);
-  font: 700 11.5px/1 var(--font-ui), sans-serif;
-  white-space: nowrap;
+  font: 700 12px/1 var(--font-ui), sans-serif;
 }
 
-.rounds {
-  display: flex;
-  flex: 1;
-  gap: 3px;
-  min-width: 60px;
-}
-
-.rounds i {
-  flex: 1;
-  height: 5px;
-  border-radius: 2px;
-  background: var(--bg);
-}
-
-.rounds i[data-played] {
-  background: var(--brand);
-}
-
-.rounds i[data-now] {
-  background: var(--brand);
-  animation: beat 1.4s ease-in-out infinite;
-}
-
-.row[data-status="done"] .rounds i[data-played] {
-  background: var(--text-muted);
+.roundsPill b {
+  color: var(--text);
 }
 
 .cost {
   display: grid;
-  gap: 5px;
-  justify-items: start;
-}
-
-.costLabel {
-  color: var(--text-muted);
-  font: 700 11px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  gap: 7px;
+  justify-items: center;
+  text-align: center;
 }
 
 .costValue {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   color: var(--text);
-  font: 900 20px/1 var(--font-ui), sans-serif;
+  font: 900 22px/1 var(--font-ui), sans-serif;
 }
 
 .costValue svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
-.potLine {
+.costLabel {
   color: var(--text-muted);
-  font: 600 12px/1.3 var(--font-ui), sans-serif;
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
+}
+
+.go {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+.unboxed {
+  color: var(--text-muted);
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
+}
+
+.unboxed b {
+  margin-left: 3px;
+  color: var(--text);
 }
 
 .go button {
-  width: 100%;
-  height: 46px;
+  width: 170px;
+  height: 48px;
 }
 
 .ghost {
@@ -857,11 +829,25 @@
   .strip {
     grid-column: 1 / -1;
     order: 1;
+    min-height: 104px;
   }
 
   .go {
     grid-column: 1 / -1;
     order: 2;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: start;
+  }
+
+  .go button {
+    width: auto;
+    min-width: 150px;
+  }
+
+  .cost {
+    justify-items: end;
+    text-align: right;
   }
 
   .columns {
@@ -872,26 +858,53 @@
 @container (max-width: 560px) {
   .row {
     grid-template-columns: minmax(0, 1fr);
+    padding: 14px 16px;
+  }
+
+  .cost {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .go {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .go button {
+    width: 100%;
   }
 
   .pageTitle {
     font-size: 22px;
   }
 
+  .reel {
+    --step: 86px;
+    gap: 10px;
+    padding: 12px 12px;
+  }
+
+  .strip {
+    min-height: 88px;
+  }
+
   .thumb {
-    width: 64px;
-    height: 50px;
+    width: 76px;
+    height: 62px;
   }
 
   .thumb img {
-    width: 50px;
+    width: 70px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .state[data-state="live"]::before,
-  .rounds i[data-now] {
+  .liveTag::before {
     animation: none;
+  }
+
+  .reel {
+    transition: none;
   }
 
   .row,

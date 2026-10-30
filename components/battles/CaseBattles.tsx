@@ -55,6 +55,13 @@ type Battle = {
 };
 type Result = { winners: number[]; pot: number; share: number; youWon: boolean };
 
+// two seats on one side
+const TeamIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" aria-hidden>
+    <path d="M10 15.5H7.5a3.5 3.5 0 0 1 0-7H10M14 8.5h2.5a3.5 3.5 0 0 1 0 7H14M8.5 12h7" />
+  </svg>
+);
+
 // the winner's crown
 const CrownIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 16 16" aria-hidden>
@@ -307,98 +314,79 @@ export default function CaseBattles() {
   const row = (lb: LobbyBattle) => {
     const stake = costOf(lb.cases);
     const n = seatsOf(lb.mode);
-    const teams: number[][] = lb.mode === "2v2" ? [[0, 1], [2, 3]] : Array.from({ length: n }, (_, i) => [i]);
-    const groups = lb.cases.reduce<{ c: CaseDef; n: number }[]>((g, c) => {
-      const last = g[g.length - 1];
-      if (last && last.c.slug === c.slug) last.n += 1;
-      else g.push({ c, n: 1 });
-      return g;
-    }, []);
     const open = lb.status === "open";
     const done = lb.status === "done";
-    const free = lb.players.filter((p) => p === null).length;
+    const live = lb.status === "live";
     const pot = potOf(lb.drops.slice(0, lb.round));
     const winners = done ? winnersOf(totalsOf(lb.drops, n), lb.mode) : [];
-    const nameOf = (seat: number) => (lb.you === seat ? "you" : (lb.players[seat] ?? "?"));
-    const sides = teams.map((t) => t.map(nameOf).join(" & ")).join(" vs ");
-    const wonBy = winners.map(nameOf).join(" & ");
-    const line = done ? `${wonBy} won` : open ? `Waiting for ${free} more player${free === 1 ? "" : "s"}` : sides;
+    // the case strip keeps the round being played second from the left
+    const shift = live ? Math.max(0, lb.round - 1) : 0;
     return (
       <li key={lb.id} className={styles.row} data-battle={lb.id} data-status={lb.status} data-open={open || undefined}>
         <div className={styles.who}>
-          <div className={styles.tags}>
-            <span className={styles.modePill}>{lb.mode}</span>
-            <span className={styles.state} data-state={lb.status}>
-              {lb.status === "live" ? "Live" : open ? "Open" : "Ended"}
-            </span>
-          </div>
-          <div className={styles.teamRow}>
-            {teams.map((team, ti) => (
-              <Fragment key={ti}>
-                {ti > 0 && <b className={styles.vs}>vs</b>}
-                <span className={styles.team}>
-                  {team.map((seat) => {
-                    const p = lb.players[seat];
-                    const you = lb.you === seat;
-                    return (
-                      <span
-                        key={seat}
-                        className={`${styles.seatChip} ${p ? "" : styles.seatOpen} ${you ? styles.seatYou : ""} ${winners.includes(seat) ? styles.seatWon : ""}`}
-                        style={p && !you ? { background: avatarOf(p) } : undefined}
-                        title={p ? (you ? `${p} (you)` : p) : "Open seat"}
-                        data-chip={p ?? ""}
-                      >
-                        {p ? p[0].toUpperCase() : "+"}
-                        {winners.includes(seat) && <CrownIcon className={styles.crown} />}
-                      </span>
-                    );
-                  })}
-                </span>
-              </Fragment>
-            ))}
-          </div>
-          <span className={styles.whoLine}>{line}</span>
+          <span className={styles.modeLine}>
+            <SwordsIcon />
+            <b>{lb.mode} Battle</b>
+            {live && <span className={styles.liveTag}>Live</span>}
+          </span>
+          <span className={styles.seats}>
+            {lb.players.map((p, seat) => {
+              const you = lb.you === seat;
+              const won = winners.includes(seat);
+              const teamed = lb.mode === "2v2" && seat % 2 === 1;
+              return (
+                <Fragment key={seat}>
+                  {seat > 0 && (teamed ? <TeamIcon className={styles.sep} /> : <SwordsIcon className={styles.sep} />)}
+                  <span
+                    className={`${styles.seatChip} ${p ? "" : styles.seatOpen} ${you ? styles.seatYou : ""} ${won ? styles.seatWon : ""}`}
+                    style={p && !you ? { background: avatarOf(p) } : undefined}
+                    title={p ? (you ? `${p} (you)` : p) : "Open seat"}
+                    data-chip={p ?? ""}
+                  >
+                    {p ? p[0].toUpperCase() : "+"}
+                    {won && <CrownIcon className={styles.crown} />}
+                  </span>
+                </Fragment>
+              );
+            })}
+          </span>
         </div>
 
         <div className={styles.strip}>
-          <span className={styles.thumbs} aria-label={lb.cases.map((c) => c.name).join(", ")}>
-            {groups.map((g, i) => (
-              <span key={i} className={styles.thumb} title={g.c.name}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.c.image} alt="" width={64} height={48} />
-                {g.n > 1 && <b>×{g.n}</b>}
-              </span>
-            ))}
-          </span>
-          <span className={styles.roundMeta}>
-            <span className={`${styles.roundText} tabular`} data-progress={`${lb.round}/${lb.cases.length}`}>
-              {done ? `${lb.cases.length} round${lb.cases.length === 1 ? "" : "s"}` : open ? `${lb.cases.length} round${lb.cases.length === 1 ? "" : "s"} to play` : `Round ${Math.min(lb.round + 1, lb.cases.length)} of ${lb.cases.length}`}
-            </span>
-            <span className={styles.rounds} aria-hidden>
-              {lb.cases.map((_, i) => (
-                <i key={i} data-played={i < lb.round || undefined} data-now={(lb.status === "live" && i === lb.round) || undefined} />
+          <div className={styles.reelWrap}>
+            <span className={styles.reel} style={{ "--shift": shift } as CSSProperties} aria-label={lb.cases.map((c) => c.name).join(", ")}>
+              {lb.cases.map((c, i) => (
+                <span key={i} className={styles.thumb} title={c.name} data-played={i < lb.round || undefined} data-now={(!done && i === lb.round) || undefined}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" width={88} height={66} />
+                </span>
               ))}
             </span>
+          </div>
+          <span className={`${styles.roundsPill} tabular`} data-progress={`${lb.round}/${lb.cases.length}`}>
+            <b>{lb.round}</b>/{lb.cases.length} Rounds
           </span>
         </div>
 
         <div className={styles.cost}>
-          <span className={styles.costLabel}>Cost a seat</span>
           <span className={`${styles.costValue} tabular`} data-row-cost={stake.toFixed(2)}>
             <CoinIcon />
             {money.format(stake)}
           </span>
-          <span className={`${styles.potLine} tabular`}>{open ? "No drops yet" : `${done ? "Final pot" : "Pot so far"} ${money.format(pot)}`}</span>
+          <span className={styles.costLabel}>Battle cost</span>
         </div>
 
         <div className={styles.go}>
+          <span className={`${styles.unboxed} tabular`}>
+            Unboxed <b>{money.format(pot)}</b>
+          </span>
           {open ? (
             <button type="button" className={kit.primary} disabled={!inLobby || balance < stake} onClick={() => join(lb)} data-join>
               Join battle
             </button>
           ) : (
-            <button type="button" className={`${kit.secondary} ${done ? styles.ghost : ""}`} disabled={!inLobby} onClick={() => look(lb)} data-view>
-              {lb.status === "live" ? "Watch live" : "See result"}
+            <button type="button" className={done ? `${kit.secondary} ${styles.ghost}` : kit.primary} disabled={!inLobby} onClick={() => look(lb)} data-view>
+              View battle
             </button>
           )}
         </div>
