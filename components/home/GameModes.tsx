@@ -24,12 +24,12 @@ const ART: Record<string, ReactNode> = {
   blackjack: <BlackjackArt />,
 };
 
-// Cases and battles get a wide banner each; the originals share a row.
+// Battles and cases get a wide banner each, battles first; the originals share a row.
 // art.size is the art's square stage on the banner in px, and art.x where
 // its middle sits, as a share of the banner's width.
 const FEATURES = [
-  { slug: "cases", title: "Case Opening", text: "Unbox CS2 skins from $0.49 a case.", cta: "Open cases", art: { size: 180, x: 74.5 } },
   { slug: "case-battles", title: "Case Battles", text: "Go head to head. The best unbox wins.", cta: "Start a battle", art: { size: 226, x: 71.7 } },
+  { slug: "cases", title: "Case Opening", text: "Unbox CS2 skins from $0.49 a case.", cta: "Open cases", art: { size: 180, x: 74.5 } },
 ];
 
 const bySlug = (slug: string) => GAMES.find((g) => g.slug === slug)!;
