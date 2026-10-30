@@ -8,6 +8,8 @@
 
 .title {
   margin: 0;
+  display: flex;
+  align-items: center;
   font: 900 30px/1 var(--font-ui), sans-serif;
   letter-spacing: 0.02em;
   text-transform: uppercase;

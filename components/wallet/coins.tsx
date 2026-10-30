@@ -2,8 +2,12 @@ import type { SVGProps } from "react";
 
 type P = SVGProps<SVGSVGElement>;
 
-/** A way in and out of the wallet: a coin, with its mark on a tile of its colour. */
-export type Coin = { id: string; name: string; ticker: string; color: string; icon: (p: P) => React.JSX.Element };
+/**
+ * A way in and out of the wallet: a coin, with its mark on a tile of its
+ * colour, the network it moves on, and what one is worth in dollars (a
+ * placeholder rate until a price feed is wired).
+ */
+export type Coin = { id: string; name: string; ticker: string; color: string; network: string; usd: number; icon: (p: P) => React.JSX.Element };
 
 const EthIcon = (p: P) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
@@ -37,10 +41,18 @@ const UsdcIcon = (p: P) => (
   </svg>
 );
 
+/** The warning's triangle. */
+export const WarnIcon = (p: P) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" aria-hidden {...p}>
+    <path d="M12 3.5 2.5 20h19z" />
+    <path d="M12 9.5v5M12 17.2v.3" />
+  </svg>
+);
+
 export const COINS: Coin[] = [
-  { id: "eth", name: "Ethereum", ticker: "ETH", color: "#5d7be6", icon: EthIcon },
-  { id: "ltc", name: "Litecoin", ticker: "LTC", color: "#9aa5b5", icon: LtcIcon },
-  { id: "sol", name: "Solana", ticker: "SOL", color: "#1fc98a", icon: SolIcon },
-  { id: "usdt", name: "Tether", ticker: "USDT", color: "#26a17b", icon: UsdtIcon },
-  { id: "usdc", name: "USD Coin", ticker: "USDC", color: "#2775ca", icon: UsdcIcon },
+  { id: "eth", name: "Ethereum", ticker: "ETH", color: "#5d7be6", network: "the Ethereum network", usd: 3420.5, icon: EthIcon },
+  { id: "ltc", name: "Litecoin", ticker: "LTC", color: "#9aa5b5", network: "the Litecoin network", usd: 71.4, icon: LtcIcon },
+  { id: "sol", name: "Solana", ticker: "SOL", color: "#1fc98a", network: "the Solana network", usd: 95.85, icon: SolIcon },
+  { id: "usdt", name: "Tether", ticker: "USDT", color: "#26a17b", network: "Ethereum (ERC-20)", usd: 1, icon: UsdtIcon },
+  { id: "usdc", name: "USD Coin", ticker: "USDC", color: "#2775ca", network: "Ethereum (ERC-20)", usd: 1, icon: UsdcIcon },
 ];

@@ -6,8 +6,12 @@ import { CheckIcon, CloseIcon } from "@/components/home/icons";
 import type { Seeds } from "./stores";
 import styles from "./Mines.module.css";
 
-/** A window over the page, open from the moment it mounts; its X, Escape or a click outside close it. */
-export function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+/**
+ * A window over the page, open from the moment it mounts; its X, Escape or
+ * a click outside close it. `label` names it for assistive tech when the
+ * title isn't plain text.
+ */
+export function Modal({ title, label, onClose, children, wide }: { title: ReactNode; label?: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current;
@@ -17,7 +21,7 @@ export function Modal({ title, onClose, children, wide }: { title: string; onClo
     <dialog
       ref={ref}
       className={`${styles.modal} ${wide ? styles.modalWide : ""}`}
-      aria-label={title}
+      aria-label={label ?? (typeof title === "string" ? title : undefined)}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
     >

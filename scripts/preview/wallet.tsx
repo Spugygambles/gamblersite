@@ -4,21 +4,26 @@
 import { createRoot } from "react-dom/client";
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/mines/Dialogs";
-import WalletPanel from "@/components/wallet/WalletPanel";
+import WalletPanel, { StepTitle, WALLET_START, type WalletView } from "@/components/wallet/WalletPanel";
 
 // the button asks for the window with this event
 const OPEN = "csgoneo:wallet";
 
 function Wallet() {
   const [open, setOpen] = useState(false);
+  const [view, setView] = useState<WalletView>(WALLET_START);
   useEffect(() => {
     const show = () => setOpen(true);
     window.addEventListener(OPEN, show);
     return () => window.removeEventListener(OPEN, show);
   }, []);
+  const close = () => {
+    setOpen(false);
+    setView(WALLET_START);
+  };
   return open ? (
-    <Modal title="Wallet" wide onClose={() => setOpen(false)}>
-      <WalletPanel />
+    <Modal title={view.coin ? <StepTitle view={view} onView={setView} /> : "Wallet"} label="Wallet" wide onClose={close}>
+      <WalletPanel view={view} onView={setView} />
     </Modal>
   ) : null;
 }
