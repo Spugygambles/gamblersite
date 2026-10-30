@@ -4,7 +4,7 @@ import { PageContent } from "@/components/home/Section";
 
 export const metadata: Metadata = {
   title: "Deposit — CsgoNeo",
-  description: "Add Robux to your balance: 500 Robux to the dollar, with 5% extra on every deposit.",
+  description: "Add Robux to your balance: 500 Robux to the dollar.",
 };
 
 // data-deposit-root marks where the preview mounts its copy.

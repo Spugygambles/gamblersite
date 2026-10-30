@@ -104,8 +104,6 @@ const YOU = PLAYER.name;
 const PREVIOUS_KEPT = SAMPLES_DONE;
 let nextSample = 10000;
 let toastCount = 0;
-// the name, over and over, behind the result screen
-const MARKS = Array.from({ length: 40 }, (_, i) => i);
 
 // the extras, in the order they're offered
 const OPTIONS: { key: keyof Options; label: string; icon: (p: { className?: string }) => React.JSX.Element; hint: string }[] = [
@@ -977,11 +975,6 @@ export default function CaseBattles() {
         )}
         {over && result && (
           <div className={styles.overScreen} data-over>
-            <span className={styles.overMarks} aria-hidden>
-              {MARKS.map((i) => (
-                <i key={i}>CSGONEO</i>
-              ))}
-            </span>
             <h2 className={styles.overTitle}>
               Battle
               <span>Over</span>

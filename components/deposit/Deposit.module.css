@@ -73,16 +73,6 @@
   outline: none;
 }
 
-/* the extra on a Robux deposit */
-.bonus {
-  flex-shrink: 0;
-  padding: 6px 9px;
-  border-radius: 7px;
-  background: #2f8a4a;
-  color: #e9ffe9;
-  font: 800 13px/1 var(--font-ui), sans-serif;
-}
-
 .equals {
   color: var(--text-muted);
   font: 800 24px/1 var(--font-ui), sans-serif;
@@ -92,10 +82,6 @@
   margin: 0;
   color: var(--text-soft);
   font: 500 14px/1.5 var(--font-ui), sans-serif;
-}
-
-.line b {
-  color: var(--text);
 }
 
 .note {

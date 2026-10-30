@@ -1463,36 +1463,6 @@
   text-align: center;
 }
 
-.overScreen > :not(.overMarks) {
-  position: relative;
-  z-index: 1;
-}
-
-/* the name, faint, over and over behind it all */
-.overMarks {
-  position: absolute;
-  z-index: 0;
-  inset: -60px -40px;
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  align-content: space-between;
-  justify-items: center;
-  row-gap: 56px;
-  opacity: 0.04;
-  rotate: -10deg;
-  pointer-events: none;
-  user-select: none;
-}
-
-.overMarks i {
-  color: var(--text);
-  font: italic 900 24px/1 var(--font-ui), sans-serif;
-}
-
-.overMarks i:nth-child(odd) {
-  translate: 0 30px;
-}
-
 .overTitle {
   display: grid;
   margin: 0;
