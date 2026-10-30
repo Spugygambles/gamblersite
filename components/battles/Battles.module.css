@@ -1734,9 +1734,12 @@
   height: 13px;
 }
 
+/* the pulls, two to a row: square cards with an outline, the item on a faint disc */
 .dropList {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+  justify-items: center;
   margin: 0;
   padding: 12px;
   list-style: none;
@@ -1745,55 +1748,52 @@
 .dropCard {
   position: relative;
   display: grid;
-  justify-items: center;
-  gap: 8px;
-  padding: 14px 10px 12px;
-  border-radius: 12px;
-  background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--edge);
+  align-items: center;
+  width: 100%;
+  max-width: 220px;
+  padding: 12px 10px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.09);
   text-align: center;
   overflow: hidden;
   animation: dropIn 0.3s ease-out;
 }
 
-/* a line along the top in the item's tier */
-.dropCard[data-tier]::before {
+/* at least as tall as it is wide: a square where there's room, taller where the words need it */
+.dropCard::before {
   content: "";
-  position: absolute;
-  top: 0;
-  right: 18px;
-  left: 18px;
-  height: 2px;
-  border-radius: 0 0 2px 2px;
-  background: var(--tier);
+  grid-area: 1 / 1;
+  padding-bottom: 100%;
 }
 
-.dropCard[data-tier="grey"]::before {
-  background: var(--surface-3);
+.dropInner {
+  display: grid;
+  grid-area: 1 / 1;
+  justify-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
-/* the art in a ring that glows in the tier's colour; grey has no glow */
+/* the art on a disc, tinted and lit a little in the tier's colour; grey plain */
 .dropCircle {
   display: grid;
   place-items: center;
-  width: 92px;
-  height: 92px;
+  width: 58%;
+  max-width: 96px;
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 30%, var(--surface-2)), var(--surface-2) 72%);
-  box-shadow:
-    inset 0 0 0 2px color-mix(in srgb, var(--tier) 75%, transparent),
-    0 0 22px color-mix(in srgb, var(--tier) 35%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 22%, var(--surface-3)), var(--surface-3) 74%);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--tier) 22%, transparent);
 }
 
 .dropCard[data-tier="grey"] .dropCircle {
-  background: var(--surface-2);
-  box-shadow: inset 0 0 0 2px var(--surface-3);
+  background: var(--surface-3);
+  box-shadow: none;
 }
 
 .dropCard[data-tier="gold"] .dropCircle {
-  box-shadow:
-    inset 0 0 0 2px color-mix(in srgb, var(--tier) 85%, transparent),
-    0 0 30px color-mix(in srgb, var(--tier) 50%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--tier) 32%, transparent);
 }
 
 .dropCard[data-tier] .dropPrice {
@@ -1801,24 +1801,25 @@
 }
 
 .dropCard[data-tier="grey"] .dropPrice {
-  color: var(--text-soft);
+  color: var(--text);
 }
 
 .dropCircle > * {
-  width: 72px;
-  height: 54px;
+  width: 76%;
+  height: 58%;
 }
 
 /* a round still to come: the case, waiting */
 .pendingArt {
   display: grid;
   place-items: center;
-  width: 92px;
-  height: 92px;
+  width: 58%;
+  max-width: 96px;
+  aspect-ratio: 1;
 }
 
 .pendingArt img {
-  width: 72px;
+  width: 78%;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));
@@ -1837,7 +1838,7 @@
   box-shadow: inset 0 0 0 1.5px var(--brand);
 }
 
-.dropCard b {
+.dropInner b {
   max-width: 100%;
   overflow: hidden;
   font: 700 13px/1.2 var(--font-ui), sans-serif;
@@ -1849,7 +1850,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font: 800 13px/1 var(--font-ui), sans-serif;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
 /* the losers' pulls in the shade */
@@ -1929,14 +1930,8 @@
     font-size: 32px;
   }
 
-  .dropCircle {
-    width: 72px;
-    height: 72px;
-  }
-
-  .dropCircle > * {
-    width: 56px;
-    height: 42px;
+  .dropInner b {
+    font-size: 12px;
   }
 }
 
@@ -2082,6 +2077,10 @@
     grid-template-columns: none;
     overflow-x: auto;
     padding-bottom: 4px;
+  }
+
+  .dropList {
+    grid-template-columns: 1fr;
   }
 
   .reel {

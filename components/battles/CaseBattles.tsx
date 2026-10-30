@@ -1078,25 +1078,29 @@ export default function CaseBattles() {
                   const tier = drop ? tierOf(drop.skin.price, c.price) : "grey";
                   return drop ? (
                     <li key={r} className={styles.dropCard} style={{ "--tier": TIERS[tier].color } as CSSProperties} data-drop={drop.skin.slug} data-tier={tier} title={`${drop.skin.name}: ${TIERS[tier].name}`}>
-                      <span className={styles.dropCircle}>
-                        <SkinArt skin={drop.skin} />
-                      </span>
-                      <b>{drop.skin.name}</b>
-                      <span className={`${styles.dropPrice} tabular`}>
-                        <CoinIcon />
-                        {money.format(drop.skin.price)}
+                      <span className={styles.dropInner}>
+                        <span className={styles.dropCircle}>
+                          <SkinArt skin={drop.skin} />
+                        </span>
+                        <b>{drop.skin.name}</b>
+                        <span className={`${styles.dropPrice} tabular`}>
+                          <CoinIcon />
+                          {money.format(drop.skin.price)}
+                        </span>
                       </span>
                     </li>
                   ) : (
                     <li key={r} className={`${styles.dropCard} ${styles.dropPending}`} data-pending data-now={(phase === "fighting" && r === cur) || undefined} title={`Round ${r + 1}: ${c.name}`}>
-                      <span className={styles.pendingArt}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={c.image} alt="" width={72} height={54} />
-                      </span>
-                      <b>Round {r + 1}</b>
-                      <span className={`${styles.dropPrice} tabular`}>
-                        <CoinIcon />
-                        0
+                      <span className={styles.dropInner}>
+                        <span className={styles.pendingArt}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={c.image} alt="" width={72} height={54} />
+                        </span>
+                        <b>Round {r + 1}</b>
+                        <span className={`${styles.dropPrice} tabular`}>
+                          <CoinIcon />
+                          0
+                        </span>
                       </span>
                     </li>
                   );
