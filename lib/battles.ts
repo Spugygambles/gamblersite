@@ -4,34 +4,62 @@ import { BET_PLAYERS } from "./home";
 
 /*
  * Case battles: two to four seats open the same cases round by round, and
- * the seat (or team) whose drops are worth the most takes every drop. The
- * house's share is in the case prices (lib/cases.ts), nowhere else. One
- * nonce covers a battle: the drops come from its draws in order, round by
- * round and seat by seat, so a battle can be worked out again from its
- * seeds.
+ * the gamemode says who takes the drops: as a rule the seat (or team) whose
+ * drops are worth the most. The house's share is in the case prices
+ * (lib/cases.ts), nowhere else. One nonce covers a battle: the drops come
+ * from its draws in order, round by round and seat by seat, and one draw
+ * more decides the coinflip and jackpot modes, so a battle can be worked
+ * out again from its seeds.
  */
 
-export type Mode = "1v1" | "1v1v1" | "2v2";
-export const MODES: { id: Mode; seats: number; label: string }[] = [
-  { id: "1v1", seats: 2, label: "1v1" },
-  { id: "1v1v1", seats: 3, label: "1v1v1" },
-  { id: "2v2", seats: 4, label: "2v2" },
+export type Mode = "1v1" | "1v1v1" | "1v1v1v1" | "2v2";
+export const MODES: { id: Mode; seats: number; label: string; kind: "Solo battle" | "Team battle" }[] = [
+  { id: "1v1", seats: 2, label: "1v1", kind: "Solo battle" },
+  { id: "1v1v1", seats: 3, label: "1v1v1", kind: "Solo battle" },
+  { id: "1v1v1v1", seats: 4, label: "1v1v1v1", kind: "Solo battle" },
+  { id: "2v2", seats: 4, label: "2v2", kind: "Team battle" },
 ];
 export const seatsOf = (mode: Mode) => MODES.find((m) => m.id === mode)!.seats;
-/** Seats 0 and 1 are one team in 2v2, 2 and 3 the other. */
+/** Seats 0 and 1 are one team in 2v2, 2 and 3 the other; every other mode is each seat for itself. */
 export const teamOf = (mode: Mode, seat: number) => (mode === "2v2" ? Math.floor(seat / 2) : seat);
+/** The sides, each a list of seats. */
+export const teamsOf = (mode: Mode): number[][] => (mode === "2v2" ? [[0, 1], [2, 3]] : Array.from({ length: seatsOf(mode) }, (_, i) => [i]));
+
+/** How a battle is won. Standard is the one with no card picked: the biggest haul wins. */
+export type Gamemode = "standard" | "crazy" | "terminal" | "group" | "coinflip" | "jackpot" | "reaper";
+export const GAMEMODES: { id: Exclude<Gamemode, "standard">; name: string; blurb: string }[] = [
+  { id: "crazy", name: "Crazy", blurb: "The one who unboxes the LEAST amount wins the battle!" },
+  { id: "terminal", name: "Terminal", blurb: "Only the LAST case counts, the rest are ignored!" },
+  { id: "group", name: "Group", blurb: "Play together as a group, all winnings are split equally!" },
+  { id: "coinflip", name: "Coinflip", blurb: "The battle ends with a coinflip that decides the winner!" },
+  { id: "jackpot", name: "Jackpot", blurb: "The battle ends with a jackpot that decides the winner!" },
+  { id: "reaper", name: "Reaper", blurb: "In the last rounds the lowest unbox is reaped. Last one standing takes everything!" },
+];
+export const gamemodeName = (g: Gamemode) => GAMEMODES.find((m) => m.id === g)?.name ?? "";
+
+/** The extras a battle can be made with. */
+export type Options = { borrow: boolean; fund: boolean; private: boolean; fast: boolean; gold: boolean };
+export const NO_OPTIONS: Options = { borrow: false, fund: false, private: false, fast: false, gold: false };
 
 /** The cases a battle can be made of: the ones sold for coins. */
 export const COIN_CASES: CaseDef[] = CASES.filter((c) => c.gems === null);
 export const MAX_ROUNDS = 8;
 
 const cents = (n: number) => Math.round(n * 100) / 100;
+/** A seat's cost: the cases' prices together. */
 export const costOf = (cases: CaseDef[]) => cents(cases.reduce((sum, c) => sum + c.price, 0));
+/** What making the battle costs: a seat, or every seat when the maker funds them all. */
+export const makeCostOf = (cases: CaseDef[], mode: Mode, options: Options) => cents(costOf(cases) * (options.fund ? seatsOf(mode) : 1));
 
 /** Every seat's drop in every round: drops[round][seat], draw index round × seats + seat. */
 export function battleDrops(cases: CaseDef[], seats: number, serverSeed: string, clientSeed: string, nonce: number): CaseItem[][] {
   const r = draws(serverSeed, clientSeed, nonce, cases.length * seats);
   return cases.map((c, round) => Array.from({ length: seats }, (_, seat) => c.items[weighted(c.items.map((it) => it.weight), r[round * seats + seat])]));
+}
+
+/** The draw after the drops' draws: it settles the coinflip and jackpot modes. */
+export function deciderOf(rounds: number, seats: number, serverSeed: string, clientSeed: string, nonce: number): number {
+  return draws(serverSeed, clientSeed, nonce, rounds * seats + 1)[rounds * seats];
 }
 
 /** What each seat's drops come to, over the rounds given. */
@@ -42,26 +70,112 @@ export function totalsOf(drops: CaseItem[][], seats: number): number[] {
 /** The pot: every drop's value. */
 export const potOf = (drops: CaseItem[][]) => cents(drops.flat().reduce((sum, it) => sum + it.skin.price, 0));
 
+const sideTotal = (totals: number[], side: number[]) => cents(side.reduce((sum, seat) => sum + totals[seat], 0));
+
 /**
- * The winning seats: the highest total, or in 2v2 the team with the
- * higher total (both its seats). A tie goes to the lower seat (or team),
- * the first to sit down.
+ * The winning seats in a standard battle: the highest total, or in 2v2 the
+ * team with the higher total (both its seats). A tie goes to the lower
+ * seat (or team), the first to sit down.
  */
 export function winnersOf(totals: number[], mode: Mode): number[] {
-  if (mode === "2v2") {
-    const a = cents(totals[0] + totals[1]);
-    const b = cents(totals[2] + totals[3]);
-    return a >= b ? [0, 1] : [2, 3];
-  }
-  let best = 0;
-  totals.forEach((t, i) => {
-    if (t > totals[best]) best = i;
-  });
-  return [best];
+  return highest(totals, mode, teamsOf(mode));
 }
 
-/** A winner's share of the pot: all of it, or half in 2v2. */
-export const shareOf = (pot: number, mode: Mode) => cents(mode === "2v2" ? pot / 2 : pot);
+function highest(totals: number[], mode: Mode, sides: number[][]): number[] {
+  let best = sides[0];
+  for (const side of sides.slice(1)) if (sideTotal(totals, side) > sideTotal(totals, best)) best = side;
+  return best;
+}
+
+function lowest(totals: number[], sides: number[][]): number[] {
+  let worst = sides[0];
+  for (const side of sides.slice(1)) if (sideTotal(totals, side) < sideTotal(totals, worst)) worst = side;
+  return worst;
+}
+
+/**
+ * Reaper: in each of the last rounds (one fewer than there are sides) the
+ * side with the lowest unbox that round is reaped, a tie reaping the side
+ * that sat down last. Given part of a battle, it says who's been reaped so
+ * far.
+ */
+export function reapedSoFar(drops: CaseItem[][], mode: Mode, rounds: number): number[][] {
+  const seats = seatsOf(mode);
+  let standing = teamsOf(mode);
+  const reaped: number[][] = [];
+  const from = Math.max(0, rounds - (standing.length - 1));
+  for (let r = from; r < Math.min(rounds, drops.length); r++) {
+    if (standing.length < 2) break;
+    const unbox = totalsOf([drops[r]], seats);
+    let worst = standing[standing.length - 1];
+    for (let i = standing.length - 2; i >= 0; i--) if (sideTotal(unbox, standing[i]) < sideTotal(unbox, worst)) worst = standing[i];
+    reaped.push(worst);
+    standing = standing.filter((s) => s !== worst);
+  }
+  return reaped;
+}
+
+export type Settled = { totals: number[]; winners: number[]; reaped: number[][] };
+
+/** Who takes the battle, by its gamemode. `decider` is the draw after the drops' (deciderOf). */
+export function settle(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, decider: number): Settled {
+  const seats = seatsOf(mode);
+  const sides = teamsOf(mode);
+  const totals = totalsOf(drops, seats);
+  let winners: number[];
+  let reaped: number[][] = [];
+  switch (gamemode) {
+    case "crazy":
+      winners = lowest(totals, sides);
+      break;
+    case "terminal":
+      winners = highest(totalsOf(drops.slice(-1), seats), mode, sides);
+      break;
+    case "group":
+      winners = sides.flat();
+      break;
+    case "coinflip":
+      winners = sides[Math.min(sides.length - 1, Math.floor(decider * sides.length))];
+      break;
+    case "jackpot": {
+      const weights = sides.map((s) => sideTotal(totals, s));
+      winners = weights.some((w) => w > 0) ? sides[weighted(weights, decider)] : sides[Math.min(sides.length - 1, Math.floor(decider * sides.length))];
+      break;
+    }
+    case "reaper": {
+      reaped = reapedSoFar(drops, mode, drops.length);
+      const standing = sides.filter((s) => !reaped.some((r) => r[0] === s[0]));
+      winners = highest(totals, mode, standing);
+      break;
+    }
+    default:
+      winners = highest(totals, mode, sides);
+  }
+  return { totals, winners, reaped };
+}
+
+/** A winner's share of the pot: all of it, or split between the winning seats. */
+export const shareOf = (pot: number, winners: number) => cents(pot / Math.max(1, winners));
+
+/** The result in words: who, and by what rule. */
+export function resultLine(gamemode: Gamemode, who: string, several: boolean): string {
+  switch (gamemode) {
+    case "crazy":
+      return `${who} ${several ? "win" : "wins"} with the lowest haul`;
+    case "terminal":
+      return `${who} ${several ? "win" : "wins"} on the last case`;
+    case "group":
+      return "Everyone shares the pot";
+    case "coinflip":
+      return `The coin lands on ${who}`;
+    case "jackpot":
+      return `The jackpot lands on ${who}`;
+    case "reaper":
+      return `${who} ${several ? "are" : "is"} the last standing`;
+    default:
+      return `${who} ${several ? "take" : "takes"} the pot`;
+  }
+}
 
 // ---- The lobby's battles ----------------------------------------------------------------
 
@@ -69,6 +183,8 @@ export type Status = "open" | "live" | "done";
 export type LobbyBattle = {
   id: number;
   mode: Mode;
+  gamemode: Gamemode;
+  options: Options;
   cases: CaseDef[];
   /** A name per seat; null while a seat waits for a player. */
   players: (string | null)[];
@@ -77,6 +193,8 @@ export type LobbyBattle = {
   round: number;
   /** Every seat's drop in every round, for live and finished battles. */
   drops: CaseItem[][];
+  /** The draw that settles a coinflip or jackpot (deciderOf). */
+  decider: number;
   /** Your seat, in a battle you played. */
   you: number | null;
 };
@@ -110,18 +228,21 @@ export function fillSeats(seats: (string | null)[], seed: number, taken: string[
 const SAMPLE_SERVER = "csgoneo-sample-battles";
 const SAMPLE_CLIENT = "lobby";
 
-/** A sample battle: a mode, two to six cases, and its seats; open with one free, live part way through, or finished. */
+/** A sample battle: a mode, a gamemode now and then, two to six cases, and its seats; open with one free, live part way through, or finished. */
 export function lobbyBattle(id: number, status: Status = "open"): LobbyBattle {
   const rand = seeded(id * 7919);
   const mode = MODES[Math.floor(rand() * MODES.length)].id;
   const rounds = 2 + Math.floor(rand() * 5);
   const cases = Array.from({ length: rounds }, () => COIN_CASES[Math.floor(rand() * COIN_CASES.length)]);
+  const gamemode: Gamemode = rand() < 0.5 ? "standard" : GAMEMODES[Math.floor(rand() * GAMEMODES.length)].id;
+  const options: Options = { ...NO_OPTIONS, gold: rand() < 0.2, fund: rand() < 0.15 };
   const seats = seatsOf(mode);
   const full = fillSeats(Array.from({ length: seats }, () => null), id * 13);
   const players = status === "open" ? full.map((p, i) => (i === seats - 1 ? null : p)) : full;
   const drops = status === "open" ? [] : battleDrops(cases, seats, SAMPLE_SERVER, SAMPLE_CLIENT, id);
+  const decider = deciderOf(rounds, seats, SAMPLE_SERVER, SAMPLE_CLIENT, id);
   const round = status === "done" ? rounds : status === "live" ? 1 + Math.floor(rand() * (rounds - 1)) : 0;
-  return { id, mode, cases, players, status, round, drops, you: null };
+  return { id, mode, gamemode, options, cases, players, status, round, drops, decider, you: null };
 }
 
 /** The sample battles to start with, three for trying things: one with a seat free, one under way, one finished. */
@@ -129,7 +250,7 @@ export const LOBBY: LobbyBattle[] = [lobbyBattle(1, "open"), lobbyBattle(5, "liv
 
 // ---- Your finished battles, kept in the browser ----------------------------------------------
 
-type Kept = { id: number; mode: Mode; cases: string[]; players: string[]; you: number; drops: string[][] };
+type Kept = { id: number; mode: Mode; gamemode?: Gamemode; options?: Options; cases: string[]; players: string[]; you: number; drops: string[][]; decider?: number };
 const KEY = "csgoneo.battles";
 /** How many of the battles people play the list keeps. */
 export const KEEP = 10;
@@ -138,7 +259,17 @@ export const KEEP = 10;
 export function keepBattle(b: LobbyBattle) {
   try {
     const kept: Kept[] = JSON.parse(localStorage.getItem(KEY) || "[]");
-    kept.unshift({ id: b.id, mode: b.mode, cases: b.cases.map((c) => c.slug), players: b.players.map((p) => p ?? "?"), you: b.you ?? 0, drops: b.drops.map((r) => r.map((it) => it.skin.slug)) });
+    kept.unshift({
+      id: b.id,
+      mode: b.mode,
+      gamemode: b.gamemode,
+      options: b.options,
+      cases: b.cases.map((c) => c.slug),
+      players: b.players.map((p) => p ?? "?"),
+      you: b.you ?? 0,
+      drops: b.drops.map((r) => r.map((it) => it.skin.slug)),
+      decider: b.decider,
+    });
     localStorage.setItem(KEY, JSON.stringify(kept.slice(0, KEEP)));
   } catch {}
 }
@@ -148,10 +279,25 @@ export function keptBattles(): LobbyBattle[] {
   try {
     const kept: Kept[] = JSON.parse(localStorage.getItem(KEY) || "[]");
     return kept.flatMap((k) => {
+      if (!MODES.some((m) => m.id === k.mode)) return [];
       const cases = k.cases.map((slug) => CASES.find((c) => c.slug === slug)).filter((c): c is CaseDef => !!c);
       if (cases.length !== k.cases.length) return [];
       const drops = k.drops.map((round, r) => round.map((slug) => cases[r].items.find((it) => it.skin.slug === slug) ?? cases[r].items[0]));
-      return [{ id: k.id, mode: k.mode, cases, players: k.players, status: "done" as const, round: cases.length, drops, you: k.you }];
+      return [
+        {
+          id: k.id,
+          mode: k.mode,
+          gamemode: k.gamemode ?? "standard",
+          options: { ...NO_OPTIONS, ...k.options },
+          cases,
+          players: k.players,
+          status: "done" as const,
+          round: cases.length,
+          drops,
+          decider: k.decider ?? 0,
+          you: k.you,
+        },
+      ];
     });
   } catch {
     return [];
@@ -159,12 +305,13 @@ export function keptBattles(): LobbyBattle[] {
 }
 
 /** A battle in words, round by round, for checking it from its seeds. */
-export function describeBattle(cases: CaseDef[], mode: Mode, names: string[], serverSeed: string, clientSeed: string, nonce: number): string {
+export function describeBattle(cases: CaseDef[], mode: Mode, gamemode: Gamemode, names: string[], serverSeed: string, clientSeed: string, nonce: number): string {
   const seats = seatsOf(mode);
   const drops = battleDrops(cases, seats, serverSeed, clientSeed, nonce);
-  const totals = totalsOf(drops, seats);
-  const winners = winnersOf(totals, mode);
+  const decider = deciderOf(cases.length, seats, serverSeed, clientSeed, nonce);
+  const { totals, winners } = settle(drops, mode, gamemode, decider);
   const rounds = drops.map((round, r) => `Round ${r + 1} (${cases[r].name}): ${round.map((it, seat) => `${names[seat]} ${it.skin.name}`).join(", ")}`);
   const who = winners.map((w) => names[w]).join(" and ");
-  return `${rounds.join(". ")}. Winner: ${who} with ${totals.filter((_, i) => winners.includes(i)).reduce((a, b) => a + b, 0).toFixed(2)} of the ${potOf(drops).toFixed(2)} pot.`;
+  const rule = gamemode === "standard" ? "" : ` (${gamemodeName(gamemode)}${gamemode === "coinflip" || gamemode === "jackpot" ? `, deciding draw ${decider.toFixed(6)}` : ""})`;
+  return `${rounds.join(". ")}. Winner${rule}: ${who} with ${totals.filter((_, i) => winners.includes(i)).reduce((a, b) => a + b, 0).toFixed(2)} of the ${potOf(drops).toFixed(2)} pot.`;
 }

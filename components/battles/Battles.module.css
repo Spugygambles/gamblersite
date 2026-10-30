@@ -1,8 +1,8 @@
 /*
- * Case battles, on the shared game frame. On the left the mode, the case
- * picker and the rounds chosen; on the stage the lobby of open battles,
- * or the arena: a column a seat, each with its reel, its drops and its
- * running total, and the result banner at the end.
+ * Case battles. The lobby lists the battles, a row each; the Create Battle
+ * page sets one up (battle type, extras, cases, gamemode); the arena is a
+ * column a seat, each with its reel, its drops and its running total, and
+ * the result banner at the end.
  */
 
 .wrap {
@@ -11,12 +11,12 @@
   container-type: inline-size;
 }
 
-/* ---- The picker ---------------------------------------------------------------- */
+/* ---- The Add cases window ------------------------------------------------------------- */
 
 .picker {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -24,117 +24,107 @@
 
 .pickCase {
   display: grid;
-  gap: 4px;
-  width: 100%;
-  padding: 8px 6px 9px;
-  border: 0;
-  border-radius: 9px;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px 10px 10px;
+  border-radius: 12px;
   background: var(--bg);
   box-shadow: inset 0 0 0 1px var(--line);
-  color: var(--text);
-  cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.pickCase:hover:not(:disabled) {
-  background: var(--surface-2);
-  box-shadow: inset 0 0 0 1px var(--brand);
-}
-
-.pickCase:disabled {
-  cursor: default;
-  opacity: 0.6;
+  text-align: center;
 }
 
 .pickArt {
   display: grid;
   place-items: center;
-  height: 44px;
+  height: 100px;
 }
 
 .pickArt img {
-  width: 56px;
+  width: 96px;
+  max-height: 100px;
   height: auto;
-  max-height: 44px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.45));
 }
 
 .pickName {
-  overflow: hidden;
-  font: 700 11.5px/1.2 var(--font-ui), sans-serif;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font: 800 13px/1.2 var(--font-ui), sans-serif;
 }
 
 .pickPrice {
-  color: var(--text-muted);
-  font: 700 11px/1 var(--font-ui), sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-soft);
+  font: 700 12.5px/1 var(--font-ui), sans-serif;
+}
+
+.pickPrice svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* how many of the case, with a step either way */
+.pickCount {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.pickCount b {
+  min-width: 26px;
   text-align: center;
+  font: 800 13px/1 var(--font-ui), sans-serif;
 }
 
-/* the rounds chosen: a small case thumb each, with its × */
-.chosen {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  min-height: 44px;
-  margin: 0;
-  padding: 6px;
-  border-radius: 9px;
-  background: var(--bg-raised);
-  list-style: none;
-}
-
-.chosenCase {
-  position: relative;
+.pickStep {
   display: grid;
   place-items: center;
-  width: 50px;
-  height: 40px;
-  border-radius: 7px;
-  background: var(--surface-2);
-}
-
-.chosenCase img {
-  width: 40px;
-  height: auto;
-  max-height: 32px;
-  object-fit: contain;
-}
-
-.remove {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  display: grid;
-  place-items: center;
-  width: 16px;
-  height: 16px;
+  width: 28px;
+  height: 28px;
   border: 0;
   border-radius: 50%;
-  background: var(--danger);
-  color: #fff;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 800 16px/1 var(--font-ui), sans-serif;
   cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.remove svg {
-  width: 8px;
-  height: 8px;
+.pickStep:hover:not(:disabled) {
+  background: var(--surface-3);
 }
 
-.remove:disabled {
-  display: none;
+.pickStep:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-.chosenEmpty {
-  align-self: center;
-  padding: 0 6px;
+.pickerFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pickerSum {
   color: var(--text-muted);
-  font: 600 12px/1 var(--font-ui), sans-serif;
+  font: 600 13px/1.3 var(--font-ui), sans-serif;
+}
+
+.pickerSum b {
+  color: var(--text);
+}
+
+.pickerFoot button {
+  height: 42px;
+  padding-inline: 22px;
 }
 
 /* ---- The lobby ------------------------------------------------------------------- */
@@ -352,11 +342,41 @@
   gap: 6px 5px;
 }
 
+.seats[data-stack] {
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.side {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 .sep {
   flex-shrink: 0;
   width: 14px;
   height: 14px;
   color: var(--text-muted);
+}
+
+/* the swords between the two teams */
+.sepTeams {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--text-soft);
+}
+
+.modeGlyph {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
+.gold {
+  color: #e9b949;
 }
 
 .seatChip {
@@ -538,16 +558,473 @@
   background: var(--surface-2);
 }
 
-/* the create window's form */
-.createForm {
+/* ---- The Create Battle page ---------------------------------------------------------------- */
+
+.createPage {
   display: grid;
-  gap: 14px;
+  align-content: start;
+  gap: 18px;
+  min-height: max(520px, calc(100vh - 230px));
+  padding: 8px 0;
 }
 
-.createReadouts {
+.createHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.backRound {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.backRound:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.backRound svg {
+  width: 20px;
+  height: 20px;
+}
+
+.createTitle {
+  margin: 0;
+  font: 900 22px/1 var(--font-ui), sans-serif;
+}
+
+.createActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.greyButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 46px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: 800 13.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.greyButton:hover {
+  background: var(--surface-2);
+}
+
+.greyButton svg {
+  width: 17px;
+  height: 17px;
+  color: var(--text-soft);
+}
+
+.createGo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 46px;
+  padding-inline: 18px;
+  white-space: nowrap;
+}
+
+.createGo svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* a menu under its button */
+.menuWrap {
+  position: relative;
+}
+
+.dropMenu {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 100%;
+  margin: 0;
+  padding: 6px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 1px var(--edge),
+    0 14px 30px rgba(3, 4, 14, 0.5);
+  list-style: none;
+}
+
+.createActions .dropMenu {
+  right: 0;
+  left: auto;
+  min-width: 260px;
+}
+
+.dropItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: 700 13px/1.2 var(--font-ui), sans-serif;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.dropItem:hover,
+.dropItem[aria-selected="true"] {
+  background: var(--surface-2);
+}
+
+.dropItem small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-muted);
+  font: 600 11.5px/1.2 var(--font-ui), sans-serif;
+}
+
+.createActions .dropItem {
+  display: block;
+}
+
+.createRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.createBlock {
+  display: grid;
+  gap: 12px;
+}
+
+.optionsBlock {
+  justify-items: end;
+}
+
+.createLabel {
+  margin: 0;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+}
+
+/* the battle type, a select */
+.typeSelect {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
+  min-width: 300px;
+  height: 48px;
+  padding: 0 14px 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: 800 14px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.typeSelect:hover {
+  background: var(--surface-2);
+}
+
+.typeKind {
+  color: var(--text-muted);
+  font: 700 14px/1 var(--font-ui), sans-serif;
+}
+
+.typeSeats {
+  display: inline-flex;
+  gap: 1px;
+  margin-left: auto;
+  color: var(--text-muted);
+}
+
+.typeSeats svg {
+  width: 12px;
+  height: 12px;
+}
+
+.typeCaret {
+  width: 16px;
+  height: 16px;
+  color: var(--text-soft);
+}
+
+/* the extras */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: end;
+  gap: 10px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: 800 13.5px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.chip:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1.5px var(--brand);
+  color: var(--text);
+}
+
+.chipGold[aria-pressed="true"] {
+  background: #3a2f16;
+  box-shadow: inset 0 0 0 1.5px #e9b949;
+  color: #e9b949;
+}
+
+.chipIcon {
+  width: 17px;
+  height: 17px;
+  color: var(--text-muted);
+}
+
+.chip[aria-pressed="true"] .chipIcon {
+  color: var(--brand-hi);
+}
+
+.chipGold[aria-pressed="true"] .chipIcon {
+  color: #e9b949;
+}
+
+/* the cases, a slot a round */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 940px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slotAdd,
+.slotCase {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 14px;
+  width: 100%;
+  height: 290px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  color: var(--text-muted);
+  font: 800 14.5px/1 var(--font-ui), sans-serif;
+}
+
+.slotAdd {
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    translate 0.15s ease,
+    color 0.15s ease;
+}
+
+.slotAdd:hover:not(:disabled) {
+  translate: 0 -3px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.slotAdd:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.slotPlus {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font: 400 30px/1 var(--font-ui), sans-serif;
+}
+
+.slotAdd:hover:not(:disabled) .slotPlus {
+  background: var(--surface-3);
+}
+
+.slotCase {
+  gap: 8px;
+  color: var(--text);
+}
+
+.slotCase img {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+}
+
+.slotRound {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  color: var(--text-muted);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.slotRemove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.slotRemove:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.slotRemove svg {
+  width: 12px;
+  height: 12px;
+}
+
+.slotName {
+  font: 800 14px/1.2 var(--font-ui), sans-serif;
+}
+
+.slotPrice {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-soft);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+.slotPrice svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* the gamemodes, a card each in one strip */
+.gamemodes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.gamemode {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 22px 22px 24px;
+  border: 0;
+  background: var(--surface);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.gamemode:hover {
+  background: var(--surface-2);
+}
+
+.gamemode[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--gm) 14%, var(--surface));
+  box-shadow: inset 0 0 0 2px var(--gm);
+}
+
+.gamemodeName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+}
+
+.gamemodeIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--gm);
+}
+
+.gamemodeBlurb {
+  color: var(--text-muted);
+  font: 600 13px/1.5 var(--font-ui), sans-serif;
+}
+
+.createNote {
+  margin: 0;
+  color: var(--text-muted);
+  font: 600 13px/1.4 var(--font-ui), sans-serif;
+}
+
+.createNote span {
+  color: var(--brand-hi);
 }
 
 /* ---- The arena page ---------------------------------------------------------------------- */
@@ -595,6 +1072,16 @@
   font: 600 13px/1 var(--font-ui), sans-serif;
 }
 
+.arenaMode {
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font: 800 11px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 .pot {
   margin-left: auto;
   color: var(--text-muted);
@@ -633,6 +1120,31 @@
 .column[data-winner] {
   background: #1d3127;
   box-shadow: inset 0 0 0 1.5px var(--live);
+}
+
+/* a seat the reaper took */
+.column[data-reaped] {
+  opacity: 0.45;
+}
+
+.reapedTag {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: #4a2a3a;
+  color: #f0a0b8;
+  font: 800 9.5px/1 var(--font-ui), sans-serif;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* a gold spin: the columns edged in gold */
+.arenaPage[data-gold] .column:not([data-winner]) {
+  box-shadow: inset 0 0 0 1px #8a6d2a;
+}
+
+.arenaPage[data-gold] .pot b {
+  color: #e9b949;
 }
 
 .colHead {
@@ -849,7 +1361,53 @@
   }
 }
 
+@container (max-width: 900px) {
+  .slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .slotAdd,
+  .slotCase {
+    height: 220px;
+  }
+
+  .gamemodes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .optionsBlock {
+    justify-items: start;
+  }
+
+  .chips {
+    justify-content: start;
+  }
+}
+
 @container (max-width: 560px) {
+  .typeSelect {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .gamemodes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gamemode {
+    padding: 16px;
+  }
+
+  .createActions {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .createGo {
+    width: 100%;
+  }
+
   .row {
     grid-template-columns: minmax(0, 1fr);
     padding: 14px 16px;
@@ -898,6 +1456,10 @@
   }
 
   .reel {
+    transition: none;
+  }
+
+  .slotAdd {
     transition: none;
   }
 
