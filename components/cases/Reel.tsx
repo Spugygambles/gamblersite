@@ -58,6 +58,7 @@ export default function Reel({
   onDone,
   seed = 0,
   label = "The reel",
+  vertical = false,
 }: {
   items: CaseItem[];
   winner: CaseItem | null;
@@ -66,6 +67,8 @@ export default function Reel({
   onDone?: () => void;
   seed?: number;
   label?: string;
+  /** The strip runs top to bottom, the marker across the middle. */
+  vertical?: boolean;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -83,23 +86,27 @@ export default function Reel({
     const el = stripRef.current;
     if (!box || !el || !el.children.length) return;
     const first = el.children[0] as HTMLElement;
-    const tile = first.getBoundingClientRect().width;
-    const gap = parseFloat(getComputedStyle(el).columnGap || "0") || 0;
+    const rect = first.getBoundingClientRect();
+    const tile = vertical ? rect.height : rect.width;
+    const style = getComputedStyle(el);
+    const gap = parseFloat((vertical ? style.rowGap : style.columnGap) || "0") || 0;
+    const span = vertical ? box.clientHeight : box.clientWidth;
     const jitter = (mulberry(seed + 7)() - 0.5) * tile * 0.7;
-    const target = -(WIN_AT * (tile + gap) + tile / 2 - box.clientWidth / 2 + jitter);
+    const target = -(WIN_AT * (tile + gap) + tile / 2 - span / 2 + jitter);
     const still = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
     const ms = still ? 0 : fast ? FAST_MS : SPIN_MS;
+    const move = (px: number) => (vertical ? `translateY(${px}px)` : `translateX(${px}px)`);
     el.style.transition = "none";
-    el.style.transform = "translateX(0px)";
+    el.style.transform = move(0);
     void el.offsetWidth;
     el.style.transition = ms ? `transform ${ms}ms cubic-bezier(0.1, 0.7, 0.12, 1)` : "none";
-    el.style.transform = `translateX(${target.toFixed(1)}px)`;
+    el.style.transform = move(Number(target.toFixed(1)));
     const timer = window.setTimeout(() => done.current?.(), ms + 120);
     return () => clearTimeout(timer);
-  }, [spinning, seed, fast]);
+  }, [spinning, seed, fast, vertical]);
 
   return (
-    <div ref={boxRef} className={styles.reel} role="img" aria-label={label} data-reel data-spinning={spinning || undefined} data-winner={winner?.skin.slug}>
+    <div ref={boxRef} className={styles.reel} role="img" aria-label={label} data-reel data-vertical={vertical || undefined} data-spinning={spinning || undefined} data-winner={winner?.skin.slug}>
       <div ref={stripRef} className={styles.strip}>
         {strip.map((it, i) => (
           <div key={i} className={styles.tile} style={{ "--rarity": it.skin.color } as CSSProperties} data-win={i === WIN_AT || undefined}>

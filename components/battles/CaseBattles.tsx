@@ -43,7 +43,7 @@ import {
 import type { CaseDef, CaseItem } from "@/lib/cases";
 import { wagered } from "@/lib/gems";
 import { PLAYER } from "@/lib/home";
-import { takeNonce } from "@/lib/seeds";
+import { seedHash, takeNonce } from "@/lib/seeds";
 import { recordOutcome } from "@/lib/stats";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
@@ -78,6 +78,8 @@ type Battle = {
   drops: CaseItem[][];
   decider: number;
   nonce: number;
+  /** The hash of the server seed the battle was drawn with, to show while it starts. */
+  hash: string;
   /** What your seat cost you. */
   cost: number;
   /** Opened from the list to look at, not played through. */
@@ -143,6 +145,7 @@ let lobbyFirst: LobbyBattle[] | null = null;
 const lobbyWithKept = () => (lobbyFirst ??= [...keptBattles(), ...LOBBY]);
 
 const battleName = (mode: Mode, gamemode: Gamemode) => `${mode} ${gamemode === "standard" ? "" : `${gamemodeName(gamemode)} `}Battle`;
+
 
 /**
  * Case battles. The lobby lists battles with a seat free to join, battles
@@ -222,6 +225,48 @@ export default function CaseBattles() {
     return () => document.removeEventListener("pointerdown", close);
   }, [menu]);
 
+  // the same battle again: played through once more as a look, or made anew (at once, or edited first)
+  const replay = (b: Battle) => {
+    clearTimeout(timers.current.pause);
+    const again = { ...b, viewed: true };
+    setResult(null);
+    setNote("");
+    setRound(0);
+    setLanded(0);
+    setLive("fighting", again);
+    setSpinning(true);
+  };
+  const recreate = (b: Battle, edit: boolean) => {
+    setMode(b.mode);
+    setGamemode(b.gamemode);
+    setPicked(b.cases);
+    setOptions({ ...b.options, fast });
+    setResult(null);
+    setNote("");
+    if (edit) {
+      setLive("create", null);
+      return;
+    }
+    const stake = makeCostOf(b.cases, b.mode, { ...b.options, fast });
+    if (balance < stake) {
+      setLive("create", null);
+      setNote("Not enough balance to recreate it");
+      return;
+    }
+    const seats: (string | null)[] = Array.from({ length: seatsOf(b.mode) }, (_, i) => (i === 0 ? YOU : null));
+    start(b.mode, b.gamemode, { ...b.options, fast }, b.cases, seats, 0, stake);
+  };
+
+  const share = (b: Battle) => {
+    const link = `${window.location.origin}${window.location.pathname}#battle-${b.id}`;
+    const say = (ok: boolean) => setNote(ok ? "Link copied" : link);
+    try {
+      navigator.clipboard.writeText(link).then(() => say(true), () => say(false));
+    } catch {
+      say(false);
+    }
+  };
+
   const setLive = (ph: Phase, b: Battle | null) => {
     live.current = { phase: ph, battle: b };
     setPhase(ph);
@@ -237,7 +282,7 @@ export default function CaseBattles() {
     const n = seatsOf(m);
     const drops = battleDrops(cases, n, s.serverSeed, s.clientSeed, s.nonce);
     const decider = deciderOf(cases.length, n, s.serverSeed, s.clientSeed, s.nonce);
-    const b: Battle = { id: ++nextId.current, mode: m, gamemode: g, options: o, cases, seats, you, drops, decider, nonce: s.nonce, cost: stake, viewed: false };
+    const b: Battle = { id: ++nextId.current, mode: m, gamemode: g, options: o, cases, seats, you, drops, decider, nonce: s.nonce, hash: seedHash(s.serverSeed), cost: stake, viewed: false };
     setRound(0);
     setLanded(0);
     setSpinning(false);
@@ -291,6 +336,7 @@ export default function CaseBattles() {
       drops: lb.drops,
       decider: lb.decider,
       nonce: 0,
+      hash: "",
       cost: 0,
       viewed: true,
     };
@@ -309,6 +355,18 @@ export default function CaseBattles() {
       setSpinning(true);
     }
   };
+
+  // a link with #battle-<id> opens that battle from the list (the ref is set before the link is read)
+  const lookRef = useRef(look);
+  useEffect(() => {
+    lookRef.current = look;
+  });
+  useEffect(() => {
+    const m = window.location.hash.match(/^#battle-(\d+)$/);
+    if (!m) return;
+    const lb = lobbyWithKept().find((x) => x.id === Number(m[1]));
+    if (lb && lb.status !== "open") lookRef.current(lb);
+  }, []);
 
   // ---- The rounds ---------------------------------------------------------------------------
 
@@ -340,6 +398,8 @@ export default function CaseBattles() {
   };
 
   const whoWon = (b: Battle, winners: number[]) => winners.map((w) => (w === b.you ? "You" : b.seats[w])).join(" & ");
+  // "you win", "rook wins", "you & rook win"
+  const plural = (b: Battle, winners: number[]) => winners.length > 1 || winners.includes(b.you);
 
   const finish = (b: Battle) => {
     const r = resultOf(b);
@@ -350,7 +410,7 @@ export default function CaseBattles() {
     }
     setResult(r);
     setLive("done", b);
-    const line = resultLine(b.gamemode, whoWon(b, r.winners), r.winners.length > 1);
+    const line = resultLine(b.gamemode, whoWon(b, r.winners), plural(b, r.winners));
     const borrowed = b.options.borrow > 0 ? ` (${Math.round(b.options.borrow * 100)}% borrowed, so ${Math.round(keptShare(b.options.borrow) * 100)}% of your share)` : "";
     setNote(played && r.youWon ? `${line}: ${money.format(r.share)} of the ${money.format(r.pot)} pot to your balance${borrowed}` : `${line}: the pot was ${money.format(r.pot)}`);
     // the battle goes into the list as finished: yours is kept for next time
@@ -784,40 +844,91 @@ export default function CaseBattles() {
   const seats = battle ? seatsOf(battle.mode) : 0;
   const totals = battle ? totalsOf(battle.drops.slice(0, landed), seats) : [];
   const rounds = battle?.cases.length ?? 0;
+  const cur = Math.min(round, Math.max(0, rounds - 1));
+  const potNow = battle ? potOf(battle.drops.slice(0, landed)) : 0;
+  const Gm = battle && battle.gamemode !== "standard" ? GAMEMODE_ICONS[battle.gamemode] : null;
+  const gmColor = battle && battle.gamemode !== "standard" ? GAMEMODE_COLORS[battle.gamemode] : undefined;
+  const over = phase === "done";
 
   const arena = battle && (
     <div className={styles.arenaPage} data-gold={battle.options.gold || undefined}>
-      <div className={styles.arenaBar}>
-        <button type="button" className={kit.secondary} onClick={backToLobby} data-back>
+      {/* the way back, and the tools */}
+      <div className={styles.arenaTop}>
+        <button type="button" className={styles.topButton} onClick={backToLobby} data-back>
+          <ChevronIcon direction="left" />
           Back to battles
         </button>
-        <span className={styles.roundNow} data-round={phase === "waiting" ? 0 : Math.min(round + 1, rounds)}>
-          {phase === "waiting" ? "Finding players" : phase === "done" ? "Battle over" : `Round ${round + 1} of ${rounds}`}
+        <span className={styles.topTools}>
+          <button type="button" className={styles.topButton} aria-pressed={fast} aria-label="Fast reels" title="Fast reels" onClick={() => setOptions({ ...options, fast: !fast })} data-fast>
+            <BoltIcon />
+          </button>
+          <button type="button" className={styles.topButton} onClick={() => share(battle)} data-share>
+            <TeamIcon />
+            Share
+          </button>
+          <button type="button" className={styles.topButton} onClick={() => setDialog("fair")} data-fairness>
+            <ShieldIcon />
+            Provably fair
+          </button>
         </span>
-        <span className={styles.roundCase}>{phase === "waiting" ? `${rounds} round${rounds === 1 ? "" : "s"}` : battle.cases[Math.min(round, rounds - 1)].name}</span>
-        <span className={styles.arenaMode} data-arena-mode={battle.gamemode}>
-          {battleName(battle.mode, battle.gamemode)}
-        </span>
-        <span className={`${styles.pot} tabular`}>
-          Pot <b data-pot>{money.format(potOf(battle.drops.slice(0, landed)))}</b>
-        </span>
-        <button
-          type="button"
-          className={kit.iconButton}
-          aria-pressed={fast}
-          aria-label="Fast reels"
-          title="Fast reels"
-          onClick={() => setOptions({ ...options, fast: !fast })}
-          data-fast
-        >
-          <BoltIcon />
-        </button>
       </div>
 
-      <div className={styles.columns} style={{ "--seats": seats } as CSSProperties}>
+      {/* the bar: the cost and the pot, the cases with the one being opened lit, the mode */}
+      <div className={styles.infoBar}>
+        <div className={styles.infoFigures}>
+          <span className={styles.infoFigure}>
+            <b className="tabular">
+              <CoinIcon />
+              {money.format(costOf(battle.cases))}
+            </b>
+            <small>Battle cost</small>
+          </span>
+          <span className={styles.infoFigure}>
+            <b className="tabular" data-pot={potNow.toFixed(2)}>
+              <CoinIcon />
+              {money.format(potNow)}
+            </b>
+            <small>Pot</small>
+          </span>
+        </div>
+        <div className={styles.caseStrip} data-case-now={battle.cases[cur].slug}>
+          <span className={styles.stripReel} style={{ "--shift": Math.max(0, cur - 1) } as CSSProperties}>
+            {battle.cases.map((c, r) => (
+              <span key={r} className={styles.stripCase} title={`Round ${r + 1}: ${c.name}`} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={c.image} alt="" width={56} height={42} />
+                {r === cur && !over && (
+                  <span className={styles.stripText}>
+                    <b>{c.name}</b>
+                    <i className="tabular">
+                      <CoinIcon />
+                      {money.format(c.price)}
+                    </i>
+                  </span>
+                )}
+              </span>
+            ))}
+          </span>
+          <span className={`${styles.roundsTag} tabular`} data-round={phase === "waiting" ? 0 : cur + 1}>
+            <TilesIcon />
+            {Math.min(landed, rounds)}/{rounds}
+          </span>
+        </div>
+        <div className={styles.infoMode}>
+          <b>{battle.mode}</b>
+          <span className={styles.gmTag} style={gmColor ? { color: gmColor } : undefined} data-arena-mode={battle.gamemode}>
+            {Gm && <Gm />}
+            {battle.gamemode === "standard" ? "Standard" : gamemodeName(battle.gamemode)}
+          </span>
+        </div>
+      </div>
+
+      {/* the band: a column a seat, the reels in them while the rounds run */}
+      <div className={styles.band} style={{ "--seats": seats } as CSSProperties} data-band={phase}>
         {battle.seats.map((name, seat) => {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
+          const lost = !!result && !won;
           const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
           return (
             <section
@@ -827,49 +938,112 @@ export default function CaseBattles() {
               data-seat={seat}
               data-you={you || undefined}
               data-winner={won || undefined}
+              data-lost={lost || undefined}
               data-team={team ?? undefined}
             >
-              <header className={styles.colHead}>
-                <span className={styles.avatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
+              <div className={styles.colTop}>
+                <span className={styles.bigAvatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
                   {(name ?? "?")[0].toUpperCase()}
+                  {won && <CrownIcon className={styles.bigCrown} />}
                 </span>
-                <span className={styles.colName} data-name={name ?? ""}>
+                <b className={styles.colName} data-name={name ?? ""}>
                   {name ?? "Waiting…"}
                   {you && <small>you</small>}
                   {team !== null && <i>team {team === 0 ? "A" : "B"}</i>}
-                </span>
+                </b>
                 <span className={`${styles.colTotal} tabular`} data-total={totals[seat]?.toFixed(2) ?? "0.00"}>
+                  <CoinIcon />
+                  {money.format(totals[seat] ?? 0)}
+                </span>
+                {result && <span className={`${styles.tag} ${won ? styles.tagWin : styles.tagLost}`}>{won ? "Winner" : "Lost"}</span>}
+              </div>
+              {!over && (
+                <div className={styles.colReel}>
+                  <Reel
+                    items={battle.cases[cur].items}
+                    winner={phase === "waiting" ? null : battle.drops[cur][seat]}
+                    spinning={spinning}
+                    fast={fast}
+                    seed={battle.id * 100 + round * 10 + seat + 1}
+                    onDone={seat === 0 ? roundDone : undefined}
+                    label={`${name ?? "Seat"}'s reel`}
+                    vertical
+                  />
+                </div>
+              )}
+            </section>
+          );
+        })}
+        {teamsOf(battle.mode)
+          .slice(0, -1)
+          .map((team, k, all) => {
+            const before = all.slice(0, k + 1).reduce((n, t) => n + t.length, 0);
+            return (
+              <span key={k} className={styles.bandSwords} style={{ left: `${(before / seats) * 100}%` }} aria-hidden>
+                <SwordsIcon />
+              </span>
+            );
+          })}
+        {phase === "waiting" && (
+          <div className={styles.awaiting} data-awaiting>
+            <ShieldIcon />
+            <b>Awaiting the draw</b>
+            <span className={styles.awaitingNonce}>#{battle.nonce}</span>
+            <span className={styles.awaitingHash}>({battle.hash.slice(0, 44)}…)</span>
+          </div>
+        )}
+        {result && (
+          <span className={`${styles.bandResult} ${result.youWon ? styles.bandResultWon : ""}`} role="status" data-result={result.youWon ? "won" : "lost"}>
+            {resultLine(battle.gamemode, whoWon(battle, result.winners), plural(battle, result.winners))} · {money.format(result.pot)}
+            {result.winners.length > 1 ? ` (${money.format(result.share)} each)` : ""}
+          </span>
+        )}
+        {over && (
+          <div className={styles.bandActions}>
+            <button type="button" className={styles.ghostButton} onClick={() => replay(battle)} data-replay>
+              <SparklesIcon />
+              Replay
+            </button>
+            <button type="button" className={`${kit.primary} ${styles.recreate}`} onClick={() => recreate(battle, false)} data-recreate>
+              Recreate for
+              <CoinIcon />
+              <span className="tabular">{money.format(makeCostOf(battle.cases, battle.mode, { ...battle.options, fast }))}</span>
+            </button>
+            <button type="button" className={styles.ghostButton} onClick={() => recreate(battle, true)} data-edit>
+              Edit
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* what each seat pulled: a column a seat, its total in the head, the losers in the shade */}
+      <div className={styles.dropsRow} style={{ "--seats": seats } as CSSProperties}>
+        {battle.seats.map((name, seat) => {
+          const you = seat === battle.you;
+          const won = result?.winners.includes(seat) ?? false;
+          return (
+            <section key={seat} className={styles.dropsCol} aria-label={`${name ?? "Seat"}'s drops`} data-drops-seat={seat} data-lost={(!!result && !won) || undefined}>
+              <header className={styles.dropsHead}>
+                <span className={styles.miniAvatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
+                  {(name ?? "?")[0].toUpperCase()}
+                </span>
+                <b className={styles.dropsName}>{name ?? "Waiting…"}</b>
+                <span className={`${styles.headTotal} tabular`}>
+                  <CoinIcon />
                   {money.format(totals[seat] ?? 0)}
                 </span>
               </header>
-              {!(battle.viewed && phase === "done") && (
-                <div className={styles.colReel}>
-                  {phase === "waiting" ? (
-                    <div className={styles.reelWait}>Waiting for the first round</div>
-                  ) : (
-                    <Reel
-                      items={battle.cases[Math.min(round, rounds - 1)].items}
-                      winner={battle.drops[Math.min(round, rounds - 1)][seat]}
-                      spinning={spinning}
-                      fast={fast}
-                      seed={battle.id * 100 + round * 10 + seat + 1}
-                      onDone={seat === 0 ? roundDone : undefined}
-                      label={`${name ?? "Seat"}'s reel`}
-                    />
-                  )}
-                </div>
-              )}
-              <ol className={styles.drops} aria-label="Drops">
-                {battle.drops.slice(0, landed).map((r, i) => (
-                  <li key={i} className={styles.drop} style={{ "--rarity": r[seat].skin.color } as CSSProperties} data-drop={r[seat].skin.slug}>
-                    <span className={styles.dropArt}>
+              <ol className={styles.dropList} aria-label="Drops">
+                {battle.drops.slice(0, landed).map((r, k) => (
+                  <li key={k} className={styles.dropCard} style={{ "--rarity": r[seat].skin.color } as CSSProperties} data-drop={r[seat].skin.slug}>
+                    <span className={styles.dropCircle}>
                       <SkinArt skin={r[seat].skin} />
                     </span>
-                    <span className={styles.dropName}>
-                      {r[seat].skin.finish}
-                      <small>{r[seat].skin.weapon}</small>
+                    <b>{r[seat].skin.name}</b>
+                    <span className={`${styles.dropPrice} tabular`}>
+                      <CoinIcon />
+                      {money.format(r[seat].skin.price)}
                     </span>
-                    <span className={`${styles.dropPrice} tabular`}>{money.format(r[seat].skin.price)}</span>
                   </li>
                 ))}
               </ol>
@@ -877,18 +1051,7 @@ export default function CaseBattles() {
           );
         })}
       </div>
-
-      {result && (
-        <div className={`${styles.banner} ${result.youWon ? styles.bannerWon : styles.bannerLost}`} role="status" data-result={result.youWon ? "won" : "lost"}>
-          <span className={styles.bannerWho}>{resultLine(battle.gamemode, whoWon(battle, result.winners), result.winners.length > 1)}</span>
-          <span className={`${styles.bannerPot} tabular`}>
-            <CoinIcon />
-            {money.format(result.pot)}
-            {result.winners.length > 1 && <small>{money.format(result.share)} each</small>}
-          </span>
-        </div>
-      )}
-      <p className={kit.stageNote} aria-live="polite" data-note>
+      <p className={`${kit.stageNote} ${styles.arenaNote}`} aria-live="polite" data-note>
         {note}
       </p>
     </div>

@@ -140,3 +140,117 @@
     height: 56px;
   }
 }
+
+/* ---- Standing up: the strip runs top to bottom, the marker across the middle ---- */
+
+.reel[data-vertical] {
+  --vtile: 84px;
+  height: 100%;
+  min-height: 220px;
+}
+
+.reel[data-vertical]::before,
+.reel[data-vertical]::after {
+  right: 0;
+  left: 0;
+  width: auto;
+  height: 56px;
+}
+
+.reel[data-vertical]::before {
+  top: 0;
+  bottom: auto;
+  background: linear-gradient(180deg, var(--bg), transparent);
+}
+
+.reel[data-vertical]::after {
+  top: auto;
+  bottom: 0;
+  background: linear-gradient(0deg, var(--bg), transparent);
+}
+
+.reel[data-vertical] .strip {
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+
+.reel[data-vertical] .tile {
+  flex: 0 0 var(--vtile);
+  grid-template-columns: 60px minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  column-gap: 10px;
+  row-gap: 3px;
+  width: auto;
+  height: var(--vtile);
+  padding: 8px 10px 8px 12px;
+  text-align: left;
+}
+
+.reel[data-vertical] .tile::before {
+  top: 12px;
+  right: auto;
+  bottom: 12px;
+  left: 0;
+  width: 3px;
+  height: auto;
+  border-radius: 0 2px 2px 0;
+}
+
+.reel[data-vertical] .tileArt {
+  grid-row: 1 / 4;
+  height: 100%;
+}
+
+.reel[data-vertical] .marker {
+  top: 50%;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: auto;
+  height: 2px;
+  translate: 0 -50%;
+}
+
+.reel[data-vertical] .marker::before,
+.reel[data-vertical] .marker::after {
+  top: 50%;
+  border: 7px solid transparent;
+  translate: 0 -50%;
+}
+
+.reel[data-vertical] .marker::before {
+  left: 0;
+  border-left: 9px solid var(--brand);
+  border-right: 0;
+}
+
+.reel[data-vertical] .marker::after {
+  right: 0;
+  left: auto;
+  border-right: 9px solid var(--brand);
+  border-left: 0;
+}
+
+/* a narrow column shows the art alone */
+@container (max-width: 180px) {
+  .reel[data-vertical] {
+    --vtile: 64px;
+  }
+
+  .reel[data-vertical] .tile {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 6px;
+  }
+
+  .reel[data-vertical] .tileArt {
+    grid-row: auto;
+  }
+
+  .reel[data-vertical] .tileName,
+  .reel[data-vertical] .tileWeapon,
+  .reel[data-vertical] .tilePrice {
+    display: none;
+  }
+}
