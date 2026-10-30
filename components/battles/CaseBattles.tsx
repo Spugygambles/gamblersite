@@ -15,6 +15,7 @@ import {
   costOf,
   describeBattle,
   fillSeats,
+  KEEP,
   keepBattle,
   keptBattles,
   lobbyBattle,
@@ -59,8 +60,8 @@ const PAUSE_MS = 700;
 const TICK_MS = 5000;
 const YOU = PLAYER.name;
 
-// how many finished sample battles the list keeps (yours are all kept)
-const PREVIOUS_KEPT = 12;
+// the list keeps one finished sample battle; the battles people play are kept up to KEEP
+const PREVIOUS_KEPT = 1;
 let nextSample = 10000;
 
 // A round passes in the lobby: live battles move on, finished ones join
@@ -81,7 +82,8 @@ function tick(list: LobbyBattle[]): LobbyBattle[] {
   }
   const out = [...finished, ...rest];
   let samples = 0;
-  return out.filter((b) => b.status !== "done" || b.you !== null || samples++ < PREVIOUS_KEPT);
+  let played = 0;
+  return out.filter((b) => b.status !== "done" || (b.you !== null ? played++ < KEEP : samples++ < PREVIOUS_KEPT));
 }
 
 // the lobby, with the battles you played before (kept in the browser) in front
@@ -408,23 +410,10 @@ export default function CaseBattles() {
         </div>
       </div>
 
-      <section className={styles.section} aria-labelledby="battles-current">
-        <h2 id="battles-current" className={styles.sectionTitle}>
-          Current battles <span className={styles.count}>{current.length}</span>
-        </h2>
-        <ul className={styles.list} data-lobby>
-          {current.map(row)}
-        </ul>
-      </section>
-
-      <section className={styles.section} aria-labelledby="battles-previous">
-        <h2 id="battles-previous" className={styles.sectionTitle}>
-          Previous battles <span className={styles.count}>{previous.length}</span>
-        </h2>
-        <ul className={styles.list} data-previous>
-          {previous.map(row)}
-        </ul>
-      </section>
+      {/* one list: the battles under way or with a seat free first and in full colour, the finished ones after them, greyed */}
+      <ul className={styles.list} aria-label="Battles" data-lobby>
+        {[...current, ...previous].map(row)}
+      </ul>
       <p className={kit.stageNote} aria-live="polite" data-note>
         {note}
       </p>

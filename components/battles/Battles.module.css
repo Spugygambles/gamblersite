@@ -209,26 +209,8 @@
   height: 17px;
 }
 
-.section {
-  display: grid;
-  gap: 10px;
-}
 
-.sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font: 800 15px/1.2 var(--font-ui), sans-serif;
-}
 
-.count {
-  padding: 4px 8px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  font: 700 11.5px/1 var(--font-ui), sans-serif;
-}
 
 .list {
   display: grid;
@@ -256,7 +238,17 @@
     inset 0 0 0 1px var(--edge);
 }
 
+/* a finished battle sits greyed under the live ones, and comes back on hover */
 .row[data-status="done"] {
+  filter: grayscale(0.9);
+  opacity: 0.5;
+  transition:
+    opacity 0.15s ease,
+    filter 0.15s ease;
+}
+
+.row[data-status="done"]:hover {
+  filter: grayscale(0.4);
   opacity: 0.85;
 }
 

@@ -124,18 +124,15 @@ export function lobbyBattle(id: number, status: Status = "open"): LobbyBattle {
   return { id, mode, cases, players, status, round, drops, you: null };
 }
 
-/** The lobby to start with: four battles with a seat free, four under way, six finished. */
-export const LOBBY: LobbyBattle[] = [
-  ...Array.from({ length: 4 }, (_, i) => lobbyBattle(i + 1, "open")),
-  ...Array.from({ length: 4 }, (_, i) => lobbyBattle(i + 5, "live")),
-  ...Array.from({ length: 6 }, (_, i) => lobbyBattle(i + 9, "done")),
-];
+/** The sample battles to start with, three for trying things: one with a seat free, one under way, one finished. */
+export const LOBBY: LobbyBattle[] = [lobbyBattle(1, "open"), lobbyBattle(5, "live"), lobbyBattle(9, "done")];
 
 // ---- Your finished battles, kept in the browser ----------------------------------------------
 
 type Kept = { id: number; mode: Mode; cases: string[]; players: string[]; you: number; drops: string[][] };
 const KEY = "csgoneo.battles";
-const KEEP = 10;
+/** How many of the battles people play the list keeps. */
+export const KEEP = 10;
 
 /** Keeps a battle you played, newest first, so it shows among the previous battles next time. */
 export function keepBattle(b: LobbyBattle) {
