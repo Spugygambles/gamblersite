@@ -10,7 +10,7 @@ import { MAX_TARGET, MIN_TARGET, chanceOf, chanceText, money, parseTarget, payou
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
 import { recordOutcome } from "@/lib/stats";
-import { sfx, warmSfx } from "./sfx";
+import { sfx } from "./sounds";
 import styles from "./Limbo.module.css";
 
 type Mode = "manual" | "auto";
@@ -138,10 +138,13 @@ export default function Limbo() {
       if (!green && value >= targetNow) {
         green = true;
         setPassed(true);
-        sfx("win", 0.6);
+        sfx("win");
       }
       if (p < 1) frame.current = requestAnimationFrame(tick);
-      else settle();
+      else {
+        if (!green) sfx("lose");
+        settle();
+      }
     };
     frame.current = requestAnimationFrame(tick);
   };
@@ -157,14 +160,13 @@ export default function Limbo() {
     setPassed(false);
     setNote("");
     stopTicking();
-    ticker.current = window.setInterval(() => sfx("tick", 0.35), TICK_MS);
+    ticker.current = window.setInterval(() => sfx("tick"), TICK_MS);
     climb(result, targetNow, fast ? FAST_MS : ROLL_MS);
   };
 
   const placeBet = () => {
     if (!canBet || target === null || live.current.phase === "rolling") return;
-    warmSfx();
-    sfx("click", 0.5);
+    sfx("bet");
     roll(bet.bet, target);
   };
 
@@ -221,8 +223,7 @@ export default function Limbo() {
 
   const startAuto = () => {
     if (!canBet || auto.current.running) return;
-    warmSfx();
-    sfx("click", 0.5);
+    sfx("bet");
     Object.assign(auto.current, { running: true, timer: 0, done: 0, profit: 0, startBet: bet.bet });
     setRunning(true);
     runRound();
@@ -451,7 +452,7 @@ export default function Limbo() {
           onClose={() => setDialog(null)}
           steps={[
             "Choose a bet and a multiplier, or type the chance you want and the multiplier follows. The higher the multiplier, the lower the chance: the house's 90% share over the multiplier, so 2.00x wins 45% of the time.",
-            "Press Bet. The number climbs from 1.00x and turns green the moment it passes your multiplier; stop short and it turns red. A win pays the bet times the multiplier.",
+            "Press Bet. The number climbs from 1.00x, ticking as it goes, and turns green with a chime the moment it passes your multiplier; stop short and it turns red. A win pays the bet times the multiplier.",
             "Auto repeats the bet, raising or resetting it as you win or lose, until the number of bets or a profit or loss limit stops it.",
           ]}
           note="Rolls run from 1.00x up to 1,000,000x. About one in nine comes up 1.00x exactly."
