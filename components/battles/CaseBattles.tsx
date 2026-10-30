@@ -6,6 +6,7 @@ import { Choices, FairDialog, HowTo, Readout, kit } from "@/components/game/kit"
 import { Modal } from "@/components/mines/Dialogs";
 import { CloseIcon, CoinIcon, InfoIcon, ShieldIcon, SwordsIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
+import { avatarOf } from "@/components/home/avatar";
 import {
   COIN_CASES,
   LOBBY,
@@ -53,6 +54,13 @@ type Battle = {
   viewed: boolean;
 };
 type Result = { winners: number[]; pot: number; share: number; youWon: boolean };
+
+// the winner's crown
+const CrownIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 16 16" aria-hidden>
+    <path d="M2 12.5h12v1.5H2zM2 11 1 4l3.6 2.6L8 2l3.4 4.6L15 4l-1 7z" fill="currentColor" />
+  </svg>
+);
 
 const FILL_MS = 1500;
 const PAUSE_MS = 700;
@@ -307,21 +315,27 @@ export default function CaseBattles() {
       return g;
     }, []);
     const open = lb.status === "open";
+    const done = lb.status === "done";
     const free = lb.players.filter((p) => p === null).length;
     const pot = potOf(lb.drops.slice(0, lb.round));
-    const winners = lb.status === "done" ? winnersOf(totalsOf(lb.drops, n), lb.mode) : [];
+    const winners = done ? winnersOf(totalsOf(lb.drops, n), lb.mode) : [];
+    const nameOf = (seat: number) => (lb.you === seat ? "you" : (lb.players[seat] ?? "?"));
+    const sides = teams.map((t) => t.map(nameOf).join(" & ")).join(" vs ");
+    const wonBy = winners.map(nameOf).join(" & ");
+    const line = done ? `${wonBy} won` : open ? `Waiting for ${free} more player${free === 1 ? "" : "s"}` : sides;
     return (
       <li key={lb.id} className={styles.row} data-battle={lb.id} data-status={lb.status} data-open={open || undefined}>
-        <div className={styles.teams}>
-          <span className={styles.modePill}>{lb.mode}</span>
+        <div className={styles.who}>
+          <div className={styles.tags}>
+            <span className={styles.modePill}>{lb.mode}</span>
+            <span className={styles.state} data-state={lb.status}>
+              {lb.status === "live" ? "Live" : open ? "Open" : "Ended"}
+            </span>
+          </div>
           <div className={styles.teamRow}>
             {teams.map((team, ti) => (
               <Fragment key={ti}>
-                {ti > 0 && (
-                  <span className={styles.vs} aria-hidden>
-                    <SwordsIcon />
-                  </span>
-                )}
+                {ti > 0 && <b className={styles.vs}>vs</b>}
                 <span className={styles.team}>
                   {team.map((seat) => {
                     const p = lb.players[seat];
@@ -330,10 +344,12 @@ export default function CaseBattles() {
                       <span
                         key={seat}
                         className={`${styles.seatChip} ${p ? "" : styles.seatOpen} ${you ? styles.seatYou : ""} ${winners.includes(seat) ? styles.seatWon : ""}`}
+                        style={p && !you ? { background: avatarOf(p) } : undefined}
                         title={p ? (you ? `${p} (you)` : p) : "Open seat"}
                         data-chip={p ?? ""}
                       >
                         {p ? p[0].toUpperCase() : "+"}
+                        {winners.includes(seat) && <CrownIcon className={styles.crown} />}
                       </span>
                     );
                   })}
@@ -341,48 +357,50 @@ export default function CaseBattles() {
               </Fragment>
             ))}
           </div>
+          <span className={styles.whoLine}>{line}</span>
         </div>
+
         <div className={styles.strip}>
           <span className={styles.thumbs} aria-label={lb.cases.map((c) => c.name).join(", ")}>
             {groups.map((g, i) => (
               <span key={i} className={styles.thumb} title={g.c.name}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.c.image} alt="" width={52} height={39} />
+                <img src={g.c.image} alt="" width={64} height={48} />
                 {g.n > 1 && <b>×{g.n}</b>}
               </span>
             ))}
           </span>
-          <span className={`${styles.progress} tabular`} data-progress={`${lb.round}/${lb.cases.length}`}>
-            {lb.round} / {lb.cases.length}
+          <span className={styles.roundMeta}>
+            <span className={`${styles.roundText} tabular`} data-progress={`${lb.round}/${lb.cases.length}`}>
+              {done ? `${lb.cases.length} round${lb.cases.length === 1 ? "" : "s"}` : open ? `${lb.cases.length} round${lb.cases.length === 1 ? "" : "s"} to play` : `Round ${Math.min(lb.round + 1, lb.cases.length)} of ${lb.cases.length}`}
+            </span>
+            <span className={styles.rounds} aria-hidden>
+              {lb.cases.map((_, i) => (
+                <i key={i} data-played={i < lb.round || undefined} data-now={(lb.status === "live" && i === lb.round) || undefined} />
+              ))}
+            </span>
           </span>
         </div>
+
         <div className={styles.cost}>
-          <span className={styles.costLabel}>Battle cost</span>
+          <span className={styles.costLabel}>Cost a seat</span>
           <span className={`${styles.costValue} tabular`} data-row-cost={stake.toFixed(2)}>
             <CoinIcon />
             {money.format(stake)}
           </span>
+          <span className={`${styles.potLine} tabular`}>{open ? "No drops yet" : `${done ? "Final pot" : "Pot so far"} ${money.format(pot)}`}</span>
         </div>
+
         <div className={styles.go}>
           {open ? (
             <button type="button" className={kit.primary} disabled={!inLobby || balance < stake} onClick={() => join(lb)} data-join>
-              Join
+              Join battle
             </button>
           ) : (
-            <button type="button" className={kit.secondary} disabled={!inLobby} onClick={() => look(lb)} data-view>
-              {lb.status === "live" ? "Watch" : "View"}
+            <button type="button" className={`${kit.secondary} ${done ? styles.ghost : ""}`} disabled={!inLobby} onClick={() => look(lb)} data-view>
+              {lb.status === "live" ? "Watch live" : "See result"}
             </button>
           )}
-          <span className={`${styles.under} tabular`}>
-            {open ? (
-              `${free} seat${free === 1 ? "" : "s"} open`
-            ) : (
-              <>
-                <CoinIcon />
-                {money.format(pot)}
-              </>
-            )}
-          </span>
         </div>
       </li>
     );
@@ -391,10 +409,15 @@ export default function CaseBattles() {
   const list = (
     <div className={styles.page} data-lobby-page>
       <div className={styles.pageHead}>
-        <h1 className={styles.pageTitle}>
-          <SwordsIcon />
-          Case Battles
-        </h1>
+        <div className={styles.titleBlock}>
+          <span className={styles.titleBadge} aria-hidden>
+            <SwordsIcon />
+          </span>
+          <div>
+            <h1 className={styles.pageTitle}>Case Battles</h1>
+            <p className={styles.subtitle}>Everyone opens the same cases, round by round. The biggest haul takes the lot.</p>
+          </div>
+        </div>
         <div className={styles.pageActions}>
           <button type="button" className={styles.textButton} onClick={() => setDialog("how")} data-how-to>
             <InfoIcon />
@@ -413,6 +436,15 @@ export default function CaseBattles() {
       {/* one list: the battles under way or with a seat free first and in full colour, the finished ones after them, greyed */}
       <ul className={styles.list} aria-label="Battles" data-lobby>
         {[...current, ...previous].map(row)}
+        <li className={styles.makeRow}>
+          <span className={styles.makeText}>
+            <b>Make your own</b>
+            <span>Pick the cases and the mode, and it waits here for players. Battles you play stay in the list afterwards, the last {KEEP} of them.</span>
+          </span>
+          <button type="button" className={kit.secondary} disabled={!inLobby} onClick={() => setCreating(true)} data-create-open-bottom>
+            Create battle
+          </button>
+        </li>
       </ul>
       <p className={kit.stageNote} aria-live="polite" data-note>
         {note}
