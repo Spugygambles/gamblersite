@@ -897,18 +897,22 @@ export default function CaseBattles() {
             <small>Pot</small>
           </span>
         </div>
-        <div className={styles.caseStrip} data-case-now={battle.cases[cur].slug}>
-          <span className={styles.stripReel} style={{ "--shift": Math.max(0, cur - 1) } as CSSProperties}>
-            {battle.cases.map((c, r) => (
-              <span key={r} className={styles.stripCase} title={`Round ${r + 1}: ${c.name}, ${money.format(c.price)}`} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.image} alt="" width={44} height={33} />
-              </span>
-            ))}
+        {/* three cases at a time: the one being opened on the right, the ones done slid off to its left and fading, the rest waiting out of sight */}
+        <div className={styles.caseStrip} data-case-now={battle.cases[cur].slug} data-round={phase === "waiting" ? 0 : cur + 1}>
+          <span className={styles.stripReel} aria-label={`Round ${cur + 1} of ${rounds}`}>
+            {battle.cases.map((c, r) => {
+              const at = Math.max(-3, Math.min(1, r - cur));
+              return (
+                <span key={r} className={styles.stripCase} style={{ "--at": at } as CSSProperties} title={`Round ${r + 1}: ${c.name}, ${money.format(c.price)}`} data-at={at} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" width={56} height={56} />
+                </span>
+              );
+            })}
           </span>
-          <span className={`${styles.roundsTag} tabular`} data-round={phase === "waiting" ? 0 : cur + 1}>
-            <TilesIcon />
-            {Math.min(landed, rounds)}/{rounds}
+          <span className={styles.stripNow}>
+            <b title={battle.cases[cur].name}>{battle.cases[cur].name}</b>
+            <span className={`${styles.stripPrice} tabular`}>{money.format(battle.cases[cur].price)}</span>
           </span>
         </div>
         <div className={styles.infoMode} data-info-mode={battle.mode}>
