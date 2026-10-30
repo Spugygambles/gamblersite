@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { BetField, Choices, FairDialog, GameFrame, History, HowTo, ModeTabs, Readout, Tools, kit } from "@/components/game/kit";
 import { useBet } from "@/components/game/useBet";
 import { CheckIcon, CoinIcon } from "@/components/home/icons";
+import { saveSettings, useSettings } from "@/components/mines/stores";
 import { wagered } from "@/lib/gems";
 import { BOARD, DRAWN, MAX_PICKS, RISKS, RISK_LABEL, TABLES, describeDraw, drawNumbers, maxMultiplier, multiplier, randomPicks, type Risk } from "@/lib/keno";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
 import { recordOutcome } from "@/lib/stats";
+import { sfx } from "./sounds";
 import styles from "./Keno.module.css";
 
 type Mode = "manual" | "auto";
@@ -27,6 +29,13 @@ const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximum
 const times = (m: number) => `${m >= 100 ? m.toFixed(0) : m.toFixed(2)}×`;
 const toCents = (n: number) => Math.round(n * 100) / 100;
 
+const SPEAKER = (
+  <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" />
+    <path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10" />
+  </svg>
+);
+
 /**
  * Keno. Pick one to ten of the forty numbers, choose a risk, and bet: ten
  * numbers are drawn one by one, and what you're paid depends on how many
@@ -35,6 +44,7 @@ const toCents = (n: number) => Math.round(n * 100) / 100;
  */
 export default function Keno() {
   const bet = useBet();
+  const settings = useSettings();
   const [mode, setMode] = useState<Mode>("manual");
   const [risk, setRisk] = useState<Risk>("classic");
   const [picks, setPicks] = useState<number[]>([]);
@@ -103,6 +113,8 @@ export default function Keno() {
     const payout = toCents(g.bet * mult);
     if (payout > 0) addToBalance(payout);
     recordOutcome(toCents(payout - g.bet));
+    if (payout > g.bet) sfx("win");
+    else if (payout > 0) sfx("even");
     live.current = "done";
     setPhase("done");
     setResult({ hits, mult, payout });
@@ -135,6 +147,7 @@ export default function Keno() {
     const step = () => {
       i += 1;
       setShown(i);
+      sfx(g.picks.includes(g.drawn[i - 1]) ? "hit" : "tick");
       timer.current = window.setTimeout(i < DRAWN ? step : () => settle(g), i < DRAWN ? REVEAL_MS : SETTLE_MS);
     };
     timer.current = window.setTimeout(step, REVEAL_MS);
@@ -145,6 +158,7 @@ export default function Keno() {
 
   const startAuto = () => {
     if (!canPlay || auto.current.running) return;
+    sfx("bet");
     Object.assign(auto.current, { running: true, timer: 0, done: 0, profit: 0 });
     setRunning(true);
     play();
@@ -239,7 +253,16 @@ export default function Keno() {
       </div>
 
       {mode === "manual" ? (
-        <button type="button" className={kit.primary} disabled={!canPlay} onClick={play} data-place-bet>
+        <button
+          type="button"
+          className={kit.primary}
+          disabled={!canPlay}
+          onClick={() => {
+            sfx("bet");
+            play();
+          }}
+          data-place-bet
+        >
           {drawing ? "Drawing…" : "Bet"}
         </button>
       ) : (
@@ -274,7 +297,19 @@ export default function Keno() {
           {why}
         </p>
       )}
-      <Tools onFair={() => setDialog("fair")} onHow={() => setDialog("how")} />
+      <Tools onFair={() => setDialog("fair")} onHow={() => setDialog("how")}>
+        <button
+          type="button"
+          className={kit.tool}
+          aria-pressed={settings.sound}
+          aria-label={settings.sound ? "Sound on" : "Sound off"}
+          title={settings.sound ? "Sound on" : "Sound off"}
+          onClick={() => saveSettings({ ...settings, sound: !settings.sound })}
+          data-sound-toggle
+        >
+          {SPEAKER}
+        </button>
+      </Tools>
     </>
   );
 

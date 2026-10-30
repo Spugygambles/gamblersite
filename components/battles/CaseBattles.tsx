@@ -26,7 +26,6 @@ import {
   lobbyBattle,
   makeCostOf,
   potOf,
-  reapedSoFar,
   resultLine,
   seatsOf,
   settle,
@@ -108,7 +107,7 @@ const PRESETS: { name: string; mode: Mode; gamemode: Gamemode; cases: number[]; 
   { name: "Quick 1v1", mode: "1v1", gamemode: "standard", cases: [0, 0] },
   { name: "Crazy three-way", mode: "1v1v1", gamemode: "crazy", cases: [1, 2, 1] },
   { name: "Team jackpot", mode: "2v2", gamemode: "jackpot", cases: [0, 1, 2, 0] },
-  { name: "Reaper four-way", mode: "1v1v1v1", gamemode: "reaper", cases: [2, 2, 0, 1, 1, 0] },
+  { name: "Terminal four-way", mode: "1v1v1v1", gamemode: "terminal", cases: [2, 2, 0, 1, 1, 0] },
   { name: "Group gold run", mode: "2v2", gamemode: "group", cases: [1, 1, 1, 1], options: { gold: true } },
 ];
 
@@ -741,7 +740,6 @@ export default function CaseBattles() {
   const seats = battle ? seatsOf(battle.mode) : 0;
   const totals = battle ? totalsOf(battle.drops.slice(0, landed), seats) : [];
   const rounds = battle?.cases.length ?? 0;
-  const reapedSeats = battle && battle.gamemode === "reaper" ? reapedSoFar(battle.drops.slice(0, landed), battle.mode, rounds).flat() : [];
 
   const arena = battle && (
     <div className={styles.arenaPage} data-gold={battle.options.gold || undefined}>
@@ -777,7 +775,6 @@ export default function CaseBattles() {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
           const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
-          const reaped = reapedSeats.includes(seat);
           return (
             <section
               key={seat}
@@ -787,7 +784,6 @@ export default function CaseBattles() {
               data-you={you || undefined}
               data-winner={won || undefined}
               data-team={team ?? undefined}
-              data-reaped={reaped || undefined}
             >
               <header className={styles.colHead}>
                 <span className={styles.avatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
@@ -797,7 +793,6 @@ export default function CaseBattles() {
                   {name ?? "Waiting…"}
                   {you && <small>you</small>}
                   {team !== null && <i>team {team === 0 ? "A" : "B"}</i>}
-                  {reaped && <em className={styles.reapedTag}>Reaped</em>}
                 </span>
                 <span className={`${styles.colTotal} tabular`} data-total={totals[seat]?.toFixed(2) ?? "0.00"}>
                   {money.format(totals[seat] ?? 0)}
@@ -916,7 +911,7 @@ export default function CaseBattles() {
           steps={[
             "Create a battle: a battle type (1v1, 1v1v1, 1v1v1v1 or 2v2), the cases to fight over, up to eight, and a gamemode if you want one. Or join a battle from the list that has a seat free. A seat costs the cases' prices together, unless the maker funded every seat.",
             "Every seat opens the same case each round, all at once. Each seat's drops stack up under it with their value.",
-            "As a rule the seat whose drops are worth the most takes every drop in the battle, the winning pair splitting it in 2v2, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul), and Reaper knocks out the lowest unbox in each of the last rounds.",
+            "As a rule the seat whose drops are worth the most takes every drop in the battle, the winning pair splitting it in 2v2, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, and Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul).",
             "The house's share is in the case prices and nowhere else, and every drop in a battle you played can be checked under Provably fair from the battle's nonce.",
           ]}
           note="Drops are sold to your balance as coins, the site having no inventory yet."

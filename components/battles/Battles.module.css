@@ -967,7 +967,7 @@
 /* the gamemodes, a card each in one strip */
 .gamemodes {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1px;
   overflow: hidden;
   border-radius: 12px;
@@ -1120,22 +1120,6 @@
 .column[data-winner] {
   background: #1d3127;
   box-shadow: inset 0 0 0 1.5px var(--live);
-}
-
-/* a seat the reaper took */
-.column[data-reaped] {
-  opacity: 0.45;
-}
-
-.reapedTag {
-  padding: 2px 5px;
-  border-radius: 4px;
-  background: #4a2a3a;
-  color: #f0a0b8;
-  font: 800 9.5px/1 var(--font-ui), sans-serif;
-  font-style: normal;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 /* a gold spin: the columns edged in gold */

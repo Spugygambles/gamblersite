@@ -95,7 +95,6 @@ export const GAMEMODE_COLORS: Record<Exclude<Gamemode, "standard">, string> = {
   group: "#7fd36b",
   coinflip: "#6fb5f0",
   jackpot: "#f08ad8",
-  reaper: "#8f8ff0",
 };
 
 /** Crazy: a grinning face. */
@@ -138,18 +137,10 @@ const Jackpot = (p: P) => (
   </svg>
 );
 
-/** Reaper: a scythe. */
-const Reaper = (p: P) => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden {...p}>
-    <path d="M20 4c-5.5-1-11 .8-14.5 4.5M20 4c-1 4.2-4.3 6.8-8.5 7.2M20 4 6.5 21" />
-  </svg>
-);
-
 export const GAMEMODE_ICONS: Record<Exclude<Gamemode, "standard">, (p: P) => React.JSX.Element> = {
   crazy: Crazy,
   terminal: Terminal,
   group: Group,
   coinflip: Coinflip,
   jackpot: Jackpot,
-  reaper: Reaper,
 };

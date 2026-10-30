@@ -26,14 +26,13 @@ export const teamOf = (mode: Mode, seat: number) => (mode === "2v2" ? Math.floor
 export const teamsOf = (mode: Mode): number[][] => (mode === "2v2" ? [[0, 1], [2, 3]] : Array.from({ length: seatsOf(mode) }, (_, i) => [i]));
 
 /** How a battle is won. Standard is the one with no card picked: the biggest haul wins. */
-export type Gamemode = "standard" | "crazy" | "terminal" | "group" | "coinflip" | "jackpot" | "reaper";
+export type Gamemode = "standard" | "crazy" | "terminal" | "group" | "coinflip" | "jackpot";
 export const GAMEMODES: { id: Exclude<Gamemode, "standard">; name: string; blurb: string }[] = [
   { id: "crazy", name: "Crazy", blurb: "The one who unboxes the LEAST amount wins the battle!" },
   { id: "terminal", name: "Terminal", blurb: "Only the LAST case counts, the rest are ignored!" },
   { id: "group", name: "Group", blurb: "Play together as a group, all winnings are split equally!" },
   { id: "coinflip", name: "Coinflip", blurb: "The battle ends with a coinflip that decides the winner!" },
   { id: "jackpot", name: "Jackpot", blurb: "The battle ends with a jackpot that decides the winner!" },
-  { id: "reaper", name: "Reaper", blurb: "In the last rounds the lowest unbox is reaped. Last one standing takes everything!" },
 ];
 export const gamemodeName = (g: Gamemode) => GAMEMODES.find((m) => m.id === g)?.name ?? "";
 
@@ -93,29 +92,7 @@ function lowest(totals: number[], sides: number[][]): number[] {
   return worst;
 }
 
-/**
- * Reaper: in each of the last rounds (one fewer than there are sides) the
- * side with the lowest unbox that round is reaped, a tie reaping the side
- * that sat down last. Given part of a battle, it says who's been reaped so
- * far.
- */
-export function reapedSoFar(drops: CaseItem[][], mode: Mode, rounds: number): number[][] {
-  const seats = seatsOf(mode);
-  let standing = teamsOf(mode);
-  const reaped: number[][] = [];
-  const from = Math.max(0, rounds - (standing.length - 1));
-  for (let r = from; r < Math.min(rounds, drops.length); r++) {
-    if (standing.length < 2) break;
-    const unbox = totalsOf([drops[r]], seats);
-    let worst = standing[standing.length - 1];
-    for (let i = standing.length - 2; i >= 0; i--) if (sideTotal(unbox, standing[i]) < sideTotal(unbox, worst)) worst = standing[i];
-    reaped.push(worst);
-    standing = standing.filter((s) => s !== worst);
-  }
-  return reaped;
-}
-
-export type Settled = { totals: number[]; winners: number[]; reaped: number[][] };
+export type Settled = { totals: number[]; winners: number[] };
 
 /** Who takes the battle, by its gamemode. `decider` is the draw after the drops' (deciderOf). */
 export function settle(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, decider: number): Settled {
@@ -123,7 +100,6 @@ export function settle(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, deci
   const sides = teamsOf(mode);
   const totals = totalsOf(drops, seats);
   let winners: number[];
-  let reaped: number[][] = [];
   switch (gamemode) {
     case "crazy":
       winners = lowest(totals, sides);
@@ -142,16 +118,10 @@ export function settle(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, deci
       winners = weights.some((w) => w > 0) ? sides[weighted(weights, decider)] : sides[Math.min(sides.length - 1, Math.floor(decider * sides.length))];
       break;
     }
-    case "reaper": {
-      reaped = reapedSoFar(drops, mode, drops.length);
-      const standing = sides.filter((s) => !reaped.some((r) => r[0] === s[0]));
-      winners = highest(totals, mode, standing);
-      break;
-    }
     default:
       winners = highest(totals, mode, sides);
   }
-  return { totals, winners, reaped };
+  return { totals, winners };
 }
 
 /** A winner's share of the pot: all of it, or split between the winning seats. */
@@ -170,8 +140,6 @@ export function resultLine(gamemode: Gamemode, who: string, several: boolean): s
       return `The coin lands on ${who}`;
     case "jackpot":
       return `The jackpot lands on ${who}`;
-    case "reaper":
-      return `${who} ${several ? "are" : "is"} the last standing`;
     default:
       return `${who} ${several ? "take" : "takes"} the pot`;
   }
@@ -287,7 +255,7 @@ export function keptBattles(): LobbyBattle[] {
         {
           id: k.id,
           mode: k.mode,
-          gamemode: k.gamemode ?? "standard",
+          gamemode: k.gamemode && GAMEMODES.some((g) => g.id === k.gamemode) ? k.gamemode : "standard",
           options: { ...NO_OPTIONS, ...k.options },
           cases,
           players: k.players,
