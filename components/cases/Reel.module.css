@@ -34,6 +34,10 @@
   background: linear-gradient(270deg, var(--bg), transparent);
 }
 
+.window {
+  overflow: hidden;
+}
+
 .strip {
   display: flex;
   gap: 8px;
@@ -141,12 +145,15 @@
   }
 }
 
-/* ---- Standing up: the strip runs top to bottom, the marker across the middle ---- */
+/* ---- Standing up: three items showing, the winner ringed once it lands ---- */
 
 .reel[data-vertical] {
-  --vtile: 84px;
+  --vtile: 120px;
   height: 100%;
-  min-height: 220px;
+  min-height: 200px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .reel[data-vertical]::before,
@@ -154,103 +161,156 @@
   right: 0;
   left: 0;
   width: auto;
-  height: 56px;
+  height: 26%;
 }
 
 .reel[data-vertical]::before {
   top: 0;
   bottom: auto;
-  background: linear-gradient(180deg, var(--bg), transparent);
+  background: linear-gradient(180deg, var(--reel-fade, var(--bg)), transparent);
 }
 
 .reel[data-vertical]::after {
   top: auto;
   bottom: 0;
-  background: linear-gradient(0deg, var(--bg), transparent);
+  background: linear-gradient(0deg, var(--reel-fade, var(--bg)), transparent);
+}
+
+.reel[data-vertical] .window {
+  height: 100%;
+  overflow: hidden;
 }
 
 .reel[data-vertical] .strip {
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
+  gap: 0;
+  padding: 0;
 }
 
 .reel[data-vertical] .tile {
+  display: grid;
   flex: 0 0 var(--vtile);
-  grid-template-columns: 60px minmax(0, 1fr);
-  grid-template-rows: auto auto auto;
+  grid-template-rows: minmax(0, 1fr) auto auto;
   align-content: center;
-  column-gap: 10px;
-  row-gap: 3px;
+  justify-items: center;
+  gap: 2px;
   width: auto;
   height: var(--vtile);
-  padding: 8px 10px 8px 12px;
-  text-align: left;
+  padding: 8px 6px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .reel[data-vertical] .tile::before {
-  top: 12px;
-  right: auto;
-  bottom: 12px;
-  left: 0;
-  width: 3px;
-  height: auto;
-  border-radius: 0 2px 2px 0;
+  display: none;
 }
 
+/* the art, with a soft glow behind it */
 .reel[data-vertical] .tileArt {
-  grid-row: 1 / 4;
+  position: relative;
+  z-index: 1;
+  width: min(72%, 108px);
   height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent 62%);
+  transition: scale 0.3s ease;
+}
+
+.reel[data-vertical] .tileName,
+.reel[data-vertical] .tileWeapon,
+.reel[data-vertical] .tilePrice {
+  display: none;
+}
+
+/* the hexagon round the winner's art */
+.reel[data-vertical] .hex {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 118%;
+  aspect-ratio: 1;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.4;
+  opacity: 0;
+  translate: -50% -50%;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .hex {
+  opacity: 0.85;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] {
+  grid-template-rows: minmax(0, 1fr) auto auto;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt {
+  scale: 1.18;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt > :not(.hex) {
+  position: relative;
+  z-index: 1;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .tileName {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  max-width: 100%;
+  overflow: hidden;
+  font: 700 12.5px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .tilePrice {
+  display: inline-flex;
+  position: relative;
+  z-index: 1;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
+}
+
+.reel[data-vertical] .tilePrice svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* the others step back once it's landed */
+.reel[data-vertical][data-landed] .tile:not([data-win]) {
+  opacity: 0.55;
 }
 
 .reel[data-vertical] .marker {
-  top: 50%;
-  right: 0;
-  bottom: auto;
-  left: 0;
-  width: auto;
-  height: 2px;
-  translate: 0 -50%;
+  display: none;
 }
 
-.reel[data-vertical] .marker::before,
-.reel[data-vertical] .marker::after {
-  top: 50%;
-  border: 7px solid transparent;
-  translate: 0 -50%;
+.filterDef {
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 
-.reel[data-vertical] .marker::before {
-  left: 0;
-  border-left: 9px solid var(--brand);
-  border-right: 0;
-}
-
-.reel[data-vertical] .marker::after {
-  right: 0;
-  left: auto;
-  border-right: 9px solid var(--brand);
-  border-left: 0;
-}
-
-/* a narrow column shows the art alone */
-@container (max-width: 180px) {
-  .reel[data-vertical] {
-    --vtile: 64px;
-  }
-
-  .reel[data-vertical] .tile {
-    grid-template-columns: minmax(0, 1fr);
-    padding: 6px;
+/* a narrow column keeps the art only */
+@container (max-width: 150px) {
+  .reel[data-vertical][data-landed] .tile[data-win] .tileName {
+    display: none;
   }
 
   .reel[data-vertical] .tileArt {
-    grid-row: auto;
+    width: 80%;
   }
+}
 
-  .reel[data-vertical] .tileName,
-  .reel[data-vertical] .tileWeapon,
-  .reel[data-vertical] .tilePrice {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .reel[data-vertical] .tileArt,
+  .reel[data-vertical] .hex {
+    transition: none;
   }
 }

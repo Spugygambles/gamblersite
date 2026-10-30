@@ -1418,10 +1418,49 @@
   display: grid;
   grid-template-columns: repeat(var(--seats), minmax(0, 1fr));
   /* a set height: the reels are clipped to it, and the heads sit in it once it's over */
-  height: 540px;
+  height: clamp(320px, 38cqw, 440px);
   overflow: hidden;
   border-radius: 14px;
-  background: var(--bg);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 60%, var(--bg)), var(--bg));
+  --reel-fade: var(--bg);
+}
+
+/* a reel a seat while the rounds run */
+.reelCol {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border-right: 1px solid var(--edge);
+  container-type: inline-size;
+}
+
+.reelCol:last-of-type {
+  border-right: 0;
+}
+
+.reelCol > * {
+  height: 100%;
+}
+
+/* the win line's marks on the band's edges */
+.edgeMark {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  border: 8px solid transparent;
+  translate: 0 -50%;
+}
+
+.edgeMark[data-side="left"] {
+  left: 0;
+  border-left: 10px solid var(--brand);
+  border-right: 0;
+}
+
+.edgeMark[data-side="right"] {
+  right: 0;
+  border-right: 10px solid var(--brand);
+  border-left: 0;
 }
 
 .column {
@@ -1447,8 +1486,8 @@
 /* once it's over the reels are gone and the heads sit in the middle */
 .band[data-band="done"] .column {
   grid-template-rows: minmax(0, 1fr);
-  padding-top: 56px;
-  padding-bottom: 96px;
+  padding-top: 48px;
+  padding-bottom: 90px;
 }
 
 .colTop {
@@ -1463,12 +1502,12 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 92px;
-  height: 92px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
   background: var(--surface-3);
   color: #fff;
-  font: 800 34px/1 var(--font-ui), sans-serif;
+  font: 800 32px/1 var(--font-ui), sans-serif;
 }
 
 .column[data-you] .bigAvatar {
@@ -1568,8 +1607,8 @@
   top: 50%;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: var(--surface-2);
   box-shadow: 0 0 0 3px var(--bg);
@@ -1578,8 +1617,8 @@
 }
 
 .bandSwords svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 /* while the seats fill: the draw's nonce and hash over the still reels */
@@ -1717,8 +1756,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 8px 8px 8px 10px;
   background: var(--surface-2);
+}
+
+.dropsName small {
+  margin-left: 5px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font: 800 9px/1 var(--font-ui), sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
 
 .miniAvatar {
@@ -1792,6 +1843,34 @@
 .dropCircle > * {
   width: 72px;
   height: 54px;
+}
+
+/* a round still to come: the case, waiting */
+.pendingArt {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+}
+
+.pendingArt img {
+  width: 72px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));
+}
+
+.dropPending {
+  animation: none;
+}
+
+.dropPending b,
+.dropPending .dropPrice {
+  color: var(--text-muted);
+}
+
+.dropPending[data-now] {
+  box-shadow: inset 0 0 0 1.5px var(--brand);
 }
 
 .dropCard b {
@@ -1873,7 +1952,7 @@
   }
 
   .band {
-    height: 420px;
+    height: clamp(300px, 40cqw, 420px);
   }
 
   .bigAvatar {
@@ -1971,7 +2050,7 @@
   }
 
   .band {
-    height: 340px;
+    height: 300px;
   }
 
   .column {

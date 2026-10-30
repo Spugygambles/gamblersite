@@ -923,19 +923,35 @@ export default function CaseBattles() {
         </div>
       </div>
 
-      {/* the band: a column a seat, the reels in them while the rounds run */}
+      {/* the band: the reels while the rounds run, one a seat; the heads once it's over */}
       <div className={styles.band} style={{ "--seats": seats } as CSSProperties} data-band={phase}>
         {battle.seats.map((name, seat) => {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
           const lost = !!result && !won;
           const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
+          if (!over) {
+            return (
+              <div key={seat} className={styles.reelCol} data-band-seat={seat}>
+                <Reel
+                  items={battle.cases[cur].items}
+                  winner={phase === "waiting" ? null : battle.drops[cur][seat]}
+                  spinning={spinning}
+                  fast={fast}
+                  seed={battle.id * 100 + round * 10 + seat + 1}
+                  onDone={seat === 0 ? roundDone : undefined}
+                  label={`${name ?? "Seat"}'s reel`}
+                  vertical
+                />
+              </div>
+            );
+          }
           return (
             <section
               key={seat}
               className={styles.column}
               aria-label={you ? "Your seat" : (name ?? "Open seat")}
-              data-seat={seat}
+              data-band-seat={seat}
               data-you={you || undefined}
               data-winner={won || undefined}
               data-lost={lost || undefined}
@@ -946,34 +962,26 @@ export default function CaseBattles() {
                   {(name ?? "?")[0].toUpperCase()}
                   {won && <CrownIcon className={styles.bigCrown} />}
                 </span>
-                <b className={styles.colName} data-name={name ?? ""}>
+                <b className={styles.colName}>
                   {name ?? "Waiting…"}
                   {you && <small>you</small>}
                   {team !== null && <i>team {team === 0 ? "A" : "B"}</i>}
                 </b>
-                <span className={`${styles.colTotal} tabular`} data-total={totals[seat]?.toFixed(2) ?? "0.00"}>
+                <span className={`${styles.colTotal} tabular`}>
                   <CoinIcon />
                   {money.format(totals[seat] ?? 0)}
                 </span>
                 {result && <span className={`${styles.tag} ${won ? styles.tagWin : styles.tagLost}`}>{won ? "Winner" : "Lost"}</span>}
               </div>
-              {!over && (
-                <div className={styles.colReel}>
-                  <Reel
-                    items={battle.cases[cur].items}
-                    winner={phase === "waiting" ? null : battle.drops[cur][seat]}
-                    spinning={spinning}
-                    fast={fast}
-                    seed={battle.id * 100 + round * 10 + seat + 1}
-                    onDone={seat === 0 ? roundDone : undefined}
-                    label={`${name ?? "Seat"}'s reel`}
-                    vertical
-                  />
-                </div>
-              )}
             </section>
           );
         })}
+        {!over && (
+          <>
+            <span className={styles.edgeMark} data-side="left" aria-hidden />
+            <span className={styles.edgeMark} data-side="right" aria-hidden />
+          </>
+        )}
         {teamsOf(battle.mode)
           .slice(0, -1)
           .map((team, k, all) => {
@@ -1016,36 +1024,64 @@ export default function CaseBattles() {
         )}
       </div>
 
-      {/* what each seat pulled: a column a seat, its total in the head, the losers in the shade */}
+      {/* under the band, a column a seat: who and their total, then a card a round, the case until it's opened, then what came out */}
       <div className={styles.dropsRow} style={{ "--seats": seats } as CSSProperties}>
         {battle.seats.map((name, seat) => {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
+          const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
           return (
-            <section key={seat} className={styles.dropsCol} aria-label={`${name ?? "Seat"}'s drops`} data-drops-seat={seat} data-lost={(!!result && !won) || undefined}>
+            <section
+              key={seat}
+              className={styles.dropsCol}
+              aria-label={you ? "Your seat" : (name ?? "Open seat")}
+              data-seat={seat}
+              data-you={you || undefined}
+              data-winner={won || undefined}
+              data-lost={(!!result && !won) || undefined}
+              data-team={team ?? undefined}
+            >
               <header className={styles.dropsHead}>
                 <span className={styles.miniAvatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
                   {(name ?? "?")[0].toUpperCase()}
                 </span>
-                <b className={styles.dropsName}>{name ?? "Waiting…"}</b>
-                <span className={`${styles.headTotal} tabular`}>
+                <b className={styles.dropsName} data-name={name ?? ""}>
+                  {name ?? "Waiting…"}
+                  {you && <small>you</small>}
+                </b>
+                <span className={`${styles.headTotal} tabular`} data-total={totals[seat]?.toFixed(2) ?? "0.00"}>
                   <CoinIcon />
                   {money.format(totals[seat] ?? 0)}
                 </span>
               </header>
-              <ol className={styles.dropList} aria-label="Drops">
-                {battle.drops.slice(0, landed).map((r, k) => (
-                  <li key={k} className={styles.dropCard} style={{ "--rarity": r[seat].skin.color } as CSSProperties} data-drop={r[seat].skin.slug}>
-                    <span className={styles.dropCircle}>
-                      <SkinArt skin={r[seat].skin} />
-                    </span>
-                    <b>{r[seat].skin.name}</b>
-                    <span className={`${styles.dropPrice} tabular`}>
-                      <CoinIcon />
-                      {money.format(r[seat].skin.price)}
-                    </span>
-                  </li>
-                ))}
+              <ol className={styles.dropList} aria-label="Rounds">
+                {battle.cases.map((c, r) => {
+                  const drop = r < landed ? battle.drops[r][seat] : null;
+                  return drop ? (
+                    <li key={r} className={styles.dropCard} style={{ "--rarity": drop.skin.color } as CSSProperties} data-drop={drop.skin.slug}>
+                      <span className={styles.dropCircle}>
+                        <SkinArt skin={drop.skin} />
+                      </span>
+                      <b>{drop.skin.name}</b>
+                      <span className={`${styles.dropPrice} tabular`}>
+                        <CoinIcon />
+                        {money.format(drop.skin.price)}
+                      </span>
+                    </li>
+                  ) : (
+                    <li key={r} className={`${styles.dropCard} ${styles.dropPending}`} data-pending data-now={(phase === "fighting" && r === cur) || undefined} title={`Round ${r + 1}: ${c.name}`}>
+                      <span className={styles.pendingArt}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={c.image} alt="" width={72} height={54} />
+                      </span>
+                      <b>Round {r + 1}</b>
+                      <span className={`${styles.dropPrice} tabular`}>
+                        <CoinIcon />
+                        0.00
+                      </span>
+                    </li>
+                  );
+                })}
               </ol>
             </section>
           );
