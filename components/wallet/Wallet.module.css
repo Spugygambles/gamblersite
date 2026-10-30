@@ -357,3 +357,43 @@
   border-radius: 10px;
   font-size: 16px;
 }
+
+/* withdrawing: where it goes, and what it costs */
+.field {
+  display: grid;
+  gap: 10px;
+}
+
+.fieldLabel {
+  color: var(--text-soft);
+  font: 700 15px/1.2 var(--font-ui), sans-serif;
+}
+
+.field input {
+  height: 58px;
+  font-size: 15px;
+}
+
+.total {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  margin-left: auto;
+}
+
+.totalLabel {
+  color: var(--text-soft);
+  font: 700 14px/1 var(--font-ui), sans-serif;
+}
+
+.total b {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+}
+
+.total b svg {
+  width: 18px;
+  height: 18px;
+}

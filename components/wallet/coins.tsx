@@ -50,7 +50,7 @@ export const WarnIcon = (p: P) => (
 );
 
 export const COINS: Coin[] = [
-  { id: "eth", name: "Ethereum", ticker: "ETH", color: "#5d7be6", network: "the Ethereum network", usd: 3420.5, icon: EthIcon },
+  { id: "eth", name: "Ethereum", ticker: "ETH", color: "#5d7be6", network: "the Ethereum network", usd: 2247.29, icon: EthIcon },
   { id: "ltc", name: "Litecoin", ticker: "LTC", color: "#9aa5b5", network: "the Litecoin network", usd: 71.4, icon: LtcIcon },
   { id: "sol", name: "Solana", ticker: "SOL", color: "#1fc98a", network: "the Solana network", usd: 95.85, icon: SolIcon },
   { id: "usdt", name: "Tether", ticker: "USDT", color: "#26a17b", network: "Ethereum (ERC-20)", usd: 1, icon: UsdtIcon },

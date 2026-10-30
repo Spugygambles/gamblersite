@@ -13,13 +13,9 @@
 
 .conversion {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-}
-
-.conversion[data-three] {
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
 /* a side: the currency's mark and the amount */
@@ -82,15 +78,8 @@
   font: 800 20px/1 var(--font-ui), sans-serif;
 }
 
-.line {
-  margin: 0;
-  color: var(--text-muted);
-  font: 500 13.5px/1.5 var(--font-ui), sans-serif;
-}
-
 @media (max-width: 560px) {
-  .conversion,
-  .conversion[data-three] {
+  .conversion {
     grid-template-columns: 1fr;
   }
 

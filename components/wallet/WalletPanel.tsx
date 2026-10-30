@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { kit } from "@/components/game/kit";
-import { ChevronIcon } from "@/components/home/icons";
+import { ChevronIcon, CoinIcon } from "@/components/home/icons";
+import { money } from "@/lib/money";
+import { priceOf, startPrices, usePrices } from "@/lib/prices";
 import { MIN_DEPOSIT_USD, MIN_WITHDRAW_USD } from "@/lib/robux";
-import Conversion from "./Conversion";
+import Conversion, { useConversion } from "./Conversion";
 import { COINS, WarnIcon, type Coin } from "./coins";
 import styles from "./Wallet.module.css";
 
@@ -19,6 +21,7 @@ const TABS: [WalletTab, string][] = [
   ["promo", "Promo Code"],
 ];
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const clock = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" });
 
 /** The heading once a coin is picked: the way back, and what's being done. */
 export function StepTitle({ view, onView }: { view: WalletView; onView: (v: WalletView) => void }) {
@@ -34,14 +37,15 @@ export function StepTitle({ view, onView }: { view: WalletView; onView: (v: Wall
 
 /**
  * The wallet: Deposit, Withdraw and Promo Code. The money tabs list the
- * ways in and out (crypto, for now); a coin picked brings its own screen,
- * with the coin to change, its rate, the network warning, the conversion
- * to Robux and the button. Moving money waits on accounts, and says so.
+ * ways in and out (crypto, for now); a coin picked brings its own screen.
+ * The coins' prices start coming when the wallet opens, every half hour.
+ * Moving money waits on accounts, and says so.
  */
 export default function WalletPanel({ view, onView }: { view: WalletView; onView: (v: WalletView) => void }) {
   const { tab, coin } = view;
   const [code, setCode] = useState("");
   const [note, setNote] = useState("");
+  useEffect(() => startPrices(), []);
 
   const pick = (t: WalletTab) => {
     onView({ tab: t, coin: null });
@@ -101,33 +105,65 @@ export default function WalletPanel({ view, onView }: { view: WalletView; onView
   );
 }
 
-/** One coin's screen: the coin (and the others to swap to), its rate, the warning, the conversion, the button. */
+/**
+ * One coin's screen. Depositing: the coin (and the others to swap to), its
+ * rate, the network warning, the conversion and the button. Withdrawing:
+ * the amount to take out, the address it goes to, and what it costs.
+ */
 function CoinStep({ view, coin, onView }: { view: WalletView; coin: Coin; onView: (v: WalletView) => void }) {
+  const prices = usePrices();
+  const rate = priceOf(prices, coin.id, coin.usd);
+  const conversion = useConversion(rate);
+  const [address, setAddress] = useState("");
   const [note, setNote] = useState("");
   const depositing = view.tab === "deposit";
   const doing = depositing ? "Deposit" : "Withdraw";
+  const min = depositing ? MIN_DEPOSIT_USD : MIN_WITHDRAW_USD;
+  const enough = conversion.dollars !== null && conversion.dollars >= min;
+  const ready = depositing || (enough && address.trim().length > 0);
   return (
     <section className={styles.step} aria-label={`${doing} with ${coin.name}`} data-wallet-step={coin.id}>
       <CoinSelect coin={coin} onPick={(c) => onView({ ...view, coin: c })} />
-      <p className={styles.rate} data-coin-rate>
-        1 {coin.ticker} ≈ {usd.format(coin.usd)}
+      <p className={styles.rate} title={prices.at ? `Updated ${clock.format(new Date(prices.at))}; prices come every half hour` : "A placeholder rate until the price comes in"} data-coin-rate>
+        1 {coin.ticker} ≈ {usd.format(rate)}
       </p>
-      <p className={styles.warn} role="note">
-        <WarnIcon />
-        <span>
-          {depositing
-            ? `Only send ${coin.name} (${coin.ticker}) on ${coin.network}. We cannot recover funds sent to the wrong network.`
-            : `${coin.name} (${coin.ticker}) goes out on ${coin.network}. Check the address: funds sent to a wrong address cannot be recovered.`}
-        </span>
-      </p>
-      <hr className={styles.rule} />
-      <Conversion coin={coin} />
-      <p className={styles.small}>Min Amount: {usd.format(depositing ? MIN_DEPOSIT_USD : MIN_WITHDRAW_USD)}</p>
+      {depositing && (
+        <>
+          <p className={styles.warn} role="note">
+            <WarnIcon />
+            <span>
+              Only send {coin.name} ({coin.ticker}) on {coin.network}. We cannot recover funds sent to the wrong network.
+            </span>
+          </p>
+          <hr className={styles.rule} />
+        </>
+      )}
+      <Conversion coin={coin} title={depositing ? "Currency Conversion" : "Enter Withdraw Amount"} conversion={conversion} />
+      <p className={styles.small}>Min Amount: {usd.format(min)}</p>
+      {!depositing && (
+        <div className={styles.field}>
+          <label className={styles.fieldLabel} htmlFor="wallet-address">
+            Your {coin.name} Address
+          </label>
+          <input id="wallet-address" className={kit.input} value={address} placeholder={`Enter your ${coin.name} address`} autoComplete="off" spellCheck={false} onChange={(e) => setAddress(e.target.value)} data-wallet-address />
+          <p className={styles.small}>Always double check the address and the amount before sending. We cannot recover funds sent to the wrong address.</p>
+        </div>
+      )}
+      {!depositing && <hr className={styles.rule} />}
       <div className={styles.actions}>
         <span className={styles.note} aria-live="polite" data-wallet-note>
           {note}
         </span>
-        <button type="button" className={`${kit.primary} ${styles.go}`} onClick={() => setNote(`${doing}s open once accounts are live. Nothing was sent.`)} data-wallet-go>
+        {!depositing && (
+          <span className={styles.total}>
+            <span className={styles.totalLabel}>Total Cost</span>
+            <b className="tabular" data-wallet-total={conversion.robux}>
+              <CoinIcon />
+              {money.format(conversion.robux)}
+            </b>
+          </span>
+        )}
+        <button type="button" className={`${kit.primary} ${styles.go}`} disabled={!ready} onClick={() => setNote(`${doing}s open once accounts are live. Nothing was sent.`)} data-wallet-go>
           {doing}
         </button>
       </div>
