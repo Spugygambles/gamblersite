@@ -89,3 +89,50 @@ export function burst(c: AudioContext, f: number, at: number, length: number, ga
 
 /** The chime the site's wins share: G5, C6, E6. */
 export const CHIME = [783.99, 1046.5, 1318.5];
+
+// ---- Clips: short recordings decoded once, played through the same master ----
+
+const clips = new Map<string, AudioBuffer | null>();
+const loading = new Map<string, Promise<AudioBuffer | null>>();
+
+/** Fetches and decodes a clip, once; null if it can't be had (then the caller falls back to a made sound). */
+export function loadClip(url: string): Promise<AudioBuffer | null> {
+  const have = clips.get(url);
+  if (have !== undefined) return Promise.resolve(have);
+  const pending = loading.get(url);
+  if (pending) return pending;
+  const job = (async () => {
+    try {
+      // no fetching off a file: the preview on disk plays the made sounds
+      if (typeof window === "undefined" || window.location.protocol === "file:") return null;
+      const Ctor = window.AudioContext ?? (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!Ctor) return null;
+      ctx ??= new Ctor();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(String(res.status));
+      const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+      clips.set(url, buf);
+      return buf;
+    } catch {
+      clips.set(url, null);
+      return null;
+    } finally {
+      loading.delete(url);
+    }
+  })();
+  loading.set(url, job);
+  return job;
+}
+
+/** The clip, if it's decoded already. */
+export const clipReady = (url: string) => clips.get(url) ?? null;
+
+/** Plays a decoded clip at `gain`. */
+export function playClip(c: AudioContext, buffer: AudioBuffer, at: number, gain: number) {
+  const src = c.createBufferSource();
+  src.buffer = buffer;
+  const g = c.createGain();
+  g.gain.value = gain;
+  src.connect(g).connect(output(c));
+  src.start(at);
+}

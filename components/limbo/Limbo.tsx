@@ -10,7 +10,7 @@ import { MAX_TARGET, MIN_TARGET, chanceOf, chanceText, money, parseTarget, payou
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
 import { recordOutcome } from "@/lib/stats";
-import { sfx } from "./sounds";
+import { sfx, warmSfx } from "./sounds";
 import styles from "./Limbo.module.css";
 
 type Mode = "manual" | "auto";
@@ -20,13 +20,16 @@ type Roll = { result: number; target: number; bet: number; won: boolean };
 type Past = { id: number; text: string; won: boolean };
 
 const HISTORY = 12;
-// the number climbs to the roll over this long, or the fast way
+// the number climbs to the roll over this long, or the fast way, a step
+// (and a tick) every STEP_MS
 const ROLL_MS = 550;
 const FAST_MS = 250;
-const TICK_MS = 45;
+const STEP_MS = 45;
 const AUTO_PAUSE = 500;
 
 const toCents = (n: number) => Math.round(n * 100) / 100;
+// the clock the climb runs on
+const clock = () => performance.now();
 
 const SPEAKER = (
   <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -77,7 +80,6 @@ export default function Limbo() {
   const [note, setNote] = useState("");
   const numberRef = useRef<HTMLSpanElement>(null);
   const frame = useRef(0);
-  const ticker = useRef(0);
   const live = useRef<{ phase: Phase; pending: Roll | null }>({ phase: "idle", pending: null });
   const pastId = useRef(0);
 
@@ -101,15 +103,9 @@ export default function Limbo() {
 
   // ---- Rolling ---------------------------------------------------------------------------
 
-  const stopTicking = () => {
-    clearInterval(ticker.current);
-    ticker.current = 0;
-  };
-
   const settle = () => {
     const p = live.current.pending;
     if (!p) return;
-    stopTicking();
     if (p.won) addToBalance(payoutOf(p.bet, p.target));
     recordOutcome(p.won ? profitOf(p.bet, p.target) : -p.bet);
     const next: Phase = p.won ? "won" : "lost";
@@ -122,31 +118,38 @@ export default function Limbo() {
     if (auto.current.running) afterRound(p);
   };
 
-  // the number climbs from 1.00x to the roll, quick at first and slowing
-  // in; it goes green the moment it passes the target
+  // the number climbs from 1.00x to the roll in steps, a tick a step,
+  // quick at first and slowing in; it goes green the moment it passes
+  // the target
   const climb = (result: number, targetNow: number, ms: number) => {
     cancelAnimationFrame(frame.current);
+    clearTimeout(frame.current);
     const el = numberRef.current;
-    let t0 = -1;
+    const t0 = clock();
     let green = false;
-    const tick = (now: number) => {
-      if (t0 < 0) t0 = now;
-      const p = Math.min(1, (now - t0) / ms);
+    let shown = "";
+    const step = () => {
+      const p = Math.min(1, (clock() - t0) / ms);
       const eased = 1 - Math.pow(1 - p, 3);
       const value = p < 1 ? 1 + (result - 1) * eased : result;
-      if (el) el.textContent = times(value);
+      const text = times(value);
+      if (text !== shown) {
+        shown = text;
+        if (el) el.textContent = text;
+        if (p < 1) sfx("tick");
+      }
       if (!green && value >= targetNow) {
         green = true;
         setPassed(true);
         sfx("win");
       }
-      if (p < 1) frame.current = requestAnimationFrame(tick);
+      if (p < 1) frame.current = window.setTimeout(step, STEP_MS);
       else {
         if (!green) sfx("lose");
         settle();
       }
     };
-    frame.current = requestAnimationFrame(tick);
+    step();
   };
 
   const roll = (betNow: number, targetNow: number) => {
@@ -159,8 +162,6 @@ export default function Limbo() {
     setPhase("rolling");
     setPassed(false);
     setNote("");
-    stopTicking();
-    ticker.current = window.setInterval(() => sfx("tick"), TICK_MS);
     climb(result, targetNow, fast ? FAST_MS : ROLL_MS);
   };
 
@@ -170,13 +171,14 @@ export default function Limbo() {
     roll(bet.bet, target);
   };
 
-  useEffect(
-    () => () => {
+  // the clips load ahead of the first press
+  useEffect(() => {
+    warmSfx();
+    return () => {
       cancelAnimationFrame(frame.current);
-      clearInterval(ticker.current);
-    },
-    [],
-  );
+      clearTimeout(frame.current);
+    };
+  }, []);
 
   // ---- Auto ---------------------------------------------------------------------------------
 
