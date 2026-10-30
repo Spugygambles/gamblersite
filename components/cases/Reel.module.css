@@ -154,7 +154,7 @@
   }
 }
 
-/* ---- Standing up: three items showing, the winner ringed once it lands ---- */
+/* ---- Standing up: three items showing, the winner lit once it lands ---- */
 
 .reel[data-vertical] {
   --vtile: 120px;
@@ -221,7 +221,7 @@
   z-index: 1;
   width: min(72%, 108px);
   height: 100%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 42%, transparent), transparent 64%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 36%, transparent), transparent 62%);
   transition: scale 0.3s ease;
 }
 
@@ -230,7 +230,7 @@
 }
 
 .reel[data-vertical] .tile[data-tier="gold"] .tileArt {
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 55%, transparent), transparent 66%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 48%, transparent), transparent 64%);
 }
 
 .reel[data-vertical] .tileName,
@@ -239,24 +239,99 @@
   display: none;
 }
 
-/* the hexagon round the winner's art */
-.reel[data-vertical] .hex {
+/*
+ * Landed: the winner's art grows, a wide soft glow in its tier's colour
+ * spreads behind it with a scatter of sparks round it, and the win line
+ * runs across the column behind it, dim with a brighter end each side.
+ * Grey, worth no more than the case, gets the line and nothing else.
+ */
+.reel[data-vertical] .tileArt::before,
+.reel[data-vertical] .tileArt::after,
+.reel[data-vertical] .dust {
+  content: "";
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 118%;
-  aspect-ratio: 1;
-  fill: none;
-  stroke: var(--tier);
-  stroke-width: 1.6;
+  z-index: 0;
   opacity: 0;
-  translate: -50% -50%;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.35s ease;
   pointer-events: none;
 }
 
-.reel[data-vertical][data-landed] .tile[data-win] .hex {
-  opacity: 0.85;
+/* the glow, well past the art */
+.reel[data-vertical] .tileArt::before {
+  inset: -42%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 58%, transparent) 0%, color-mix(in srgb, var(--tier) 20%, transparent) 32%, transparent 68%);
+}
+
+/* the win line */
+.reel[data-vertical] .tileArt::after {
+  top: 50%;
+  left: 50%;
+  width: 92cqw;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0 8%, rgba(255, 255, 255, 0.1) 8% 92%, rgba(255, 255, 255, 0.38) 92%);
+  translate: -50% 0;
+}
+
+/* the sparks: dots of the tier's colour and white, scattered round the art */
+.reel[data-vertical] .dust {
+  z-index: 2;
+  inset: -38%;
+  /* the art's children are sized to it; this one spreads past it */
+  width: auto;
+  height: auto;
+  background-image:
+    radial-gradient(circle at 66% 62%, var(--tier) 0 0.8px, transparent 1.7px),
+    radial-gradient(circle at 44% 70%, rgba(255, 255, 255, 0.7) 0 0.7px, transparent 1.6px),
+    radial-gradient(circle at 55% 26%, rgba(255, 255, 255, 0.75) 0 0.8px, transparent 1.7px),
+    radial-gradient(circle at 12% 38%, rgba(255, 255, 255, 0.9) 0 1.2px, transparent 2.1px),
+    radial-gradient(circle at 18% 62%, var(--tier) 0 1.6px, transparent 2.5px),
+    radial-gradient(circle at 8% 52%, var(--tier) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 24% 22%, var(--tier) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 33% 12%, rgba(255, 255, 255, 0.85) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 46% 6%, var(--tier) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 62% 9%, var(--tier) 0 1.5px, transparent 2.4px),
+    radial-gradient(circle at 74% 16%, rgba(255, 255, 255, 0.9) 0 1.2px, transparent 2.1px),
+    radial-gradient(circle at 86% 30%, var(--tier) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 92% 48%, var(--tier) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 88% 66%, rgba(255, 255, 255, 0.85) 0 1.4px, transparent 2.3px),
+    radial-gradient(circle at 78% 82%, var(--tier) 0 1.6px, transparent 2.5px),
+    radial-gradient(circle at 64% 92%, var(--tier) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 48% 95%, rgba(255, 255, 255, 0.8) 0 1px, transparent 1.9px),
+    radial-gradient(circle at 34% 90%, var(--tier) 0 1.4px, transparent 2.3px),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.85) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 28% 46%, var(--tier) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 70% 40%, rgba(255, 255, 255, 0.7) 0 0.9px, transparent 1.8px),
+    radial-gradient(circle at 58% 76%, var(--tier) 0 1.2px, transparent 2.1px),
+    radial-gradient(circle at 40% 30%, var(--tier) 0 0.8px, transparent 1.7px),
+    radial-gradient(circle at 82% 54%, var(--tier) 0 0.8px, transparent 1.7px),
+    radial-gradient(circle at 16% 26%, var(--tier) 0 1px, transparent 1.9px);
+  background-repeat: no-repeat;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt::before,
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt::after {
+  opacity: 1;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win] .dust {
+  animation: twinkle 2.6s ease-in-out infinite;
+}
+
+.reel[data-vertical][data-landed] .tile[data-win][data-tier="grey"] .tileArt::before,
+.reel[data-vertical][data-landed] .tile[data-win][data-tier="grey"] .dust {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.95;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .reel[data-vertical][data-landed] .tile[data-win] {
@@ -267,7 +342,7 @@
   scale: 1.18;
 }
 
-.reel[data-vertical][data-landed] .tile[data-win] .tileArt > :not(.hex) {
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt > :not(.dust) {
   position: relative;
   z-index: 1;
 }
@@ -331,7 +406,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .reel[data-vertical] .tileArt,
-  .reel[data-vertical] .hex {
+  .reel[data-vertical] .tileArt::before,
+  .reel[data-vertical] .tileArt::after {
     transition: none;
+  }
+
+  .reel[data-vertical][data-landed] .tile[data-win] .dust {
+    animation: none;
+    opacity: 0.9;
   }
 }
