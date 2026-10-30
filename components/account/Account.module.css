@@ -127,7 +127,7 @@
   flex-shrink: 0;
   width: 56px;
   height: 56px;
-  border-radius: 12px;
+  border-radius: 50%;
   background: var(--brand);
   color: var(--on-brand);
   font: 800 22px/1 var(--font-ui), sans-serif;
