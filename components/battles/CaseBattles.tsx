@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
-import Reel from "@/components/cases/Reel";
+import Reel, { staggerOf } from "@/components/cases/Reel";
 import { FairDialog, HowTo, kit } from "@/components/game/kit";
 import { Modal } from "@/components/mines/Dialogs";
 import { ChevronIcon, CloseIcon, CoinIcon, InfoIcon, ShieldIcon, SwordsIcon } from "@/components/home/icons";
@@ -95,7 +95,9 @@ type Battle = {
 type Result = { winners: number[]; pot: number; share: number; youWon: boolean };
 
 const FILL_MS = 1500;
-const PAUSE_MS = 700;
+// a round landed holds this long, then the band goes dark this long before the next one runs
+const PAUSE_MS = 1300;
+const BLANK_MS = 300;
 // how often the sample battles under way move on a round
 const TICK_MS = 5000;
 const YOU = PLAYER.name;
@@ -186,11 +188,13 @@ export default function CaseBattles() {
   const [round, setRound] = useState(0);
   const [landed, setLanded] = useState(0);
   const [spinning, setSpinning] = useState(false);
+  // the dark moment between one round and the next
+  const [blank, setBlank] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [note, setNote] = useState("");
   const [dialog, setDialog] = useState<"fair" | "how" | null>(null);
   const live = useRef<{ phase: Phase; battle: Battle | null }>({ phase: "lobby", battle: null });
-  const timers = useRef({ fill: 0, pause: 0 });
+  const timers = useRef({ fill: 0, pause: 0, blank: 0 });
   const nextId = useRef(100);
   // the last battle you played, for the fairness check after it's gone
   const lastSetup = useRef<{ mode: Mode; gamemode: Gamemode; cases: CaseDef[]; names: string[] } | null>(null);
@@ -238,6 +242,8 @@ export default function CaseBattles() {
   // the same battle again: played through once more as a look, or made anew (at once, or edited first)
   const replay = (b: Battle) => {
     clearTimeout(timers.current.pause);
+    clearTimeout(timers.current.blank);
+    setBlank(false);
     const again = { ...b, viewed: true };
     setResult(null);
     setNote("");
@@ -390,11 +396,19 @@ export default function CaseBattles() {
     if (next < b.cases.length) {
       timers.current.pause = window.setTimeout(() => {
         if (live.current.phase !== "fighting") return;
-        setRound(next);
-        setSpinning(true);
+        setBlank(true);
+        timers.current.blank = window.setTimeout(() => {
+          if (live.current.phase !== "fighting") return;
+          setBlank(false);
+          setRound(next);
+          setSpinning(true);
+        }, BLANK_MS);
       }, PAUSE_MS);
     } else {
-      finish(b);
+      // the last round's drops hold on the reels a moment before the result
+      timers.current.pause = window.setTimeout(() => {
+        if (live.current.phase === "fighting") finish(b);
+      }, PAUSE_MS);
     }
   };
 
@@ -446,7 +460,9 @@ export default function CaseBattles() {
 
   const backToLobby = () => {
     clearTimeout(timers.current.pause);
+    clearTimeout(timers.current.blank);
     clearTimeout(timers.current.fill);
+    setBlank(false);
     setLive("lobby", null);
     setResult(null);
     setSpinning(false);
@@ -859,6 +875,9 @@ export default function CaseBattles() {
   const Gm = battle && battle.gamemode !== "standard" ? GAMEMODE_ICONS[battle.gamemode] : null;
   const gmColor = battle && battle.gamemode !== "standard" ? GAMEMODE_COLORS[battle.gamemode] : undefined;
   const over = phase === "done";
+  // each reel lands a touch after another; the last one down ends the round
+  const lags = battle ? battle.seats.map((_, seat) => staggerOf(battle.id * 100 + round * 10 + seat + 1)) : [];
+  const lastSeat = lags.indexOf(Math.max(...lags));
   // how it was won: by how much, or by what draw
   const margin = battle && result ? marginOf(battle.drops, battle.mode, battle.gamemode, result.winners) : null;
   const wonHow = battle?.gamemode === "coinflip" ? "Won on the coinflip" : battle?.gamemode === "jackpot" ? "Won on the jackpot draw" : "Shared by everyone";
@@ -933,17 +952,20 @@ export default function CaseBattles() {
         {!over &&
           battle.seats.map((name, seat) => (
             <div key={seat} className={styles.reelCol} data-band-seat={seat}>
-              <Reel
-                items={battle.cases[cur].items}
-                winner={phase === "waiting" ? null : battle.drops[cur][seat]}
-                spinning={spinning}
-                fast={fast}
-                seed={battle.id * 100 + round * 10 + seat + 1}
-                onDone={seat === 0 ? roundDone : undefined}
-                label={`${name ?? "Seat"}'s reel`}
-                vertical
-                casePrice={battle.cases[cur].price}
-              />
+              {!blank && (
+                <Reel
+                  items={battle.cases[cur].items}
+                  winner={phase === "waiting" ? null : battle.drops[cur][seat]}
+                  spinning={spinning}
+                  fast={fast}
+                  seed={battle.id * 100 + round * 10 + seat + 1}
+                  extraMs={lags[seat]}
+                  onDone={seat === lastSeat ? roundDone : undefined}
+                  label={`${name ?? "Seat"}'s reel`}
+                  vertical
+                  casePrice={battle.cases[cur].price}
+                />
+              )}
             </div>
           ))}
         {!over && (

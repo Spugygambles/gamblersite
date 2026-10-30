@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useLayoutEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
 import type { CaseItem } from "@/lib/cases";
@@ -17,15 +17,26 @@ import styles from "./Reel.module.css";
  * lands.
  *
  * Standing up (`vertical`, the battles' way) it shows three items at a
- * time with a low glow behind each, blurs them with the strip's speed
- * while it's quick, and once it has landed lifts the winner a little on
- * the win line and shows its name and price.
+ * time, each on its own soft light, and the ride is short and quick: a
+ * steady rush of RIDE tiles that pulls up in the last third. As it
+ * settles a hexagon rings the middle; landed, the winner's name comes up
+ * and its price counts up to what it is. `extraMs` lets one reel land a
+ * touch after another, as they do.
  */
 
 const TILES = 60;
 const WIN_AT = 50;
+/** Lying down (the cases page): a long ride. */
 export const SPIN_MS = 5000;
 export const FAST_MS = 1200;
+/** Standing up (the battles): a short one. */
+export const STAND_MS = 1700;
+export const STAND_FAST_MS = 900;
+/** How many tiles a standing reel rides through. */
+const RIDE = 18;
+/** The rush, then the pull-up: most of the way at a steady pace, the rest eased off. */
+const STAND_EASE = "linear(0, 0.78 62%, 0.9 75%, 0.965 86%, 0.992 94%, 1)";
+const COUNT_MS = 450;
 
 // Small, repeatable random numbers for the strip's order.
 function mulberry(seed: number) {
@@ -38,6 +49,9 @@ function mulberry(seed: number) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+
+/** A reel's lag behind the others, 0 to 300 ms, from its seed. */
+export const staggerOf = (seed: number) => ((seed * 2654435761) >>> 0) % 301;
 
 /** The strip: `TILES` items drawn by their odds, the winner at WIN_AT. */
 export function stripFor(items: CaseItem[], winner: CaseItem | null, seed: number): CaseItem[] {
@@ -57,14 +71,6 @@ export function stripFor(items: CaseItem[], winner: CaseItem | null, seed: numbe
   return strip;
 }
 
-// how far the strip has moved, from its transform
-function offsetOf(el: HTMLElement, vertical: boolean): number {
-  const t = getComputedStyle(el).transform;
-  if (!t || t === "none") return 0;
-  const m = new DOMMatrixReadOnly(t);
-  return vertical ? m.m42 : m.m41;
-}
-
 export default function Reel({
   items,
   winner,
@@ -75,6 +81,7 @@ export default function Reel({
   label = "The reel",
   vertical = false,
   casePrice = 0,
+  extraMs = 0,
 }: {
   items: CaseItem[];
   winner: CaseItem | null;
@@ -87,12 +94,11 @@ export default function Reel({
   vertical?: boolean;
   /** What the case costs: an item's tier (its glow) is its worth against this. */
   casePrice?: number;
+  /** Added to the ride, so this reel lands after the others. */
+  extraMs?: number;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
-  const windowRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
-  const blurRef = useRef<SVGFEGaussianBlurElement>(null);
-  const filterId = "reel-blur-" + useId().replace(/[^a-zA-Z0-9]/g, "");
   const done = useRef(onDone);
   useEffect(() => {
     done.current = onDone;
@@ -112,16 +118,16 @@ export default function Reel({
     return () => ro.disconnect();
   }, [vertical]);
 
-  // A spin: back to the start without a transition, then one long ride to
-  // the winner, landing a little off its middle (where, the seed says).
-  // Standing up, the window blurs with the strip's speed as it goes.
+  // A spin: to the start without a transition, then one ride to the winner,
+  // landing a little off its middle (where, the seed says). Standing up the
+  // ring comes on as it settles, and the price counts up once it has.
   useEffect(() => {
     if (!spinning) return;
     const box = boxRef.current;
     const el = stripRef.current;
     if (!box || !el || !el.children.length) return;
-    // the winner's ring comes off for the ride and back once it's landed
     box.removeAttribute("data-landed");
+    box.removeAttribute("data-settling");
     const first = el.children[0] as HTMLElement;
     const rect = first.getBoundingClientRect();
     const tile = vertical ? rect.height : rect.width;
@@ -129,49 +135,41 @@ export default function Reel({
     const gap = parseFloat((vertical ? style.rowGap : style.columnGap) || "0") || 0;
     const span = vertical ? box.clientHeight : box.clientWidth;
     const jitter = (mulberry(seed + 7)() - 0.5) * tile * (vertical ? 0.18 : 0.7);
-    const target = -(WIN_AT * (tile + gap) + tile / 2 - span / 2 + jitter);
+    const at = (index: number) => -(index * (tile + gap) + tile / 2 - span / 2);
+    const target = at(WIN_AT) - jitter;
     const still = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const ms = still ? 0 : fast ? FAST_MS : SPIN_MS;
+    const ms = still ? 0 : vertical ? (fast ? STAND_FAST_MS : STAND_MS) + extraMs : fast ? FAST_MS : SPIN_MS;
     const move = (px: number) => (vertical ? `translateY(${px}px)` : `translateX(${px}px)`);
     el.style.transition = "none";
-    el.style.transform = move(0);
+    el.style.transform = move(vertical ? Number(at(WIN_AT - RIDE).toFixed(1)) : 0);
     void el.offsetWidth;
-    el.style.transition = ms ? `transform ${ms}ms cubic-bezier(0.1, 0.7, 0.12, 1)` : "none";
+    el.style.transition = ms ? `transform ${ms}ms ${vertical ? STAND_EASE : "cubic-bezier(0.1, 0.7, 0.12, 1)"}` : "none";
     el.style.transform = move(Number(target.toFixed(1)));
 
-    // the blur follows the speed, frame by frame
-    const win = windowRef.current;
-    const blur = blurRef.current;
+    const settle = window.setTimeout(() => box.setAttribute("data-settling", ""), ms * 0.7);
     let raf = 0;
-    if (vertical && win && blur && ms) {
-      win.style.filter = `url(#${filterId})`;
-      let prevY = 0;
-      let prevT = performance.now();
-      const loop = (now: number) => {
-        const y = offsetOf(el, true);
-        const dt = Math.max(1, now - prevT);
-        const speed = Math.abs(y - prevY) / dt;
-        prevY = y;
-        prevT = now;
-        const dev = Math.min(18, Math.max(0, speed - 0.35) * 2.4);
-        blur.setAttribute("stdDeviation", `0 ${dev.toFixed(1)}`);
-        raf = requestAnimationFrame(loop);
-      };
-      raf = requestAnimationFrame(loop);
-    }
     const timer = window.setTimeout(() => {
-      cancelAnimationFrame(raf);
-      if (win) win.style.filter = "";
-      blur?.setAttribute("stdDeviation", "0 0");
       box.setAttribute("data-landed", "");
+      // the winner's price counts up to what it is
+      const price = el.children[WIN_AT]?.querySelector<HTMLElement>("[data-price]");
+      const worth = winner?.skin.price ?? 0;
+      if (vertical && price && worth > 0 && !still) {
+        const from = performance.now();
+        const count = (now: number) => {
+          const p = Math.min(1, (now - from) / COUNT_MS);
+          price.textContent = money.format(Math.round(worth * (0.95 + 0.05 * p)));
+          if (p < 1) raf = requestAnimationFrame(count);
+        };
+        raf = requestAnimationFrame(count);
+      }
       done.current?.();
-    }, ms + 120);
+    }, ms + 60);
     return () => {
+      clearTimeout(settle);
       clearTimeout(timer);
       cancelAnimationFrame(raf);
-      if (win) win.style.filter = "";
     };
-  }, [spinning, seed, fast, vertical, filterId]);
+  }, [spinning, seed, fast, vertical, extraMs, winner]);
 
   return (
     <div
@@ -185,25 +183,23 @@ export default function Reel({
       data-landed={!spinning && winner ? "" : undefined}
       data-winner={winner?.skin.slug}
     >
-      {vertical && (
-        <svg className={styles.filterDef} aria-hidden>
-          <filter id={filterId} x="0" y="-25%" width="100%" height="150%" colorInterpolationFilters="sRGB">
-            <feGaussianBlur ref={blurRef} stdDeviation="0 0" edgeMode="duplicate" />
-          </filter>
-        </svg>
-      )}
-      <div ref={windowRef} className={styles.window}>
+      <div className={styles.window}>
         <div ref={stripRef} className={styles.strip}>
           {strip.map((it, i) => (
             <div key={i} className={styles.tile} style={{ "--tier": TIERS[tierOf(it.skin.price, casePrice)].color } as CSSProperties} data-tier={tierOf(it.skin.price, casePrice)} data-win={i === WIN_AT || undefined}>
               <span className={styles.tileArt}>
+                {vertical && i === WIN_AT && (
+                  <svg className={styles.hex} viewBox="0 0 100 100" aria-hidden>
+                    <polygon points="50,4 90,27 90,73 50,96 10,73 10,27" />
+                  </svg>
+                )}
                 <SkinArt skin={it.skin} />
               </span>
               <span className={styles.tileName}>{it.skin.finish}</span>
               <span className={styles.tileWeapon}>{it.skin.weapon}</span>
               <span className={`${styles.tilePrice} tabular`}>
                 {vertical && <CoinIcon />}
-                {money.format(it.skin.price)}
+                <span data-price={i === WIN_AT || undefined}>{money.format(it.skin.price)}</span>
               </span>
             </div>
           ))}

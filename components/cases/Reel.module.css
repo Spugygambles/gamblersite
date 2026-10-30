@@ -154,7 +154,7 @@
   }
 }
 
-/* ---- Standing up: three items showing, the winner lit once it lands ---- */
+/* ---- Standing up: three items showing, the winner ringed once it lands ---- */
 
 .reel[data-vertical] {
   --vtile: 120px;
@@ -215,22 +215,24 @@
   display: none;
 }
 
-/* the art, with a low glow behind it in its tier's colour; grey gets none */
+/* the art, each on its own soft light: grey for the common, the tier's colour for the rest */
 .reel[data-vertical] .tileArt {
   position: relative;
   z-index: 1;
-  width: min(72%, 108px);
+  width: min(74%, 128px);
   height: 100%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 20%, transparent), transparent 60%);
-  transition: scale 0.3s ease;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 18%, transparent), transparent 62%);
+  transition:
+    scale 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .reel[data-vertical] .tile[data-tier="grey"] .tileArt {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.04), transparent 58%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.07), transparent 60%);
 }
 
 .reel[data-vertical] .tile[data-tier="gold"] .tileArt {
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 28%, transparent), transparent 62%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 30%, transparent), transparent 64%);
 }
 
 .reel[data-vertical] .tileName,
@@ -239,44 +241,38 @@
   display: none;
 }
 
-/*
- * Landed: the winner's art grows a little, its glow comes up a touch, and
- * the win line runs across the column behind it, dim with a brighter end
- * each side.
- */
-.reel[data-vertical] .tileArt::after {
-  content: "";
+/* the hexagon round the middle: on as the reel settles, a thin light line */
+.reel[data-vertical] .hex {
   position: absolute;
-  z-index: 0;
   top: 50%;
   left: 50%;
-  width: 92cqw;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.38) 0 8%, rgba(255, 255, 255, 0.1) 8% 92%, rgba(255, 255, 255, 0.38) 92%);
+  width: 112%;
+  aspect-ratio: 1;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.4;
   opacity: 0;
-  translate: -50% 0;
-  transition: opacity 0.35s ease;
+  translate: -50% -50%;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
 
-.reel[data-vertical][data-landed] .tile[data-win] .tileArt::after {
+.reel[data-vertical][data-settling] .tile[data-win] .hex,
+.reel[data-vertical][data-landed] .tile[data-win] .hex {
   opacity: 1;
 }
 
-.reel[data-vertical][data-landed] .tile[data-win] {
-  grid-template-rows: minmax(0, 1fr) auto auto;
-}
-
+/* landed: the winner a touch bigger and brighter, its name and price under it, the rest in the shade */
 .reel[data-vertical][data-landed] .tile[data-win] .tileArt {
-  scale: 1.18;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 28%, transparent), transparent 60%);
+  scale: 1.06;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 26%, transparent), transparent 62%);
 }
 
 .reel[data-vertical][data-landed] .tile[data-win][data-tier="grey"] .tileArt {
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.05), transparent 58%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.11), transparent 60%);
 }
 
-.reel[data-vertical][data-landed] .tile[data-win] .tileArt > * {
+.reel[data-vertical][data-landed] .tile[data-win] .tileArt > :not(.hex) {
   position: relative;
   z-index: 1;
 }
@@ -291,6 +287,7 @@
   font: 700 12.5px/1.2 var(--font-ui), sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
+  animation: nameIn 0.3s ease-out;
 }
 
 .reel[data-vertical][data-landed] .tile[data-win] .tilePrice {
@@ -301,6 +298,7 @@
   gap: 4px;
   color: var(--tier);
   font: 800 12.5px/1 var(--font-ui), sans-serif;
+  animation: nameIn 0.3s ease-out;
 }
 
 .reel[data-vertical][data-landed] .tile[data-win][data-tier="grey"] .tilePrice {
@@ -312,19 +310,20 @@
   height: 13px;
 }
 
+@keyframes nameIn {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
 /* the others step back once it's landed */
-.reel[data-vertical][data-landed] .tile:not([data-win]) {
-  opacity: 0.55;
+.reel[data-vertical][data-landed] .tile:not([data-win]) .tileArt {
+  opacity: 0.45;
 }
 
 .reel[data-vertical] .marker {
   display: none;
-}
-
-.filterDef {
-  position: absolute;
-  width: 0;
-  height: 0;
 }
 
 /* a narrow column keeps the art only */
@@ -340,7 +339,12 @@
 
 @media (prefers-reduced-motion: reduce) {
   .reel[data-vertical] .tileArt,
-  .reel[data-vertical] .tileArt::after {
+  .reel[data-vertical] .hex {
     transition: none;
+  }
+
+  .reel[data-vertical][data-landed] .tile[data-win] .tileName,
+  .reel[data-vertical][data-landed] .tile[data-win] .tilePrice {
+    animation: none;
   }
 }
