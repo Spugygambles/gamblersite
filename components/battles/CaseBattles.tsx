@@ -919,7 +919,7 @@ export default function CaseBattles() {
             {Math.min(landed, rounds)}/{rounds}
           </span>
         </div>
-        <div className={styles.infoMode}>
+        <div className={styles.infoMode} data-info-mode={battle.mode}>
           <b>{battle.mode}</b>
           <span className={styles.gmTag} style={gmColor ? { color: gmColor } : undefined} data-arena-mode={battle.gamemode}>
             {Gm && <Gm />}
@@ -992,7 +992,7 @@ export default function CaseBattles() {
           .map((team, k, all) => {
             const before = all.slice(0, k + 1).reduce((n, t) => n + t.length, 0);
             return (
-              <span key={k} className={styles.bandSwords} style={{ left: `${(before / seats) * 100}%` }} aria-hidden>
+              <span key={k} className={styles.bandSwords} style={{ left: `${(before / seats) * 100}%` }} aria-hidden data-swords>
                 <SwordsIcon />
               </span>
             );
