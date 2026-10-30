@@ -195,7 +195,9 @@ export default function Reel({
                 )}
                 <SkinArt skin={it.skin} />
               </span>
-              <span className={styles.tileName}>{it.skin.finish}</span>
+              <span className={styles.tileName} data-name>
+                {it.skin.finish}
+              </span>
               <span className={styles.tileWeapon}>{it.skin.weapon}</span>
               <span className={`${styles.tilePrice} tabular`}>
                 {vertical && <CoinIcon />}
