@@ -139,6 +139,21 @@ export function settle(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, deci
 /** A winner's share of the pot: all of it, or split between the winning seats. */
 export const shareOf = (pot: number, winners: number) => cents(pot / Math.max(1, winners));
 
+/**
+ * How far ahead the winners were: their side's total less the nearest other
+ * side's (on the last case alone in terminal; the least in crazy, where the
+ * lowest wins). Null when no total decided it: a group, a coinflip, a jackpot.
+ */
+export function marginOf(drops: CaseItem[][], mode: Mode, gamemode: Gamemode, winners: number[]): number | null {
+  if (gamemode === "group" || gamemode === "coinflip" || gamemode === "jackpot") return null;
+  const totals = totalsOf(gamemode === "terminal" ? drops.slice(-1) : drops, seatsOf(mode));
+  const others = teamsOf(mode)
+    .filter((side) => !side.includes(winners[0]))
+    .map((side) => sideTotal(totals, side));
+  if (!others.length) return null;
+  return cents(Math.abs(sideTotal(totals, winners) - (gamemode === "crazy" ? Math.min(...others) : Math.max(...others))));
+}
+
 /** The result in words: who, and by what rule. */
 export function resultLine(gamemode: Gamemode, who: string, several: boolean): string {
   switch (gamemode) {

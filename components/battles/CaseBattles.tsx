@@ -28,6 +28,7 @@ import {
   keptBattles,
   lobbyBattle,
   makeCostOf,
+  marginOf,
   potOf,
   resultLine,
   SAMPLES_DONE,
@@ -59,11 +60,14 @@ import {
   GAMEMODE_COLORS,
   GAMEMODE_ICONS,
   LockIcon,
+  PlusIcon,
+  RefreshIcon,
   SeatIcon,
   SparklesIcon,
   StarIcon,
   TeamIcon,
   TilesIcon,
+  UndoIcon,
 } from "./glyphs";
 import styles from "./Battles.module.css";
 
@@ -100,6 +104,8 @@ const YOU = PLAYER.name;
 const PREVIOUS_KEPT = SAMPLES_DONE;
 let nextSample = 10000;
 let toastCount = 0;
+// the name, over and over, behind the result screen
+const MARKS = Array.from({ length: 40 }, (_, i) => i);
 
 // the extras, in the order they're offered
 const OPTIONS: { key: keyof Options; label: string; icon: (p: { className?: string }) => React.JSX.Element; hint: string }[] = [
@@ -855,6 +861,9 @@ export default function CaseBattles() {
   const Gm = battle && battle.gamemode !== "standard" ? GAMEMODE_ICONS[battle.gamemode] : null;
   const gmColor = battle && battle.gamemode !== "standard" ? GAMEMODE_COLORS[battle.gamemode] : undefined;
   const over = phase === "done";
+  // how it was won: by how much, or by what draw
+  const margin = battle && result ? marginOf(battle.drops, battle.mode, battle.gamemode, result.winners) : null;
+  const wonHow = battle?.gamemode === "coinflip" ? "Won on the coinflip" : battle?.gamemode === "jackpot" ? "Won on the jackpot draw" : "Shared by everyone";
 
   const arena = battle && (
     <div className={styles.arenaPage} data-gold={battle.options.gold || undefined}>
@@ -924,76 +933,40 @@ export default function CaseBattles() {
         </div>
       </div>
 
-      {/* the band: the reels while the rounds run, one a seat; the heads once it's over */}
+      {/* the band: the reels while the rounds run, one a seat; the result screen once it's over */}
       <div className={styles.band} style={{ "--seats": seats } as CSSProperties} data-band={phase}>
-        {battle.seats.map((name, seat) => {
-          const you = seat === battle.you;
-          const won = result?.winners.includes(seat) ?? false;
-          const lost = !!result && !won;
-          const team = isTeamMode(battle.mode) ? teamOf(battle.mode, seat) : null;
-          if (!over) {
-            return (
-              <div key={seat} className={styles.reelCol} data-band-seat={seat}>
-                <Reel
-                  items={battle.cases[cur].items}
-                  winner={phase === "waiting" ? null : battle.drops[cur][seat]}
-                  spinning={spinning}
-                  fast={fast}
-                  seed={battle.id * 100 + round * 10 + seat + 1}
-                  onDone={seat === 0 ? roundDone : undefined}
-                  label={`${name ?? "Seat"}'s reel`}
-                  vertical
-                  casePrice={battle.cases[cur].price}
-                />
-              </div>
-            );
-          }
-          return (
-            <section
-              key={seat}
-              className={styles.column}
-              aria-label={you ? "Your seat" : (name ?? "Open seat")}
-              data-band-seat={seat}
-              data-you={you || undefined}
-              data-winner={won || undefined}
-              data-lost={lost || undefined}
-              data-team={team ?? undefined}
-            >
-              <div className={styles.colTop}>
-                <span className={styles.bigAvatar} style={name && !you ? { background: avatarOf(name) } : undefined} aria-hidden>
-                  {(name ?? "?")[0].toUpperCase()}
-                  {won && <CrownIcon className={styles.bigCrown} />}
-                </span>
-                <b className={styles.colName}>
-                  {name ?? "Waiting…"}
-                  {you && <small>you</small>}
-                  {team !== null && <i>team {String.fromCharCode(65 + team)}</i>}
-                </b>
-                <span className={`${styles.colTotal} tabular`}>
-                  <CoinIcon />
-                  {money.format(totals[seat] ?? 0)}
-                </span>
-                {result && <span className={`${styles.tag} ${won ? styles.tagWin : styles.tagLost}`}>{won ? "Winner" : "Lost"}</span>}
-              </div>
-            </section>
-          );
-        })}
+        {!over &&
+          battle.seats.map((name, seat) => (
+            <div key={seat} className={styles.reelCol} data-band-seat={seat}>
+              <Reel
+                items={battle.cases[cur].items}
+                winner={phase === "waiting" ? null : battle.drops[cur][seat]}
+                spinning={spinning}
+                fast={fast}
+                seed={battle.id * 100 + round * 10 + seat + 1}
+                onDone={seat === 0 ? roundDone : undefined}
+                label={`${name ?? "Seat"}'s reel`}
+                vertical
+                casePrice={battle.cases[cur].price}
+              />
+            </div>
+          ))}
         {!over && (
           <>
             <span className={styles.edgeMark} data-side="left" aria-hidden />
             <span className={styles.edgeMark} data-side="right" aria-hidden />
+            {teamsOf(battle.mode)
+              .slice(0, -1)
+              .map((team, k, all) => {
+                const before = all.slice(0, k + 1).reduce((n, t) => n + t.length, 0);
+                return (
+                  <span key={k} className={styles.bandSwords} style={{ left: `${(before / seats) * 100}%` }} aria-hidden data-swords>
+                    <SwordsIcon />
+                  </span>
+                );
+              })}
           </>
         )}
-        {teamsOf(battle.mode)
-          .slice(0, -1)
-          .map((team, k, all) => {
-            const before = all.slice(0, k + 1).reduce((n, t) => n + t.length, 0);
-            return (
-              <span key={k} className={styles.bandSwords} style={{ left: `${(before / seats) * 100}%` }} aria-hidden data-swords>
-                <SwordsIcon />
-              </span>
-            );
-          })}
         {phase === "waiting" && (
           <div className={styles.awaiting} data-awaiting>
             <ShieldIcon />
@@ -1002,26 +975,79 @@ export default function CaseBattles() {
             <span className={styles.awaitingHash}>({battle.hash.slice(0, 44)}…)</span>
           </div>
         )}
-        {result && (
-          <span className={`${styles.bandResult} ${result.youWon ? styles.bandResultWon : ""}`} role="status" data-result={result.youWon ? "won" : "lost"}>
-            {resultLine(battle.gamemode, whoWon(battle, result.winners), plural(battle, result.winners))} · {money.format(result.pot)}
-            {result.winners.length > 1 ? ` (${money.format(result.share)} each)` : ""}
-          </span>
-        )}
-        {over && (
-          <div className={styles.bandActions}>
-            <button type="button" className={styles.ghostButton} onClick={() => replay(battle)} data-replay>
-              <SparklesIcon />
-              Replay
-            </button>
-            <button type="button" className={`${kit.primary} ${styles.recreate}`} onClick={() => recreate(battle, false)} data-recreate>
-              Recreate for
-              <CoinIcon />
-              <span className="tabular">{money.format(makeCostOf(battle.cases, battle.mode, { ...battle.options, fast }))}</span>
-            </button>
-            <button type="button" className={styles.ghostButton} onClick={() => recreate(battle, true)} data-edit>
-              Edit
-            </button>
+        {over && result && (
+          <div className={styles.overScreen} data-over>
+            <span className={styles.overMarks} aria-hidden>
+              {MARKS.map((i) => (
+                <i key={i}>CSGONEO</i>
+              ))}
+            </span>
+            <h2 className={styles.overTitle}>
+              Battle
+              <span>Over</span>
+            </h2>
+            {/* the winning seats: everyone on the side that took it */}
+            <ul className={styles.winners} aria-label="Winners" data-winners>
+              {result.winners.map((seat) => {
+                const name = battle.seats[seat] ?? "?";
+                const you = seat === battle.you;
+                // you borrowed for this one: the lender takes that share of the win
+                const borrowed = you && !battle.viewed && battle.options.borrow > 0;
+                return (
+                  <li key={seat} className={styles.winner} data-winner-seat={seat} data-you={you || undefined}>
+                    <span className={styles.winAvatar} style={!you ? { background: avatarOf(name) } : undefined} aria-hidden>
+                      {name[0].toUpperCase()}
+                    </span>
+                    <b className={styles.winName}>
+                      {name}
+                      {you && <small>you</small>}
+                    </b>
+                    {borrowed && (
+                      <small className={styles.winNote} data-borrow-note>
+                        Borrowed {Math.round(battle.options.borrow * 100)}% · keeps <b className="tabular">{money.format(result.share)}</b>
+                      </small>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+            <p className={styles.overLine} role="status" data-result={result.youWon ? "won" : "lost"}>
+              <span>
+                Pot <b className="tabular">{money.format(result.pot)}</b>
+              </span>
+              <i aria-hidden>•</i>
+              <span>
+                {margin === null ? (
+                  wonHow
+                ) : margin === 0 ? (
+                  "Won on a tie"
+                ) : (
+                  <>
+                    Won by <b className="tabular">{money.format(margin)}</b>
+                  </>
+                )}
+              </span>
+            </p>
+            <div className={styles.bandActions}>
+              <button type="button" className={`${styles.overButton} ${styles.createNew}`} onClick={() => recreate(battle, true)} data-create-new>
+                <PlusIcon />
+                Create New
+              </button>
+              <button
+                type="button"
+                className={`${styles.overButton} ${styles.recreate}`}
+                title={`Recreate for ${money.format(makeCostOf(battle.cases, battle.mode, { ...battle.options, fast }))}`}
+                onClick={() => recreate(battle, false)}
+                data-recreate
+              >
+                <RefreshIcon />
+                Recreate
+              </button>
+              <button type="button" className={`${styles.overButton} ${styles.ghostButton}`} onClick={() => replay(battle)} data-replay>
+                <UndoIcon />
+                Replay
+              </button>
+            </div>
           </div>
         )}
       </div>

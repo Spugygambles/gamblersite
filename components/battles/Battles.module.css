@@ -1443,81 +1443,118 @@
   border-left: 0;
 }
 
-.column {
+/*
+ * Once it's over the band is the result screen: BATTLE OVER, the winning
+ * seats with their names (and what a borrower keeps), the pot and the
+ * margin, and the ways to go again. It takes the height it needs.
+ */
+.band[data-band="done"] {
+  display: block;
+  height: auto;
+  min-height: 540px;
+  background:
+    radial-gradient(60% 55% at 50% 0%, rgba(111, 176, 122, 0.24), transparent),
+    var(--bg);
+}
+
+.overScreen {
   position: relative;
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 14px;
-  min-width: 0;
-  min-height: 0;
-  padding: 26px 10px 20px;
-  border-right: 1px solid var(--edge);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 70%, var(--bg)) 0%, var(--bg) 75%);
-}
-
-.column:last-child {
-  border-right: 0;
-}
-
-.column[data-winner] {
-  background: linear-gradient(180deg, #1c2e26 0%, var(--bg) 80%);
-}
-
-/* once it's over the reels are gone and the heads sit in the middle */
-.band[data-band="done"] .column {
-  grid-template-rows: minmax(0, 1fr);
-  padding-top: 48px;
-  padding-bottom: 90px;
-}
-
-.colTop {
-  display: grid;
-  align-content: center;
   justify-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 26px;
+  padding: 44px 20px 36px;
+  text-align: center;
 }
 
-.bigAvatar {
+.overScreen > :not(.overMarks) {
   position: relative;
+  z-index: 1;
+}
+
+/* the name, faint, over and over behind it all */
+.overMarks {
+  position: absolute;
+  z-index: 0;
+  inset: -60px -40px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  align-content: space-between;
+  justify-items: center;
+  row-gap: 56px;
+  opacity: 0.04;
+  rotate: -10deg;
+  pointer-events: none;
+  user-select: none;
+}
+
+.overMarks i {
+  color: var(--text);
+  font: italic 900 24px/1 var(--font-ui), sans-serif;
+}
+
+.overMarks i:nth-child(odd) {
+  translate: 0 30px;
+}
+
+.overTitle {
+  display: grid;
+  margin: 0;
+  font: 900 74px/0.95 var(--font-ui), sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.overTitle span {
+  background: linear-gradient(180deg, #a3e68f 0%, #5cb366 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* the winning seats */
+.winners {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px 40px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.winner {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  width: 150px;
+}
+
+.winAvatar {
   display: grid;
   place-items: center;
-  width: 84px;
-  height: 84px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   background: var(--surface-3);
+  box-shadow:
+    0 0 0 3px var(--live),
+    0 0 30px rgba(111, 176, 122, 0.45);
   color: #fff;
-  font: 800 32px/1 var(--font-ui), sans-serif;
+  font: 800 40px/1 var(--font-ui), sans-serif;
 }
 
-.column[data-you] .bigAvatar {
-  box-shadow: 0 0 0 3px var(--brand);
-}
-
-.bigCrown {
-  position: absolute;
-  top: -14px;
-  left: 50%;
-  width: 24px;
-  height: 24px;
-  translate: -50% 0;
-  color: #e9b949;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
-}
-
-.colName {
-  display: flex;
+.winName {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   max-width: 100%;
-  min-width: 0;
   overflow: hidden;
-  font: 800 15px/1.2 var(--font-ui), sans-serif;
+  font: 800 16px/1.2 var(--font-ui), sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.colName small {
+.winName small {
   padding: 2px 5px;
   border-radius: 4px;
   background: var(--brand);
@@ -1527,57 +1564,36 @@
   text-transform: uppercase;
 }
 
-.colName i {
+/* under a borrower: what the lender leaves them */
+.winNote {
+  margin-top: -4px;
   color: var(--text-muted);
-  font: 600 10.5px/1 var(--font-ui), sans-serif;
-  font-style: normal;
-  text-transform: uppercase;
+  font: 600 13px/1.35 var(--font-ui), sans-serif;
 }
 
-.colTotal {
-  display: inline-flex;
+.winNote b {
+  color: var(--text);
+  font-weight: 800;
+}
+
+/* the pot and the margin */
+.overLine {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  font: 900 22px/1 var(--font-ui), sans-serif;
+  gap: 14px;
+  margin: 0;
+  color: var(--text-muted);
+  font: 600 17px/1 var(--font-ui), sans-serif;
 }
 
-.colTotal svg {
-  width: 20px;
-  height: 20px;
+.overLine b {
+  color: var(--text);
+  font-weight: 800;
 }
 
-.column[data-lost] .colTotal svg {
-  filter: hue-rotate(-30deg) saturate(1.4);
-}
-
-.tag {
-  justify-self: center;
-  padding: 7px 12px;
-  border-radius: 6px;
-  font: 800 12px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.tagWin {
-  background: var(--live);
-  color: #0f2316;
-}
-
-.tagLost {
-  background: #e3415e;
-  color: #fff;
-}
-
-.colReel {
-  min-height: 0;
-  overflow: hidden;
-  border-radius: 12px;
-  container-type: inline-size;
-}
-
-.colReel > * {
-  height: 100%;
+.overLine i {
+  font-size: 10px;
+  font-style: normal;
 }
 
 /* the swords on the line between two sides */
@@ -1641,78 +1657,62 @@
   white-space: nowrap;
 }
 
-/* the result, and the way to go again */
-.bandResult {
-  position: absolute;
-  top: 16px;
-  right: 0;
-  left: 0;
-  z-index: 3;
-  padding: 0 16px;
-  color: var(--text-soft);
-  font: 900 13px/1.3 var(--font-ui), sans-serif;
-  letter-spacing: 0.03em;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.bandResultWon {
-  color: var(--live);
-}
-
+/* the ways to go again */
 .bandActions {
-  position: absolute;
-  bottom: 18px;
-  left: 50%;
-  z-index: 3;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  width: max-content;
-  max-width: 100%;
-  translate: -50% 0;
+  gap: 12px;
+  margin-top: 4px;
 }
 
-.ghostButton {
+.overButton {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  height: 46px;
-  padding: 0 18px;
+  gap: 9px;
+  height: 50px;
+  padding: 0 24px;
   border: 0;
-  border-radius: 9px;
-  background: var(--surface);
-  color: var(--text-soft);
-  font: 700 13.5px/1 var(--font-ui), sans-serif;
+  border-radius: 10px;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
     color 0.15s ease;
 }
 
-.ghostButton:hover {
-  background: var(--surface-2);
-  color: var(--text);
+.overButton svg {
+  width: 17px;
+  height: 17px;
 }
 
-.ghostButton svg {
-  width: 16px;
-  height: 16px;
+.createNew {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.createNew:hover {
+  background: var(--brand-hi);
 }
 
 .recreate {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 46px;
-  padding-inline: 18px;
-  white-space: nowrap;
+  background: var(--live);
+  color: #0f2316;
 }
 
-.recreate svg {
-  width: 15px;
-  height: 15px;
+.recreate:hover {
+  background: #84c78e;
+}
+
+.ghostButton {
+  background: var(--surface-2);
+  color: var(--text-soft);
+}
+
+.ghostButton:hover {
+  background: var(--surface-3);
+  color: var(--text);
 }
 
 /* what each seat pulled */
@@ -1975,14 +1975,14 @@
     height: clamp(300px, 40cqw, 420px);
   }
 
-  .bigAvatar {
-    width: 64px;
-    height: 64px;
-    font-size: 24px;
+  .overTitle {
+    font-size: 58px;
   }
 
-  .colTotal {
-    font-size: 17px;
+  .winAvatar {
+    width: 88px;
+    height: 88px;
+    font-size: 32px;
   }
 
   .dropCircle {
@@ -2073,32 +2073,35 @@
     height: 300px;
   }
 
-  .column {
-    padding: 14px 4px 12px;
+  .band[data-band="done"] {
+    min-height: 0;
   }
 
-  .band[data-band="done"] .column {
-    padding-top: 36px;
-    padding-bottom: 110px;
+  .overScreen {
+    gap: 20px;
+    padding: 32px 12px 26px;
   }
 
-  .bigAvatar {
-    width: 48px;
-    height: 48px;
-    font-size: 19px;
+  .overTitle {
+    font-size: 46px;
   }
 
-  .colName {
-    font-size: 12px;
+  .winners {
+    gap: 18px 16px;
   }
 
-  .colTotal {
-    font-size: 14px;
+  .winner {
+    width: 120px;
   }
 
-  .tag {
-    padding: 5px 8px;
-    font-size: 10px;
+  .winAvatar {
+    width: 72px;
+    height: 72px;
+    font-size: 27px;
+  }
+
+  .overLine {
+    font-size: 15px;
   }
 
   .bandSwords {
@@ -2112,15 +2115,13 @@
   }
 
   .bandActions {
-    bottom: 12px;
-    gap: 6px;
+    gap: 8px;
   }
 
-  .ghostButton,
-  .recreate {
-    height: 40px;
-    padding-inline: 12px;
-    font-size: 12.5px;
+  .overButton {
+    height: 44px;
+    padding: 0 16px;
+    font-size: 13.5px;
   }
 
   .infoFigures {

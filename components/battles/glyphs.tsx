@@ -47,6 +47,27 @@ export const SparklesIcon = (p: P) => (
   </svg>
 );
 
+/** Create new: a plus. */
+export const PlusIcon = (p: P) => (
+  <Line strokeWidth="2.8" {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </Line>
+);
+
+/** Recreate: two arrows round. */
+export const RefreshIcon = (p: P) => (
+  <Line strokeWidth="2.4" {...p}>
+    <path d="M20 12a8 8 0 0 1-14.6 4.5M4 12a8 8 0 0 1 14.6-4.5M18.5 3v4.5H14M5.5 21v-4.5H10" />
+  </Line>
+);
+
+/** Replay: an arrow turning back. */
+export const UndoIcon = (p: P) => (
+  <Line strokeWidth="2.4" {...p}>
+    <path d="M8.5 6 4 10.5 8.5 15M4 10.5h10a5 5 0 0 1 0 10h-4" />
+  </Line>
+);
+
 export const LockIcon = (p: P) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
     <path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zm2 0h6V8a3 3 0 0 0-6 0z" />
