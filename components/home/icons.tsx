@@ -1,5 +1,4 @@
 import type { ComponentType, SVGProps } from "react";
-import { CLAW_MARKS } from "@/lib/claw";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -36,21 +35,25 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
-// The site currency: a flat gold coin with the claw stamped in it.
+// The site currency, Robux: a gold six-sided coin, its rim bevelled with the
+// light from the top left, and the R stamped in the face.
 export function CoinIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden {...props}>
-      <circle cx="12" cy="12" r="10.5" fill="#a9712c" />
-      <circle cx="12" cy="11.4" r="10" fill="#dba64a" />
-      <circle cx="12" cy="11.4" r="7.1" fill="none" stroke="#b9853a" strokeWidth="1.1" />
-      <g fill="#a9712c" transform="translate(7.4 6.8) scale(0.092)">
-        {CLAW_MARKS.map((d) => (
-          <path key={d} d={d} />
-        ))}
-      </g>
+      <polygon points="12,1.2 21.35,6.6 18.93,8 12,4" fill="#f1c85e" />
+      <polygon points="21.35,6.6 21.35,17.4 18.93,16 18.93,8" fill="#d9a53c" />
+      <polygon points="21.35,17.4 12,22.8 12,20 18.93,16" fill="#9e6f1c" />
+      <polygon points="12,22.8 2.65,17.4 5.07,16 12,20" fill="#a7761f" />
+      <polygon points="2.65,17.4 2.65,6.6 5.07,8 5.07,16" fill="#d6a23a" />
+      <polygon points="2.65,6.6 12,1.2 12,4 5.07,8" fill="#f6d26b" />
+      <polygon points="12,4 18.93,8 18.93,16 12,20 5.07,16 5.07,8" fill="#e0b046" stroke="#b58424" strokeWidth="0.7" />
+      <path fillRule="evenodd" d="M8.7 7.3h4.4a3.05 3.05 0 0 1 .9 5.97L16.3 17h-2.75l-2.1-3.5h-.55V17H8.7Zm2.2 2v2.3h2.2a1.15 1.15 0 0 0 0-2.3Z" fill="#4b3210" />
     </svg>
   );
 }
+
+/** Robux, by its own name where the code reads better for it. */
+export const RobuxIcon = CoinIcon;
 
 // Chat's rain button: a coin dropping into an open hand.
 export function HandCoinIcon(props: IconProps) {

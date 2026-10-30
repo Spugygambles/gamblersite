@@ -38,6 +38,7 @@ PAGES = [
     ("/coinflip", "coinflip.html", "Coinflip — CsgoNeo"),
     ("/blackjack", "blackjack.html", "Blackjack — CsgoNeo"),
     ("/account", "account.html", "Account — CsgoNeo"),
+    ("/deposit", "deposit.html", "Deposit — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
 # The games, each bundled from its entry and put into its page. A game

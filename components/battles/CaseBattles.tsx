@@ -1226,7 +1226,7 @@ export default function CaseBattles() {
             "As a rule the seat whose drops are worth the most takes every drop in the battle, a winning team splitting it between them, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, and Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul).",
             "The house's share is in the case prices and nowhere else, and every drop in a battle you played can be checked under Provably fair from the battle's nonce.",
           ]}
-          note="Drops are sold to your balance as coins, the site having no inventory yet."
+          note="Drops are sold to your balance as Robux, the site having no inventory yet."
         />
       )}
     </div>

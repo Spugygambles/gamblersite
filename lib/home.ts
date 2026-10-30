@@ -55,7 +55,7 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "MaxiM", level: 18, text: "anyone up for a 2v2? toxic case" },
   { name: "nova", level: 63, text: "crash went 31x and i cashed at 2 lol" },
   { name: "sk8r", level: 29, text: "classic" },
-  { system: "rain", text: "$186.20 of rain was shared by 41 players" },
+  { system: "rain", text: "R$186.20 of rain was shared by 41 players" },
   { name: "jaxx", level: 12, text: "first day here, what should i open" },
   { name: "Pele", level: 20, text: "mines on 3 bombs is my comfort game" },
   { name: "deadeye", level: 9, text: "how do i get the daily case" },

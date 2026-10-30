@@ -21,6 +21,8 @@ const PAGES: Record<string, string> = {
   "/keno": "keno.html",
   "/coinflip": "coinflip.html",
   "/blackjack": "blackjack.html",
+  "/account": "account.html",
+  "/deposit": "deposit.html",
   "/terms": "terms.html",
 };
 

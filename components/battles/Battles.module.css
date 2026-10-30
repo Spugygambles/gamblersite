@@ -268,12 +268,9 @@
   align-items: center;
   gap: 26px;
   padding: 14px 22px 14px 20px;
-  border: 1px solid transparent;
+  border: 1px solid var(--edge);
   border-radius: 14px;
-  /* the edge lit at the left, in the brand colour */
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    linear-gradient(90deg, var(--brand), var(--edge) 40%) border-box;
+  background: var(--surface);
   transition:
     translate 0.15s ease,
     box-shadow 0.15s ease,

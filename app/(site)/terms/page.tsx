@@ -5,7 +5,7 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: `Terms of service — ${SITE.name}`,
-  description: `The terms you agree to by playing on ${SITE.name}: who can play, how coins and skins work, playing fair, and how disputes are handled.`,
+  description: `The terms you agree to by playing on ${SITE.name}: who can play, how Robux and skins work, playing fair, and how disputes are handled.`,
 };
 
 // The terms of service: a list of its sections to jump to, then each

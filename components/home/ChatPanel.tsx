@@ -82,7 +82,7 @@ export default function ChatPanel() {
       <div className={styles.rain}>
         <h3 className={styles.rainName}>
           <span className={styles.rainKicker}>
-            Coin
+            Robux
             <CoinIcon />
           </span>
           <RainWord className={styles.rainWord} />

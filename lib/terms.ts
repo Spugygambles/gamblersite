@@ -51,9 +51,9 @@ export const TERMS: TermsSection[] = [
   },
   {
     id: "coins",
-    title: "Coins, skins and what they're worth",
+    title: "Robux, skins and what they're worth",
     blocks: [
-      "The Site is for entertainment. You can add real money, or CS2 skins, to get coins, and coins are only for playing the games and using the features on the Site. Coins and other virtual items have no value outside the Site and can't be exchanged for cash except where the Site offers a withdrawal.",
+      "The Site is for entertainment. You can add Robux, real money or CS2 skins to get a Robux balance, and that balance is only for playing the games and using the features on the Site. The balance and other virtual items have no value outside the Site and can't be exchanged for cash except where the Site offers a withdrawal.",
       "Skins you win can be withdrawn to your Steam inventory through our trade bots. Trades go through Steam and are subject to Steam's own rules, including that Steam Guard must have been active on your mobile device for at least 15 days. That wait is Steam's, not ours, and items waiting on it don't expire.",
       "Prices for skins on the Site come from market data and move with it. The price shown when you buy, sell or withdraw is the one that applies.",
       "Every game outcome is decided by our provably fair system. If a glitch or an error in the interface shows something different, the provably fair result is the one that counts, and it may be corrected after the fact. A display error doesn't entitle you to an item or a payout.",
