@@ -317,12 +317,6 @@
   font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
-.modeLine > svg {
-  width: 18px;
-  height: 18px;
-  color: var(--brand-hi);
-}
-
 .liveTag {
   display: inline-flex;
   align-items: center;
@@ -360,8 +354,8 @@
 
 .sep {
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   color: var(--text-muted);
 }
 
@@ -369,21 +363,21 @@
   position: relative;
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: var(--surface-3);
   color: #fff;
-  font: 800 14px/1 var(--font-ui), sans-serif;
+  font: 800 13px/1 var(--font-ui), sans-serif;
 }
 
 /* the winner's crown */
 .crown {
   position: absolute;
-  top: -10px;
+  top: -9px;
   left: 50%;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   translate: -50% 0;
   color: #e9b949;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
@@ -420,7 +414,7 @@
 }
 
 .reel {
-  --step: 108px;
+  --step: 92px;
   display: flex;
   gap: 12px;
   padding: 14px 16px;
@@ -433,8 +427,8 @@
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 96px;
-  height: 76px;
+  width: 80px;
+  height: 62px;
   opacity: 0.5;
   transition: opacity 0.3s ease;
 }
@@ -468,7 +462,7 @@
 }
 
 .thumb img {
-  width: 88px;
+  width: 72px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5));
@@ -829,7 +823,7 @@
   .strip {
     grid-column: 1 / -1;
     order: 1;
-    min-height: 104px;
+    min-height: 90px;
   }
 
   .go {
@@ -879,22 +873,22 @@
   }
 
   .reel {
-    --step: 86px;
+    --step: 76px;
     gap: 10px;
     padding: 12px 12px;
   }
 
   .strip {
-    min-height: 88px;
+    min-height: 80px;
   }
 
   .thumb {
-    width: 76px;
-    height: 62px;
+    width: 66px;
+    height: 52px;
   }
 
   .thumb img {
-    width: 70px;
+    width: 60px;
   }
 }
 

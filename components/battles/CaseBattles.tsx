@@ -325,7 +325,6 @@ export default function CaseBattles() {
       <li key={lb.id} className={styles.row} data-battle={lb.id} data-status={lb.status} data-open={open || undefined}>
         <div className={styles.who}>
           <span className={styles.modeLine}>
-            <SwordsIcon />
             <b>{lb.mode} Battle</b>
             {live && <span className={styles.liveTag}>Live</span>}
           </span>
@@ -358,7 +357,7 @@ export default function CaseBattles() {
               {lb.cases.map((c, i) => (
                 <span key={i} className={styles.thumb} title={c.name} data-played={i < lb.round || undefined} data-now={(!done && i === lb.round) || undefined}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt="" width={88} height={66} />
+                  <img src={c.image} alt="" width={72} height={54} />
                 </span>
               ))}
             </span>
