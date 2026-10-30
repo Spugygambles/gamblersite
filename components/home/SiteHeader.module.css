@@ -1,6 +1,6 @@
 /*
  * The bar across the top, in two parts: the name and the links to the
- * games, rewards and the event on the left; withdraw, the wallet and the
+ * games, rewards and the event on the left; the wallet and the
  * player on the right. Matte: flat fills and one solid accent, no glows.
  */
 
@@ -156,23 +156,6 @@
 
 /* The Thanksgiving event: a pill with the turkey standing in it, poking
    out over the top. The turkey keeps still until you point at it. */
-/* ---- Withdraw ------------------------------------------------------------ */
-
-.withdraw {
-  padding: 0 10px;
-  color: var(--text-muted);
-  font: 700 12.5px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.05em;
-  text-decoration: none;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: color 0.15s ease;
-}
-
-.withdraw:hover {
-  color: var(--text);
-}
-
 .iconButton {
   display: grid;
   place-items: center;
@@ -205,7 +188,7 @@
   color: var(--brand);
 }
 
-/* ---- Wallet: the balance with the deposit button joined on ------------- */
+/* ---- Wallet: the balance with the Wallet button joined on -------------- */
 
 .wallet {
   display: flex;
@@ -395,12 +378,6 @@
 
 /* ---- Smaller screens --------------------------------------------------- */
 
-@media (max-width: 1279px) {
-  .withdraw {
-    display: none;
-  }
-}
-
 @media (max-width: 1099px) {
   .nav > a[href="/rewards"] {
     display: none;
@@ -472,7 +449,6 @@
   .navItem .caret,
   .menuItem,
   .menuIcon,
-  .withdraw,
   .deposit,
   .gems {
     transition: none;

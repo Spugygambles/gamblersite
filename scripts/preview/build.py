@@ -38,7 +38,7 @@ PAGES = [
     ("/coinflip", "coinflip.html", "Coinflip — CsgoNeo"),
     ("/blackjack", "blackjack.html", "Blackjack — CsgoNeo"),
     ("/account", "account.html", "Account — CsgoNeo"),
-    ("/deposit", "deposit.html", "Deposit — CsgoNeo"),
+    ("/deposit", "deposit.html", "Wallet — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
 # The games, each bundled from its entry and put into its page. A game
@@ -157,8 +157,8 @@ OUT.mkdir()
 used = set()
 for path, name, title in PAGES:
     head, main, body = snapshot(path, title)
-    if name in BUNDLES:
-        main += "\n" + bundle(BUNDLES[name])
+    # a game's bundle, or for a page without one just the header's wallet window
+    main += "\n" + bundle(BUNDLES.get(name, HERE / "header-entry.tsx"))
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
     (OUT / name).write_text(page)
     used |= set(re.findall(r'src="((?:cases|battles|coinflip|gems|skins)/[^"]+)"', body))

@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import type { ReactElement } from "react";
 import { gemStore } from "@/lib/gems";
 import { subscribeWallet, walletBalance } from "@/lib/wallet";
+import { mountWallet } from "./wallet";
 
 const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const whole = new Intl.NumberFormat("en-US");
@@ -29,6 +30,8 @@ const PAGES: Record<string, string> = {
 export function mount(selector: string, element: ReactElement) {
   // files the games fetch themselves (sounds) are beside the page here; see lib/assets.ts
   document.documentElement.setAttribute("data-preview", "");
+  // the header's Wallet opens its window over the page
+  mountWallet();
   const root = document.querySelector(selector);
   if (root) {
     root.replaceChildren();

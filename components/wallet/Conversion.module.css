@@ -1,0 +1,82 @@
+/* The conversion: Robux one side, dollars the other. */
+
+.panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.title {
+  margin: 0;
+  color: var(--text-soft);
+  font: 700 15px/1.2 var(--font-ui), sans-serif;
+}
+
+.conversion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+/* a side: the currency's mark and the amount */
+.box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  height: 58px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  cursor: text;
+}
+
+.box:focus-within {
+  box-shadow: inset 0 0 0 1px var(--surface-3);
+}
+
+.boxIcon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+}
+
+.dollar {
+  color: var(--text-soft);
+  font: 700 21px/1 var(--font-ui), sans-serif;
+}
+
+.amount {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: 800 21px/1 var(--font-ui), sans-serif;
+  outline: none;
+}
+
+.equals {
+  color: var(--text-muted);
+  font: 800 22px/1 var(--font-ui), sans-serif;
+}
+
+.line {
+  margin: 0;
+  color: var(--text-muted);
+  font: 500 13.5px/1.5 var(--font-ui), sans-serif;
+}
+
+@media (max-width: 560px) {
+  .conversion {
+    grid-template-columns: 1fr;
+  }
+
+  .equals {
+    justify-self: center;
+  }
+}

@@ -3,8 +3,8 @@ import Deposit from "@/components/deposit/Deposit";
 import { PageContent } from "@/components/home/Section";
 
 export const metadata: Metadata = {
-  title: "Deposit — CsgoNeo",
-  description: "Add Robux to your balance: 500 Robux to the dollar.",
+  title: "Wallet — CsgoNeo",
+  description: "Your wallet: deposit, withdraw and promo codes. 500 Robux to the dollar.",
 };
 
 // data-deposit-root marks where the preview mounts its copy.

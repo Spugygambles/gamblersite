@@ -1,0 +1,189 @@
+/*
+ * The wallet: the three tabs in a dark pill, a rule, then the ways in and
+ * out as a grid of cards (a coin's mark on its colour, its name and
+ * ticker), the conversion once one is picked, or the promo code field.
+ */
+
+.panel {
+  display: grid;
+  gap: 20px;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px;
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.tab {
+  height: 46px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--text-soft);
+  font: 800 15px/1 var(--font-ui), sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab[aria-selected="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.rule {
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--surface-3) 30% 70%, transparent);
+}
+
+.group {
+  margin: 0 0 14px;
+  font: 800 17px/1 var(--font-ui), sans-serif;
+}
+
+.coins {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.coin {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  height: 74px;
+  padding: 0 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.coin:hover {
+  border-color: var(--surface-3);
+  background: var(--surface-2);
+}
+
+.coinIcon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.coinIcon svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* the name, its ticker under it where the card is narrow */
+.coinName {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  font: 800 15px/1.1 var(--font-ui), sans-serif;
+}
+
+.coinName small,
+.stepTitle small {
+  color: var(--text-muted);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+/* a coin picked: the way back, what's happening, the conversion */
+.step {
+  display: grid;
+  gap: 14px;
+}
+
+.back {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  width: max-content;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.back svg {
+  width: 14px;
+  height: 14px;
+}
+
+.stepTitle {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  font: 800 17px/1.2 var(--font-ui), sans-serif;
+}
+
+/* the promo code */
+.promo {
+  display: grid;
+  gap: 10px;
+  max-width: 440px;
+}
+
+.promoLabel {
+  color: var(--text-soft);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+.promoRow {
+  display: flex;
+  gap: 10px;
+}
+
+.promoRow input {
+  text-transform: uppercase;
+}
+
+.note {
+  min-height: 1em;
+  margin: 0;
+  color: var(--text-muted);
+  font: 500 13.5px/1.5 var(--font-ui), sans-serif;
+}
+
+@media (max-width: 560px) {
+  .tab {
+    padding: 0 14px;
+    font-size: 13.5px;
+  }
+
+  .coins {
+    grid-template-columns: 1fr;
+  }
+}
