@@ -8,6 +8,7 @@ import { wagered } from "@/lib/gems";
 import { BOARD, DRAWN, MAX_PICKS, RISKS, RISK_LABEL, TABLES, describeDraw, drawNumbers, maxMultiplier, multiplier, randomPicks, type Risk } from "@/lib/keno";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import styles from "./Keno.module.css";
 
 type Mode = "manual" | "auto";
@@ -101,6 +102,7 @@ export default function Keno() {
     const mult = multiplier(g.risk, g.picks.length, hits);
     const payout = toCents(g.bet * mult);
     if (payout > 0) addToBalance(payout);
+    recordOutcome(toCents(payout - g.bet));
     live.current = "done";
     setPhase("done");
     setResult({ hits, mult, payout });

@@ -4,7 +4,7 @@
 export const PROFILE = {
   id: 302114,
   memberSince: "March 14, 2025",
-  email: "sp••••@example.com",
+  email: "spugy@example.com",
   emailVerified: false,
   /** Experience through the current level, and what the next one takes. */
   xp: 12420,

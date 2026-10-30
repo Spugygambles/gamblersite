@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { PLAYER } from "./home";
+import { addWagered } from "./stats";
 import { createStore } from "./store";
 
 /*
@@ -46,6 +47,7 @@ export const useGems = () => useSyncExternalStore(gemStore.subscribe, gemStore.g
 
 /** Counts a wager toward gems and hands out the ones it earned. */
 export function wagered(coins: number): number {
+  addWagered(coins);
   const s = gemStore.get();
   const toward = Math.round((s.toward + coins) * 100) / 100;
   const earned = Math.floor(toward / GEM_PER);

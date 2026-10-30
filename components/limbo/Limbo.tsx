@@ -7,6 +7,7 @@ import { wagered } from "@/lib/gems";
 import { MAX_TARGET, MIN_TARGET, QUICK, chanceOf, money, parseTarget, payoutOf, percent, rollOf, times } from "@/lib/limbo";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import styles from "./Limbo.module.css";
 
 type Mode = "manual" | "auto";
@@ -69,6 +70,7 @@ export default function Limbo() {
     const p = live.current.pending;
     if (!p) return;
     if (p.won) addToBalance(payoutOf(p.bet, p.target));
+    recordOutcome(p.won ? Math.round((payoutOf(p.bet, p.target) - p.bet) * 100) / 100 : -p.bet);
     const next: Phase = p.won ? "won" : "lost";
     live.current = { phase: next, pending: null };
     setPhase(next);

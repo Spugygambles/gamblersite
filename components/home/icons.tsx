@@ -260,6 +260,15 @@ export const UserIcon = (p: IconProps) => (
   </svg>
 );
 
+/** Two people: affiliates. */
+export const UsersIcon = (p: IconProps) => (
+  <Line {...p}>
+    <circle cx="9" cy="8" r="3.4" />
+    <path d="M3.5 19.5c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5" />
+    <path d="M16 11.2a3 3 0 1 0-1.6-5.5M20.5 18.5c0-2.6-1.6-4.4-4-4.8" />
+  </Line>
+);
+
 export const UserXIcon = (p: IconProps) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}>
     <circle cx="10" cy="7.4" r="4.2" />

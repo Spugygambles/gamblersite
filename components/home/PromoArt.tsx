@@ -9,9 +9,7 @@ import styles from "./PromoArt.module.css";
 const LINE = "#170f1c";
 const GOLD = "#e3a845";
 const GOLD_DARK = "#c48a35";
-const RED = "#c2503e";
 const ORANGE = "#d9773f";
-const CREAM = "#f6e9d6";
 
 // The outline, drawn behind each shape's fill.
 const ink = { stroke: LINE, strokeWidth: 3.4, paintOrder: "stroke", strokeLinejoin: "round" } as const;

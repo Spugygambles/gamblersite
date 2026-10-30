@@ -482,7 +482,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   justify-items: center;
-  min-height: 560px;
+  min-height: max(560px, calc(100vh - 230px));
   padding: 18px 28px 20px;
   background: var(--bg-raised);
 }
@@ -537,7 +537,7 @@
   grid-template-columns: repeat(var(--n), minmax(0, 1fr));
   gap: 8px;
   /* as big as the stage allows, and never taller than the screen */
-  width: min(100%, 660px, calc(100vh - 290px));
+  width: min(100%, 760px, calc(100vh - 330px));
   aspect-ratio: 1;
   user-select: none;
   -webkit-user-select: none;

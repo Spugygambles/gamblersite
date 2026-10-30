@@ -8,6 +8,7 @@ import { CRASHED_MS, WINDOW_MS, crashPoint, money, multiplierAt, payoutOf, ticks
 import { wagered } from "@/lib/gems";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance, walletBalance } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import styles from "./Crash.module.css";
 
 type Phase = "waiting" | "flying" | "crashed";
@@ -164,6 +165,7 @@ export default function Crash() {
     const payout = payoutOf(live.amount, m);
     live.cashedAt = m;
     addToBalance(payout);
+    recordOutcome(Math.round((payout - live.amount) * 100) / 100);
     setCashed(m);
     setNote(`Cashed out at ${times(m)} for ${money.format(payout)}`);
   };
@@ -199,7 +201,10 @@ export default function Crash() {
     setCrashedAt(r.crashAt);
     const id = ++pastId.current;
     setHistory((h) => [{ id, text: times(r.crashAt), won }, ...h].slice(0, HISTORY));
-    if (live && !won) setNote(`Crashed at ${times(r.crashAt)}: the ${money.format(live.amount)} is gone`);
+    if (live && !won) {
+      recordOutcome(-live.amount);
+      setNote(`Crashed at ${times(r.crashAt)}: the ${money.format(live.amount)} is gone`);
+    }
     else if (live && won) setNote(`Crashed at ${times(r.crashAt)}, after you cashed out at ${times(live.cashedAt!)}`);
     else setNote(`Crashed at ${times(r.crashAt)}`);
     afterRound(live, r);

@@ -37,6 +37,7 @@ PAGES = [
     ("/keno", "keno.html", "Keno — CsgoNeo"),
     ("/coinflip", "coinflip.html", "Coinflip — CsgoNeo"),
     ("/blackjack", "blackjack.html", "Blackjack — CsgoNeo"),
+    ("/account", "account.html", "Account — CsgoNeo"),
     ("/terms", "terms.html", "Terms of service — CsgoNeo"),
 ]
 # The games, each bundled from its entry and put into its page. A game
@@ -68,7 +69,12 @@ def snapshot(path, title):
     assert "<script" not in body
     # Public images sit beside the page.
     body = re.sub(r'src="/(cases|battles|coinflip|gems|skins)/', r'src="\1/', body)
-    body = re.sub(r'href="(/[^"]*)"', lambda m: f'href="{LINKS.get(m.group(1), m.group(1))}"', body)
+    # a link to a built page points at its file, its #hash kept
+    def link(m):
+        path, _, hash_ = m.group(1).partition("#")
+        to = LINKS.get(path, path)
+        return f'href="{to}#{hash_}"' if hash_ else f'href="{to}"'
+    body = re.sub(r'href="(/[^"]*)"', link, body)
 
     css = []
     for href in re.findall(r'<link rel="stylesheet" href="([^"]+\.css)"', html):

@@ -338,7 +338,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   justify-items: center;
-  min-height: 460px;
+  min-height: max(460px, calc(100vh - 300px));
   padding: 16px 24px 18px;
   background: var(--bg-raised);
 }

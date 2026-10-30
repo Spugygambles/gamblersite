@@ -10,6 +10,7 @@ import { count } from "@/lib/home";
 import { takeNonce } from "@/lib/seeds";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import Reel from "./Reel";
 import styles from "./Cases.module.css";
 
@@ -88,6 +89,7 @@ export default function CaseOpening() {
     const { item, from } = live.current;
     if (live.current.phase !== "spinning" || !item || !from) return;
     addToBalance(item.skin.price);
+    recordOutcome(Math.round((item.skin.price - (from.gems ? 0 : from.price)) * 100) / 100);
     live.current = { phase: "done", item, from };
     setPhase("done");
     setResult({ item, from });

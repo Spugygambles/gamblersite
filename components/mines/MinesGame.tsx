@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { GRIDS, maxMines, minePositions, money, multiplier, payoutOf, times, type Grid } from "@/lib/mines";
 import { wagered } from "@/lib/gems";
+import { recordOutcome } from "@/lib/stats";
 import { randomHex } from "@/lib/sha256";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import { CoinIcon, GearIcon, InfoIcon, ShieldIcon } from "@/components/home/icons";
@@ -117,6 +118,7 @@ export default function MinesGame() {
     const m = won ? multiplier(g.tiles, g.mines, g.revealed.length) : 0;
     const payout = won ? payoutOf(g.bet, m) : 0;
     if (won) addToBalance(payout);
+    recordOutcome(won ? toCents(payout - g.bet) : -g.bet);
     const id = ++pastId.current;
     setLive(won ? "won" : "lost", g);
     setResult(won ? { mult: m, payout } : null);

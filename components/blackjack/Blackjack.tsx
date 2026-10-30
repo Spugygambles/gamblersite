@@ -8,7 +8,6 @@ import { saveSettings, useSettings } from "@/components/mines/stores";
 import {
   canDouble,
   canSplit,
-  cardsLeft,
   deal,
   describe,
   double as doubleHand,
@@ -31,6 +30,7 @@ import {
   type Result,
 } from "@/lib/blackjack";
 import { wagered } from "@/lib/gems";
+import { recordOutcome } from "@/lib/stats";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance } from "@/lib/wallet";
 import { sfx, warmSfx } from "./sfx";
@@ -184,6 +184,7 @@ export default function Blackjack() {
     const staked = toCents(g.hands.reduce((s, h) => s + h.bet, 0) + g.insurance);
     if (payout > 0) addToBalance(payout);
     const net = toCents(payout - staked);
+    recordOutcome(net);
     setOutcome({ results: rs, net, insured });
     setPhase("done");
     const won = net > 0 ? true : net < 0 ? false : null;
@@ -242,6 +243,7 @@ export default function Blackjack() {
       later(() => {
         setSide(pair ? { name: pair.name, payout } : { name: "No pair", payout: 0 });
         if (payout > 0) addToBalance(payout);
+        recordOutcome(toCents(payout - sideBet));
       }, DEAL_MS * 3);
     } else {
       setSide(null);
@@ -345,21 +347,6 @@ export default function Blackjack() {
       <div className={styles.topRow}>
         <div className={styles.historyWrap}>
           <History items={history} label="Last hands" />
-        </div>
-        <div className={styles.shoe} aria-label="The shoe" data-shoe>
-          <span className={styles.shoeStack} aria-hidden>
-            <i />
-            <i />
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className={styles.shoeLabel}>
-            <b className="tabular" data-shoe-left>
-              {game ? cardsLeft(game) : 312}
-            </b>{" "}
-            cards
-          </span>
         </div>
       </div>
 

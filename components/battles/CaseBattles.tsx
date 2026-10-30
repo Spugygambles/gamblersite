@@ -30,6 +30,7 @@ import { PLAYER } from "@/lib/home";
 import { takeNonce } from "@/lib/seeds";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import styles from "./Battles.module.css";
 
 type Phase = "lobby" | "waiting" | "fighting" | "done";
@@ -179,6 +180,7 @@ export default function CaseBattles() {
     const share = shareOf(pot, b.mode);
     const youWon = winners.includes(b.you);
     if (youWon) addToBalance(share);
+    recordOutcome(youWon ? Math.round((share - b.cost) * 100) / 100 : -b.cost);
     const r: Result = { winners, pot, share, youWon };
     setResult(r);
     setLive("done", b);

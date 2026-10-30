@@ -9,7 +9,7 @@ import styles from "./MobileBar.module.css";
  * The bar along the bottom on phones, like the big sites' apps: home, the
  * games, rewards, chat and the player's account. AppShell works the chat
  * button and keeps its aria-expanded up to date; the account button opens
- * ProfileModal.
+ * account page.
  */
 export default function MobileBar() {
   const path = usePathname();
@@ -32,10 +32,10 @@ export default function MobileBar() {
         <ChatBubbleIcon />
         Chat
       </button>
-      <button type="button" className={styles.item} aria-haspopup="dialog" aria-controls="profile-dialog" data-profile-open>
+      <Link href="/account" className={styles.item} aria-current={path === "/account" ? "page" : undefined}>
         <UserIcon />
         Account
-      </button>
+      </Link>
     </nav>
   );
 }

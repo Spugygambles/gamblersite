@@ -407,7 +407,8 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   justify-items: center;
-  min-height: 560px;
+  /* the height of the screen, less the header and the gap below, and never less than before */
+  min-height: max(560px, calc(100vh - 230px));
   padding: 18px 28px 20px;
   background: var(--bg-raised);
 }

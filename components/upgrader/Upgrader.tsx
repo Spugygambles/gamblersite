@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { wagered } from "@/lib/gems";
+import { recordOutcome } from "@/lib/stats";
 import { rotateSeeds, takeNonce, useSeeds } from "@/lib/seeds";
 import { SKINS, WEARS, skinBySlug, type Skin } from "@/lib/skins";
 import { MAX_ITEMS, MAX_MULT, MIN_BET, chanceOf, isWin, money, multiplierOf, percent, rollOf, times } from "@/lib/upgrader";
@@ -163,6 +164,7 @@ export default function Upgrader() {
     const p = live.current.pending;
     if (!p) return;
     if (p.won) addToBalance(p.target);
+    recordOutcome(p.won ? toCents(p.target - p.bet) : -p.bet);
     const next: Phase = p.won ? "won" : "lost";
     live.current = { phase: next, pending: null };
     setPhase(next);

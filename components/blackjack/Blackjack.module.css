@@ -1,7 +1,6 @@
 /*
  * The blackjack table, in the kit's frame with a bar along the bottom:
- * the felt on the stage with the shoe at its top right and, before a
- * hand, the two pay ribbons in the middle; during a hand the dealer's
+ * the felt on the stage with the two pay ribbons in the middle; during a hand the dealer's
  * cards at the top, the player's below and the outcome between. Cards
  * are drawn in CSS: a pale face with the rank and suit in two corners
  * and the suit large in the middle, a navy back for the hole card. In
@@ -15,7 +14,7 @@
 
 .stage {
   grid-template-rows: auto minmax(0, 1fr) auto;
-  min-height: 600px;
+  min-height: max(600px, calc(100vh - 230px));
   background:
     radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.025), transparent 70%),
     var(--bg-raised);
@@ -26,9 +25,9 @@
 .topRow {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
   width: 100%;
+  min-height: 24px;
 }
 
 .historyWrap {
@@ -37,59 +36,6 @@
 
 .historyWrap > ol {
   justify-content: flex-start;
-}
-
-.shoe {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-/* five card backs stacked, the top one in the site's colour */
-.shoeStack {
-  position: relative;
-  display: block;
-  width: 62px;
-  height: 40px;
-}
-
-.shoeStack i {
-  position: absolute;
-  inset: 0;
-  border-radius: 6px;
-  background: var(--surface-3);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-}
-
-.shoeStack i:nth-child(2) {
-  translate: 0 -3px;
-}
-
-.shoeStack i:nth-child(3) {
-  translate: 0 -6px;
-}
-
-.shoeStack i:nth-child(4) {
-  translate: 0 -9px;
-}
-
-.shoeStack i:nth-child(5) {
-  translate: 0 -12px;
-  background:
-    repeating-linear-gradient(45deg, rgba(0, 0, 0, 0.12) 0 4px, transparent 4px 8px),
-    var(--brand);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
-}
-
-.shoeLabel {
-  color: var(--text-muted);
-  font: 600 11.5px/1 var(--font-ui), sans-serif;
-}
-
-.shoeLabel b {
-  color: var(--text-soft);
-  font-weight: 800;
 }
 
 /* ---- The table ------------------------------------------------------------------------ */
@@ -219,11 +165,6 @@
   justify-items: center;
   padding: 8px 12px 10px;
   border-radius: 14px;
-}
-
-.hand[data-active] {
-  background: rgba(255, 255, 255, 0.025);
-  box-shadow: inset 0 0 0 1px var(--edge);
 }
 
 .hand[data-won] .card {

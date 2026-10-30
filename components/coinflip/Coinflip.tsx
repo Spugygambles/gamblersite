@@ -8,6 +8,7 @@ import { wagered } from "@/lib/gems";
 import { BET_PLAYERS } from "@/lib/home";
 import { takeNonce } from "@/lib/seeds";
 import { addToBalance } from "@/lib/wallet";
+import { recordOutcome } from "@/lib/stats";
 import { SAMPLE_FLIPS, SIDE_IMAGE, SIDE_NAME, SIDES, flipOf, money, other, payoutOf, sampleFlip, type LobbyFlip, type Side } from "@/lib/coinflip";
 import styles from "./Coinflip.module.css";
 
@@ -68,6 +69,7 @@ export default function Coinflip() {
 
   const settle = (m: Match) => {
     if (m.won) addToBalance(payoutOf(m.amount));
+    recordOutcome(m.won ? Math.round((payoutOf(m.amount) - m.amount) * 100) / 100 : -m.amount);
     setPhase("done");
     const id = ++pastId.current;
     setHistory((h) => [{ id, text: `${SIDE_NAME[m.result][0]} ${m.won ? "+" : "−"}${money.format(m.won ? payoutOf(m.amount) - m.amount : m.amount)}`, won: m.won }, ...h].slice(0, HISTORY));
