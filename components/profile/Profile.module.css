@@ -97,7 +97,7 @@
   place-items: center;
   width: 84px;
   height: 84px;
-  border-radius: 50%;
+  border-radius: 18px;
   color: #fff;
   font: 800 32px/1 var(--font-ui), sans-serif;
 }

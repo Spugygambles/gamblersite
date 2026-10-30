@@ -78,7 +78,7 @@
   place-items: center;
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 8px;
   background: var(--surface-3);
   color: var(--text);
   font: 800 14px/1 var(--font-ui), sans-serif;
@@ -215,6 +215,7 @@
 .playerAvatar {
   width: 48px;
   height: 48px;
+  border-radius: 11px;
   font-size: 18px;
 }
 
