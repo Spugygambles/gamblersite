@@ -11,6 +11,7 @@ import {
   COIN_CASES,
   GAMEMODES,
   LOBBY,
+  MAX_BORROW,
   MAX_ROUNDS,
   MODES,
   NO_OPTIONS,
@@ -21,6 +22,7 @@ import {
   fillSeats,
   gamemodeName,
   KEEP,
+  keptShare,
   keepBattle,
   keptBattles,
   lobbyBattle,
@@ -92,10 +94,11 @@ const YOU = PLAYER.name;
 // the list keeps one finished sample battle; the battles people play are kept up to KEEP
 const PREVIOUS_KEPT = 1;
 let nextSample = 10000;
+let toastCount = 0;
 
 // the extras, in the order they're offered
 const OPTIONS: { key: keyof Options; label: string; icon: (p: { className?: string }) => React.JSX.Element; hint: string }[] = [
-  { key: "borrow", label: "Borrow", icon: BorrowIcon, hint: "Borrow the seat's cost against the pot. Needs an account, so it changes nothing here yet." },
+  { key: "borrow", label: "Borrow", icon: BorrowIcon, hint: "Borrow up to 90% of the seat's cost; a win pays you the share you put in." },
   { key: "fund", label: "Fund Money", icon: FundIcon, hint: "You pay for every seat; the others join for free." },
   { key: "private", label: "Private Battle", icon: LockIcon, hint: "Only people with the link can join." },
   { key: "fast", label: "Fast", icon: BoltIcon, hint: "Quick reels." },
@@ -161,6 +164,9 @@ export default function CaseBattles() {
   const [picked, setPicked] = useState<CaseDef[]>([COIN_CASES[0], COIN_CASES[1]]);
   const [menu, setMenu] = useState<"type" | "presets" | null>(null);
   const [picking, setPicking] = useState(false);
+  const [borrowing, setBorrowing] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ id: number; title: string; text: string } | null>(null);
+  const toastTimer = useRef(0);
   const [lobbyEdits, setLobbyEdits] = useState<LobbyBattle[] | null>(null);
   const lobby = lobbyEdits ?? lobbyInitial;
   const [battle, setBattle] = useState<Battle | null>(null);
@@ -178,6 +184,7 @@ export default function CaseBattles() {
 
   const inLobby = phase === "lobby";
   const making = phase === "create";
+  const borrowPct = Math.round(options.borrow * 100);
   const makeCost = makeCostOf(picked, mode, options);
   const why = picked.length === 0 ? "Add a case to fight over" : balance < makeCost ? "Not enough balance" : "";
   const canCreate = making && picked.length > 0 && balance >= makeCost;
@@ -188,8 +195,15 @@ export default function CaseBattles() {
     return () => {
       clearTimeout(t.fill);
       clearTimeout(t.pause);
+      clearTimeout(toastTimer.current);
     };
   }, []);
+
+  const complain = (title: string, text: string) => {
+    clearTimeout(toastTimer.current);
+    setToast({ id: ++toastCount, title, text });
+    toastTimer.current = window.setTimeout(() => setToast(null), 3200);
+  };
 
   // The sample battles under way move on a round now and then; one that
   // ends goes to the previous battles and a fresh one starts in its place.
@@ -260,7 +274,7 @@ export default function CaseBattles() {
     // the battle leaves the lobby; another with a seat free takes its place
     const fresh = lobbyBattle(++nextId.current, "open");
     setLobbyEdits(lobby.map((x) => (x.id === lb.id ? fresh : x)));
-    start(lb.mode, lb.gamemode, { ...lb.options, fast }, lb.cases, seats, seat, stake);
+    start(lb.mode, lb.gamemode, { ...lb.options, fast, borrow: 0 }, lb.cases, seats, seat, stake);
   };
 
   // a battle under way or finished, opened to look at: no seat, no stake
@@ -316,10 +330,13 @@ export default function CaseBattles() {
     }
   };
 
+  // a winner's share of the pot; yours less the lender's cut when you borrowed
   const resultOf = (b: Battle): Result => {
     const { winners } = settle(b.drops, b.mode, b.gamemode, b.decider);
     const pot = potOf(b.drops);
-    return { winners, pot, share: shareOf(pot, winners.length), youWon: b.you >= 0 && winners.includes(b.you) };
+    const youWon = b.you >= 0 && winners.includes(b.you);
+    const share = shareOf(pot, winners.length);
+    return { winners, pot, share: youWon && !b.viewed ? Math.round(share * keptShare(b.options.borrow) * 100) / 100 : share, youWon };
   };
 
   const whoWon = (b: Battle, winners: number[]) => winners.map((w) => (w === b.you ? "You" : b.seats[w])).join(" & ");
@@ -334,7 +351,8 @@ export default function CaseBattles() {
     setResult(r);
     setLive("done", b);
     const line = resultLine(b.gamemode, whoWon(b, r.winners), r.winners.length > 1);
-    setNote(played && r.youWon ? `${line}: ${money.format(r.share)} of the ${money.format(r.pot)} pot to your balance` : `${line}: the pot was ${money.format(r.pot)}`);
+    const borrowed = b.options.borrow > 0 ? ` (${Math.round(b.options.borrow * 100)}% borrowed, so ${Math.round(keptShare(b.options.borrow) * 100)}% of your share)` : "";
+    setNote(played && r.youWon ? `${line}: ${money.format(r.share)} of the ${money.format(r.pot)} pot to your balance${borrowed}` : `${line}: the pot was ${money.format(r.pot)}`);
     // the battle goes into the list as finished: yours is kept for next time
     const done: LobbyBattle = {
       id: b.id,
@@ -375,7 +393,25 @@ export default function CaseBattles() {
     const i = picked.map((p) => p.slug).lastIndexOf(c.slug);
     if (i >= 0) removeCase(i);
   };
-  const toggleOption = (key: keyof Options) => setOptions({ ...options, [key]: !options[key] });
+  const toggleOption = (key: keyof Options) => {
+    if (key === "borrow") {
+      if (options.fund) {
+        complain("Something went wrong!", "You cannot borrow if you fund the battle");
+        return;
+      }
+      setBorrowing(options.borrow);
+      return;
+    }
+    if (key === "fund" && !options.fund && options.borrow > 0) {
+      complain("Something went wrong!", "You cannot fund the battle if you have borrowed money");
+      return;
+    }
+    setOptions({ ...options, [key]: !options[key] });
+  };
+  const keepBorrow = () => {
+    if (borrowing !== null) setOptions({ ...options, borrow: Math.min(MAX_BORROW, Math.max(0, borrowing)) });
+    setBorrowing(null);
+  };
   const applyPreset = (p: (typeof PRESETS)[number]) => {
     setMode(p.mode);
     setGamemode(p.gamemode);
@@ -590,11 +626,18 @@ export default function CaseBattles() {
             <SparklesIcon />
             Randomize settings
           </button>
-          <button type="button" className={`${kit.primary} ${styles.createGo}`} disabled={!canCreate} onClick={create} data-create title={why || undefined}>
-            Create battle for
-            <CoinIcon />
-            <span data-cost>{money.format(makeCost)}</span>
-          </button>
+          <span className={styles.createGoWrap}>
+            <button type="button" className={`${kit.primary} ${styles.createGo}`} disabled={!canCreate} onClick={create} data-create title={why || undefined}>
+              Create battle for
+              <CoinIcon />
+              <span data-cost>{money.format(makeCost)}</span>
+            </button>
+            {options.borrow > 0 && (
+              <span className={styles.borrowingNote} data-borrowing={borrowPct}>
+                Borrowing {borrowPct}%
+              </span>
+            )}
+          </span>
         </div>
       </div>
 
@@ -650,14 +693,15 @@ export default function CaseBattles() {
                 key={o.key}
                 type="button"
                 className={`${styles.chip} ${o.key === "gold" ? styles.chipGold : ""}`}
-                aria-pressed={options[o.key]}
+                aria-pressed={o.key === "borrow" ? options.borrow > 0 : options[o.key]}
                 title={o.hint}
                 onClick={() => toggleOption(o.key)}
                 data-option={o.key}
                 {...(o.key === "fast" ? { "data-fast": "" } : {})}
+                {...(o.key === "borrow" ? { "data-borrow": borrowPct } : {})}
               >
                 <o.icon className={styles.chipIcon} />
-                {o.label}
+                {o.key === "borrow" && options.borrow > 0 ? `${borrowPct}%` : o.label}
               </button>
             ))}
           </div>
@@ -854,6 +898,46 @@ export default function CaseBattles() {
     <div className={styles.wrap} data-battles data-phase={phase}>
       {making ? createPage : inLobby || !battle ? list : arena}
 
+      {borrowing !== null && (
+        <Modal title="Borrow Funds" onClose={() => setBorrowing(null)}>
+          <div className={styles.borrowBox} data-borrow-window>
+            <p className={styles.borrowLine}>
+              On win you will receive <b>{Math.round(keptShare(borrowing) * 100)}%</b> of your share.
+            </p>
+            <p className={styles.borrowSub}>Gems follow your stake: you earn them on the part you put in.</p>
+            <div className={styles.borrowSlider}>
+              <span className={styles.borrowHead}>
+                <span>
+                  Borrow Amount: <b data-borrow-amount>{Math.round(borrowing * 100)}%</b>
+                </span>
+                <b>{Math.round(MAX_BORROW * 100)}%</b>
+              </span>
+              <input
+                type="range"
+                min={0}
+                max={Math.round(MAX_BORROW * 100)}
+                step={5}
+                value={Math.round(borrowing * 100)}
+                aria-label="Borrow amount, percent"
+                style={{ "--pct": `${(borrowing / MAX_BORROW) * 100}%` } as CSSProperties}
+                onChange={(e) => setBorrowing(Number(e.target.value) / 100)}
+                data-borrow-range
+              />
+            </div>
+            <button type="button" className={`${kit.primary} ${styles.borrowGo}`} onClick={keepBorrow} data-borrow-continue>
+              Continue
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {toast && (
+        <div key={toast.id} className={styles.toast} role="alert" data-toast>
+          <b>{toast.title}</b>
+          <span>{toast.text}</span>
+        </div>
+      )}
+
       {picking && (
         <Modal title="Add cases" onClose={() => setPicking(false)} wide>
           <ul className={styles.picker} aria-label="Cases" data-picker>
@@ -909,7 +993,7 @@ export default function CaseBattles() {
           title="How case battles work"
           onClose={() => setDialog(null)}
           steps={[
-            "Create a battle: a battle type (1v1, 1v1v1, 1v1v1v1 or 2v2), the cases to fight over, up to eight, and a gamemode if you want one. Or join a battle from the list that has a seat free. A seat costs the cases' prices together, unless the maker funded every seat.",
+            "Create a battle: a battle type (1v1, 1v1v1, 1v1v1v1 or 2v2), the cases to fight over, up to eight, and a gamemode if you want one. Or join a battle from the list that has a seat free. A seat costs the cases' prices together, unless the maker funded every seat. Borrow up to 90% of your seat and you put in the rest; a win then pays you the share you put in, the lender keeping the borrowed share.",
             "Every seat opens the same case each round, all at once. Each seat's drops stack up under it with their value.",
             "As a rule the seat whose drops are worth the most takes every drop in the battle, the winning pair splitting it in 2v2, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, and Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul).",
             "The house's share is in the case prices and nowhere else, and every drop in a battle you played can be checked under Provably fair from the battle's nonce.",

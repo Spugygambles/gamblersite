@@ -36,9 +36,13 @@ export const GAMEMODES: { id: Exclude<Gamemode, "standard">; name: string; blurb
 ];
 export const gamemodeName = (g: Gamemode) => GAMEMODES.find((m) => m.id === g)?.name ?? "";
 
-/** The extras a battle can be made with. */
-export type Options = { borrow: boolean; fund: boolean; private: boolean; fast: boolean; gold: boolean };
-export const NO_OPTIONS: Options = { borrow: false, fund: false, private: false, fast: false, gold: false };
+/** The extras a battle can be made with. `borrow` is the share of the seat's cost borrowed, 0 to MAX_BORROW. */
+export type Options = { borrow: number; fund: boolean; private: boolean; fast: boolean; gold: boolean };
+export const NO_OPTIONS: Options = { borrow: 0, fund: false, private: false, fast: false, gold: false };
+/** The most of a seat that can be borrowed. */
+export const MAX_BORROW = 0.9;
+/** The share of a win the player keeps when borrowing: the lender takes the borrowed share. */
+export const keptShare = (borrow: number) => Math.round((1 - borrow) * 100) / 100;
 
 /** The cases a battle can be made of: the ones sold for coins. */
 export const COIN_CASES: CaseDef[] = CASES.filter((c) => c.gems === null);
@@ -47,8 +51,8 @@ export const MAX_ROUNDS = 8;
 const cents = (n: number) => Math.round(n * 100) / 100;
 /** A seat's cost: the cases' prices together. */
 export const costOf = (cases: CaseDef[]) => cents(cases.reduce((sum, c) => sum + c.price, 0));
-/** What making the battle costs: a seat, or every seat when the maker funds them all. */
-export const makeCostOf = (cases: CaseDef[], mode: Mode, options: Options) => cents(costOf(cases) * (options.fund ? seatsOf(mode) : 1));
+/** What making the battle costs: a seat, or every seat when the maker funds them all, less what's borrowed. */
+export const makeCostOf = (cases: CaseDef[], mode: Mode, options: Options) => cents(costOf(cases) * (options.fund ? seatsOf(mode) : 1) * keptShare(options.borrow));
 
 /** Every seat's drop in every round: drops[round][seat], draw index round × seats + seat. */
 export function battleDrops(cases: CaseDef[], seats: number, serverSeed: string, clientSeed: string, nonce: number): CaseItem[][] {
@@ -256,7 +260,7 @@ export function keptBattles(): LobbyBattle[] {
           id: k.id,
           mode: k.mode,
           gamemode: k.gamemode && GAMEMODES.some((g) => g.id === k.gamemode) ? k.gamemode : "standard",
-          options: { ...NO_OPTIONS, ...k.options },
+          options: { ...NO_OPTIONS, ...k.options, borrow: typeof k.options?.borrow === "number" ? k.options.borrow : 0 },
           cases,
           players: k.players,
           status: "done" as const,
