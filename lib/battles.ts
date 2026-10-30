@@ -12,18 +12,26 @@ import { BET_PLAYERS } from "./home";
  * out again from its seeds.
  */
 
-export type Mode = "1v1" | "1v1v1" | "1v1v1v1" | "2v2";
+export type Mode = "1v1" | "1v1v1" | "1v1v1v1" | "1v1v1v1v1" | "2v2" | "2v2v2" | "3v3";
 export const MODES: { id: Mode; seats: number; label: string; kind: "Solo battle" | "Team battle" }[] = [
   { id: "1v1", seats: 2, label: "1v1", kind: "Solo battle" },
   { id: "1v1v1", seats: 3, label: "1v1v1", kind: "Solo battle" },
   { id: "1v1v1v1", seats: 4, label: "1v1v1v1", kind: "Solo battle" },
+  { id: "1v1v1v1v1", seats: 5, label: "1v1v1v1v1", kind: "Solo battle" },
   { id: "2v2", seats: 4, label: "2v2", kind: "Team battle" },
+  { id: "2v2v2", seats: 6, label: "2v2v2", kind: "Team battle" },
+  { id: "3v3", seats: 6, label: "3v3", kind: "Team battle" },
 ];
 export const seatsOf = (mode: Mode) => MODES.find((m) => m.id === mode)!.seats;
-/** Seats 0 and 1 are one team in 2v2, 2 and 3 the other; every other mode is each seat for itself. */
-export const teamOf = (mode: Mode, seat: number) => (mode === "2v2" ? Math.floor(seat / 2) : seat);
-/** The sides, each a list of seats. */
-export const teamsOf = (mode: Mode): number[][] => (mode === "2v2" ? [[0, 1], [2, 3]] : Array.from({ length: seatsOf(mode) }, (_, i) => [i]));
+/** The sides, each a list of seats: the mode's name says how big each is, and seats fill it in order. */
+export function teamsOf(mode: Mode): number[][] {
+  let seat = 0;
+  return mode.split("v").map((size) => Array.from({ length: Number(size) }, () => seat++));
+}
+/** Which side a seat is on. */
+export const teamOf = (mode: Mode, seat: number) => teamsOf(mode).findIndex((t) => t.includes(seat));
+/** Whether seats share a side in this mode. */
+export const isTeamMode = (mode: Mode) => teamsOf(mode).some((t) => t.length > 1);
 
 /** How a battle is won. Standard is the one with no card picked: the biggest haul wins. */
 export type Gamemode = "standard" | "crazy" | "terminal" | "group" | "coinflip" | "jackpot";
@@ -200,10 +208,11 @@ export function fillSeats(seats: (string | null)[], seed: number, taken: string[
 const SAMPLE_SERVER = "csgoneo-sample-battles";
 const SAMPLE_CLIENT = "lobby";
 
-/** A sample battle: a mode, a gamemode now and then, two to six cases, and its seats; open with one free, live part way through, or finished. */
-export function lobbyBattle(id: number, status: Status = "open"): LobbyBattle {
+/** A sample battle: a mode (given, or drawn), a gamemode now and then, two to six cases, and its seats; open with one free, live part way through, or finished. */
+export function lobbyBattle(id: number, status: Status = "open", wanted?: Mode): LobbyBattle {
   const rand = seeded(id * 7919);
-  const mode = MODES[Math.floor(rand() * MODES.length)].id;
+  const drawn = MODES[Math.floor(rand() * MODES.length)].id;
+  const mode = wanted ?? drawn;
   const rounds = 2 + Math.floor(rand() * 5);
   const cases = Array.from({ length: rounds }, () => COIN_CASES[Math.floor(rand() * COIN_CASES.length)]);
   const gamemode: Gamemode = rand() < 0.5 ? "standard" : GAMEMODES[Math.floor(rand() * GAMEMODES.length)].id;
@@ -217,8 +226,18 @@ export function lobbyBattle(id: number, status: Status = "open"): LobbyBattle {
   return { id, mode, gamemode, options, cases, players, status, round, drops, decider, you: null };
 }
 
-/** The sample battles to start with, three for trying things: one with a seat free, one under way, one finished. */
-export const LOBBY: LobbyBattle[] = [lobbyBattle(1, "open"), lobbyBattle(5, "live"), lobbyBattle(9, "done")];
+/** The sample battles to start with: one of every battle type, some with a seat free, some under way, some finished. */
+export const LOBBY: LobbyBattle[] = [
+  lobbyBattle(1, "open", "1v1"),
+  lobbyBattle(5, "live", "1v1v1"),
+  lobbyBattle(9, "done", "1v1v1v1"),
+  lobbyBattle(13, "live", "1v1v1v1v1"),
+  lobbyBattle(17, "open", "2v2"),
+  lobbyBattle(21, "live", "2v2v2"),
+  lobbyBattle(25, "done", "3v3"),
+];
+/** How many finished sample battles the list keeps. */
+export const SAMPLES_DONE = LOBBY.filter((b) => b.status === "done").length;
 
 // ---- Your finished battles, kept in the browser ----------------------------------------------
 

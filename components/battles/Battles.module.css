@@ -264,7 +264,7 @@
 /* a battle: the mode and who's in it, the cases, the cost, the way in */
 .row {
   display: grid;
-  grid-template-columns: 236px minmax(0, 1fr) auto auto;
+  grid-template-columns: 272px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 26px;
   padding: 14px 22px 14px 20px;
@@ -339,7 +339,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 5px;
+  gap: 6px 4px;
 }
 
 .seats[data-stack] {

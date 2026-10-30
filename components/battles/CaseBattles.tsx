@@ -21,6 +21,7 @@ import {
   describeBattle,
   fillSeats,
   gamemodeName,
+  isTeamMode,
   KEEP,
   keptShare,
   keepBattle,
@@ -29,6 +30,7 @@ import {
   makeCostOf,
   potOf,
   resultLine,
+  SAMPLES_DONE,
   seatsOf,
   settle,
   shareOf,
@@ -93,8 +95,8 @@ const PAUSE_MS = 700;
 const TICK_MS = 5000;
 const YOU = PLAYER.name;
 
-// the list keeps one finished sample battle; the battles people play are kept up to KEEP
-const PREVIOUS_KEPT = 1;
+// the list keeps the finished sample battles it started with; the battles people play are kept up to KEEP
+const PREVIOUS_KEPT = SAMPLES_DONE;
 let nextSample = 10000;
 let toastCount = 0;
 
@@ -114,6 +116,9 @@ const PRESETS: { name: string; mode: Mode; gamemode: Gamemode; cases: number[]; 
   { name: "Team jackpot", mode: "2v2", gamemode: "jackpot", cases: [0, 1, 2, 0] },
   { name: "Terminal four-way", mode: "1v1v1v1", gamemode: "terminal", cases: [2, 2, 0, 1, 1, 0] },
   { name: "Group gold run", mode: "2v2", gamemode: "group", cases: [1, 1, 1, 1], options: { gold: true } },
+  { name: "Three teams, crazy", mode: "2v2v2", gamemode: "crazy", cases: [0, 2, 1, 0] },
+  { name: "3v3 showdown", mode: "3v3", gamemode: "standard", cases: [2, 2, 1] },
+  { name: "Five-way coinflip", mode: "1v1v1v1v1", gamemode: "coinflip", cases: [0, 1] },
 ];
 
 // A round passes in the lobby: live battles move on, finished ones join
@@ -513,7 +518,7 @@ export default function CaseBattles() {
     const pot = potOf(lb.drops.slice(0, lb.round));
     const winners = done ? settle(lb.drops, lb.mode, lb.gamemode, lb.decider).winners : [];
     const teams = teamsOf(lb.mode);
-    const stacked = lb.mode === "2v2";
+    const stacked = isTeamMode(lb.mode);
     // the case strip keeps the round being played second from the left
     const shift = isLive ? Math.max(0, lb.round - 1) : 0;
     const chip = (seat: number) => {
@@ -929,7 +934,7 @@ export default function CaseBattles() {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
           const lost = !!result && !won;
-          const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
+          const team = isTeamMode(battle.mode) ? teamOf(battle.mode, seat) : null;
           if (!over) {
             return (
               <div key={seat} className={styles.reelCol} data-band-seat={seat}>
@@ -965,7 +970,7 @@ export default function CaseBattles() {
                 <b className={styles.colName}>
                   {name ?? "Waiting…"}
                   {you && <small>you</small>}
-                  {team !== null && <i>team {team === 0 ? "A" : "B"}</i>}
+                  {team !== null && <i>team {String.fromCharCode(65 + team)}</i>}
                 </b>
                 <span className={`${styles.colTotal} tabular`}>
                   <CoinIcon />
@@ -1029,7 +1034,7 @@ export default function CaseBattles() {
         {battle.seats.map((name, seat) => {
           const you = seat === battle.you;
           const won = result?.winners.includes(seat) ?? false;
-          const team = battle.mode === "2v2" ? teamOf(battle.mode, seat) : null;
+          const team = isTeamMode(battle.mode) ? teamOf(battle.mode, seat) : null;
           return (
             <section
               key={seat}
@@ -1192,9 +1197,9 @@ export default function CaseBattles() {
           title="How case battles work"
           onClose={() => setDialog(null)}
           steps={[
-            "Create a battle: a battle type (1v1, 1v1v1, 1v1v1v1 or 2v2), the cases to fight over, up to eight, and a gamemode if you want one. Or join a battle from the list that has a seat free. A seat costs the cases' prices together, unless the maker funded every seat. Borrow up to 90% of your seat and you put in the rest; a win then pays you the share you put in, the lender keeping the borrowed share.",
+            "Create a battle: a battle type (solo from 1v1 up to 1v1v1v1v1, or teams of 2v2, 2v2v2 and 3v3), the cases to fight over, up to eight, and a gamemode if you want one. Or join a battle from the list that has a seat free. A seat costs the cases' prices together, unless the maker funded every seat. Borrow up to 90% of your seat and you put in the rest; a win then pays you the share you put in, the lender keeping the borrowed share.",
             "Every seat opens the same case each round, all at once. Each seat's drops stack up under it with their value.",
-            "As a rule the seat whose drops are worth the most takes every drop in the battle, the winning pair splitting it in 2v2, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, and Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul).",
+            "As a rule the seat whose drops are worth the most takes every drop in the battle, a winning team splitting it between them, and a tie going to whoever sat down first. Crazy hands it to the lowest haul, Terminal counts the last case only, Group splits it between everyone, and Coinflip and Jackpot settle it with one more draw (even odds, or odds by haul).",
             "The house's share is in the case prices and nowhere else, and every drop in a battle you played can be checked under Provably fair from the battle's nonce.",
           ]}
           note="Drops are sold to your balance as coins, the site having no inventory yet."
