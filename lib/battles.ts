@@ -63,9 +63,23 @@ export function winnersOf(totals: number[], mode: Mode): number[] {
 /** A winner's share of the pot: all of it, or half in 2v2. */
 export const shareOf = (pot: number, mode: Mode) => cents(mode === "2v2" ? pot / 2 : pot);
 
-// ---- The lobby's sample battles ---------------------------------------------------------
+// ---- The lobby's battles ----------------------------------------------------------------
 
-export type LobbyBattle = { id: number; mode: Mode; cases: CaseDef[]; players: (string | null)[] };
+export type Status = "open" | "live" | "done";
+export type LobbyBattle = {
+  id: number;
+  mode: Mode;
+  cases: CaseDef[];
+  /** A name per seat; null while a seat waits for a player. */
+  players: (string | null)[];
+  status: Status;
+  /** Rounds played so far: all of them once it's done. */
+  round: number;
+  /** Every seat's drop in every round, for live and finished battles. */
+  drops: CaseItem[][];
+  /** Your seat, in a battle you played. */
+  you: number | null;
+};
 
 // Small, repeatable random numbers, so the lobby is the same on the server and the client.
 function seeded(seed: number) {
@@ -92,20 +106,60 @@ export function fillSeats(seats: (string | null)[], seed: number, taken: string[
   });
 }
 
-/** A sample battle for the lobby: a mode, two to five cases, and most seats taken, one often open. */
-export function lobbyBattle(id: number): LobbyBattle {
+// the sample battles' drops come from fixed seeds, so they're the same every visit
+const SAMPLE_SERVER = "csgoneo-sample-battles";
+const SAMPLE_CLIENT = "lobby";
+
+/** A sample battle: a mode, two to six cases, and its seats; open with one free, live part way through, or finished. */
+export function lobbyBattle(id: number, status: Status = "open"): LobbyBattle {
   const rand = seeded(id * 7919);
   const mode = MODES[Math.floor(rand() * MODES.length)].id;
-  const rounds = 2 + Math.floor(rand() * 4);
+  const rounds = 2 + Math.floor(rand() * 5);
   const cases = Array.from({ length: rounds }, () => COIN_CASES[Math.floor(rand() * COIN_CASES.length)]);
   const seats = seatsOf(mode);
-  // the first four battles always have a seat open; later ones sometimes fill up
-  const open = id <= 4 || rand() < 0.6 ? 1 : 0;
-  const players = fillSeats(Array.from({ length: seats }, () => null), id * 13).map((p, i) => (i === seats - 1 && open ? null : p));
-  return { id, mode, cases, players };
+  const full = fillSeats(Array.from({ length: seats }, () => null), id * 13);
+  const players = status === "open" ? full.map((p, i) => (i === seats - 1 ? null : p)) : full;
+  const drops = status === "open" ? [] : battleDrops(cases, seats, SAMPLE_SERVER, SAMPLE_CLIENT, id);
+  const round = status === "done" ? rounds : status === "live" ? 1 + Math.floor(rand() * (rounds - 1)) : 0;
+  return { id, mode, cases, players, status, round, drops, you: null };
 }
 
-export const LOBBY: LobbyBattle[] = Array.from({ length: 7 }, (_, i) => lobbyBattle(i + 1));
+/** The lobby to start with: four battles with a seat free, four under way, six finished. */
+export const LOBBY: LobbyBattle[] = [
+  ...Array.from({ length: 4 }, (_, i) => lobbyBattle(i + 1, "open")),
+  ...Array.from({ length: 4 }, (_, i) => lobbyBattle(i + 5, "live")),
+  ...Array.from({ length: 6 }, (_, i) => lobbyBattle(i + 9, "done")),
+];
+
+// ---- Your finished battles, kept in the browser ----------------------------------------------
+
+type Kept = { id: number; mode: Mode; cases: string[]; players: string[]; you: number; drops: string[][] };
+const KEY = "csgoneo.battles";
+const KEEP = 10;
+
+/** Keeps a battle you played, newest first, so it shows among the previous battles next time. */
+export function keepBattle(b: LobbyBattle) {
+  try {
+    const kept: Kept[] = JSON.parse(localStorage.getItem(KEY) || "[]");
+    kept.unshift({ id: b.id, mode: b.mode, cases: b.cases.map((c) => c.slug), players: b.players.map((p) => p ?? "?"), you: b.you ?? 0, drops: b.drops.map((r) => r.map((it) => it.skin.slug)) });
+    localStorage.setItem(KEY, JSON.stringify(kept.slice(0, KEEP)));
+  } catch {}
+}
+
+/** The battles you played before, newest first. */
+export function keptBattles(): LobbyBattle[] {
+  try {
+    const kept: Kept[] = JSON.parse(localStorage.getItem(KEY) || "[]");
+    return kept.flatMap((k) => {
+      const cases = k.cases.map((slug) => CASES.find((c) => c.slug === slug)).filter((c): c is CaseDef => !!c);
+      if (cases.length !== k.cases.length) return [];
+      const drops = k.drops.map((round, r) => round.map((slug) => cases[r].items.find((it) => it.skin.slug === slug) ?? cases[r].items[0]));
+      return [{ id: k.id, mode: k.mode, cases, players: k.players, status: "done" as const, round: cases.length, drops, you: k.you }];
+    });
+  } catch {
+    return [];
+  }
+}
 
 /** A battle in words, round by round, for checking it from its seeds. */
 export function describeBattle(cases: CaseDef[], mode: Mode, names: string[], serverSeed: string, clientSeed: string, nonce: number): string {
