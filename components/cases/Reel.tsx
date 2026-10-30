@@ -17,8 +17,9 @@ import styles from "./Reel.module.css";
  * lands.
  *
  * Standing up (`vertical`, the battles' way) it shows three items at a
- * time, each on its own soft light, and the ride is short and quick: a
- * steady rush of RIDE tiles that pulls up in the last third. As it
+ * time, each on its own soft light, and the ride is short: a steady run
+ * of RIDE tiles that pulls up in the last third, every reel landing its
+ * winner dead centre. As it
  * settles a hexagon rings the middle; landed, the winner's name comes up
  * and its price counts up to what it is. `extraMs` lets one reel land a
  * touch after another, as they do.
@@ -30,8 +31,8 @@ const WIN_AT = 50;
 export const SPIN_MS = 5000;
 export const FAST_MS = 1200;
 /** Standing up (the battles): a short one. */
-export const STAND_MS = 1700;
-export const STAND_FAST_MS = 900;
+export const STAND_MS = 2400;
+export const STAND_FAST_MS = 1200;
 /** How many tiles a standing reel rides through. */
 const RIDE = 18;
 /** The rush, then the pull-up: most of the way at a steady pace, the rest eased off. */
@@ -134,7 +135,8 @@ export default function Reel({
     const style = getComputedStyle(el);
     const gap = parseFloat((vertical ? style.rowGap : style.columnGap) || "0") || 0;
     const span = vertical ? box.clientHeight : box.clientWidth;
-    const jitter = (mulberry(seed + 7)() - 0.5) * tile * (vertical ? 0.18 : 0.7);
+    // lying down the winner lands a little off its middle (where, the seed says); standing up, dead centre, every reel alike
+    const jitter = vertical ? 0 : (mulberry(seed + 7)() - 0.5) * tile * 0.7;
     const at = (index: number) => -(index * (tile + gap) + tile / 2 - span / 2);
     const target = at(WIN_AT) - jitter;
     const still = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
