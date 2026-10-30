@@ -1273,7 +1273,7 @@
   font: 700 12px/1 var(--font-ui), sans-serif;
 }
 
-/* the cases, the one being opened lit with its name and price, the ones to come in the shade */
+/* the cases, the one being opened lit and marked, the ones to come in the shade */
 .caseStrip {
   position: relative;
   display: flex;
@@ -1281,7 +1281,7 @@
   justify-self: center;
   gap: 10px;
   max-width: 100%;
-  height: 86px;
+  height: 72px;
   padding: 0 12px;
   overflow: hidden;
   border-radius: 10px;
@@ -1289,7 +1289,7 @@
 }
 
 .stripReel {
-  --step: 74px;
+  --step: 60px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1302,10 +1302,9 @@
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 10px;
-  height: 70px;
-  padding: 0 7px;
-  border-radius: 8px;
+  justify-content: center;
+  height: 56px;
+  padding: 0 6px;
   opacity: 0.3;
   filter: grayscale(1);
   transition:
@@ -1319,8 +1318,6 @@
 }
 
 .stripCase[data-now] {
-  padding: 0 14px 0 10px;
-  background: var(--surface-2);
   opacity: 1;
   filter: none;
 }
@@ -1337,35 +1334,10 @@
 }
 
 .stripCase img {
-  width: 56px;
+  width: 44px;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.5));
-}
-
-.stripText {
-  display: grid;
-  gap: 6px;
-}
-
-.stripText b {
-  font: 800 13.5px/1 var(--font-ui), sans-serif;
-  white-space: nowrap;
-}
-
-.stripText i {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  justify-self: start;
-  color: var(--text-soft);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
-  font-style: normal;
-}
-
-.stripText i svg {
-  width: 13px;
-  height: 13px;
+  filter: drop-shadow(0 4px 7px rgba(0, 0, 0, 0.5));
 }
 
 .roundsTag {

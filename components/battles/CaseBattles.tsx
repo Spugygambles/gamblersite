@@ -899,18 +899,9 @@ export default function CaseBattles() {
         <div className={styles.caseStrip} data-case-now={battle.cases[cur].slug}>
           <span className={styles.stripReel} style={{ "--shift": Math.max(0, cur - 1) } as CSSProperties}>
             {battle.cases.map((c, r) => (
-              <span key={r} className={styles.stripCase} title={`Round ${r + 1}: ${c.name}`} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
+              <span key={r} className={styles.stripCase} title={`Round ${r + 1}: ${c.name}, ${money.format(c.price)}`} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={c.image} alt="" width={56} height={42} />
-                {r === cur && !over && (
-                  <span className={styles.stripText}>
-                    <b>{c.name}</b>
-                    <i className="tabular">
-                      <CoinIcon />
-                      {money.format(c.price)}
-                    </i>
-                  </span>
-                )}
+                <img src={c.image} alt="" width={44} height={33} />
               </span>
             ))}
           </span>
