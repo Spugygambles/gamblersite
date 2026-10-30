@@ -1235,7 +1235,8 @@
 /* the bar: cost and pot, the cases, the mode; no box, it sits on the page */
 .infoBar {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  /* equal sides, so the cases sit in the middle of the bar whatever's beside them */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 16px;
   padding: 4px 8px;
@@ -1291,6 +1292,9 @@
   flex-shrink: 0;
   width: calc(3 * var(--slot));
   height: 64px;
+  /* fewer than three showing: the group slides right to sit in the middle */
+  translate: calc((var(--visible, 3) - 3) * var(--slot) / 2) 0;
+  transition: translate 0.55s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .stripCase {

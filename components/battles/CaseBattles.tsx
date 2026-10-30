@@ -906,7 +906,8 @@ export default function CaseBattles() {
         </div>
         {/* three cases at a time: the one being opened on the right, the ones done slid off to its left and fading, the rest waiting out of sight */}
         <div className={styles.caseStrip} data-case-now={battle.cases[cur].slug} data-round={phase === "waiting" ? 0 : cur + 1}>
-          <span className={styles.stripReel} aria-label={`Round ${cur + 1} of ${rounds}`}>
+          {/* the cases showing (the current one and up to two before it) sit centred as a group */}
+          <span className={styles.stripReel} style={{ "--visible": Math.min(3, cur + 1) } as CSSProperties} aria-label={`Round ${cur + 1} of ${rounds}`}>
             {battle.cases.map((c, r) => {
               const at = Math.max(-3, Math.min(1, r - cur));
               return (
