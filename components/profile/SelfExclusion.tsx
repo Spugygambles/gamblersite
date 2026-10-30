@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { EXCLUSIONS } from "@/lib/profile";
 import styles from "./Profile.module.css";
@@ -40,7 +39,7 @@ export default function SelfExclusion() {
         Self exclude
       </button>
       <p className={styles.hint}>
-        Want to talk to someone first? See <Link href="/responsible-gaming">Responsible gaming</Link>.
+        Want to talk to someone first? See <a href="/responsible-gaming">Responsible gaming</a>.
       </p>
     </>
   );
