@@ -4,7 +4,7 @@ import { PageContent } from "@/components/home/Section";
 
 export const metadata: Metadata = {
   title: "Gem Vault — CsgoNeo",
-  description: "Every 10.00 you wager earns a gem. Spend gems on cases in the vault.",
+  description: "Every 5,000 Robux you wager earns a gem. Spend gems on cases in the vault.",
 };
 
 // The Gem Vault. data-gems-root marks where the preview mounts its copy.

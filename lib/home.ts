@@ -26,8 +26,8 @@ export const GAMES: GameInfo[] = [
 
 export const PLAYER = {
   name: "Spugy",
-  /** Sample money to try the games with. */
-  balance: 1000,
+  /** Sample Robux to try the games with. */
+  balance: 500000,
   /** Gems to start with: earned as the player wagers (lib/gems.ts), spent in the Gem Vault. */
   gems: 12,
   level: 70,
@@ -55,7 +55,7 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "MaxiM", level: 18, text: "anyone up for a 2v2? toxic case" },
   { name: "nova", level: 63, text: "crash went 31x and i cashed at 2 lol" },
   { name: "sk8r", level: 29, text: "classic" },
-  { system: "rain", text: "R$186.20 of rain was shared by 41 players" },
+  { system: "rain", text: "93,100 Robux of rain was shared by 41 players" },
   { name: "jaxx", level: 12, text: "first day here, what should i open" },
   { name: "Pele", level: 20, text: "mines on 3 bombs is my comfort game" },
   { name: "deadeye", level: 9, text: "how do i get the daily case" },
@@ -66,13 +66,13 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "MaxiM", level: 18, text: "2v2 is up in battles, join" },
   { name: "zenn", level: 34, text: "swept a whole row in mines lol" },
   { name: "dusk", level: 70, text: "got one in keno, 3 left to find" },
-  { system: "event", text: "Gems are live: every 10.00 you wager earns one. Spend them in the Gem Vault." },
+  { system: "event", text: "Gems are live: every 5,000 you wager earns one. Spend them in the Gem Vault." },
   { name: "ghostR", level: 31, text: "who else is waiting on the rain" },
   { name: "Obi", level: 88, text: "happy thanksgiving all, good luck" },
 ];
 
 /** The pot in chat's rain, split between the players who join before it falls. */
-export const RAIN_POT = 248.6;
+export const RAIN_POT = 124300;
 
 export type CaseInfo = {
   slug: string;
@@ -107,7 +107,7 @@ export const BET_PLAYERS = [
   "tiko", "rook", "ghostR", "mira", "jaxx", "Pele", "sk8r", "dusk", "Wren", "hydra",
 ];
 
-const WAGERS = [0.25, 0.5, 1, 2, 2.5, 5, 10, 12.5, 20, 25, 50, 100, 250];
+const WAGERS = [125, 250, 500, 1000, 1250, 2500, 5000, 6250, 10000, 12500, 25000, 50000, 125000];
 
 /**
  * A bet, from a source of random numbers between 0 and 1: about four in ten

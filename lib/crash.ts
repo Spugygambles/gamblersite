@@ -18,8 +18,8 @@ export const msFor = (mult: number) => (Math.log(Math.max(1, mult)) / GROWTH) * 
 
 export const crashPoint = burstMultiplier;
 
-export const payoutOf = (bet: number, mult: number) => Math.round(bet * mult * 100) / 100;
-export const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const payoutOf = (bet: number, mult: number) => Math.round(bet * mult);
+export const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export const times = (m: number) => `${m.toFixed(2)}×`;
 
 /** Round numbers between `from` and `to`, about `want` of them, for an axis. */

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { GRIDS, maxMines, minePositions, money, multiplier, payoutOf, times, type Grid } from "@/lib/mines";
+import { GRIDS, maxMines, MIN_BET, minePositions, money, multiplier, payoutOf, times, type Grid } from "@/lib/mines";
 import { wagered } from "@/lib/gems";
 import { recordOutcome } from "@/lib/stats";
 import { randomHex } from "@/lib/sha256";
@@ -24,11 +24,11 @@ const AUTO_STEP = 170;
 const AUTO_PAUSE = 700;
 const NO_GAME: Game = { tiles: 25, mines: 3, bet: 0, positions: [], revealed: [], hit: null };
 
-const toCents = (n: number) => Math.round(n * 100) / 100;
+const robux = (n: number) => Math.round(n);
 const oneOf = (list: number[]) => list[Math.floor(Math.random() * list.length)];
 const parseBet = (text: string) => {
   const n = Number(text);
-  return Number.isFinite(n) && n > 0 ? toCents(n) : 0;
+  return Number.isFinite(n) && n > 0 ? robux(n) : 0;
 };
 
 /**
@@ -47,7 +47,7 @@ export default function MinesGame() {
   const [mode, setMode] = useState<Mode>("manual");
   const [grid, setGrid] = useState<Grid>(25);
   const [minesText, setMinesText] = useState("3");
-  const [betText, setBetText] = useState("10.00");
+  const [betText, setBetText] = useState("5000");
   const [phase, setPhase] = useState<Phase>("idle");
   const [game, setGame] = useState<Game>(NO_GAME);
   // The game as it stands this instant, ahead of React's render: a sweep
@@ -118,7 +118,7 @@ export default function MinesGame() {
     const m = won ? multiplier(g.tiles, g.mines, g.revealed.length) : 0;
     const payout = won ? payoutOf(g.bet, m) : 0;
     if (won) addToBalance(payout);
-    recordOutcome(won ? toCents(payout - g.bet) : -g.bet);
+    recordOutcome(won ? robux(payout - g.bet) : -g.bet);
     const id = ++pastId.current;
     setLive(won ? "won" : "lost", g);
     setResult(won ? { mult: m, payout } : null);
@@ -190,11 +190,11 @@ export default function MinesGame() {
     // the round's over: settle, work out the next bet, stop or go again
     const after = (profit: number, won: boolean) => {
       a.done += 1;
-      a.profit = toCents(a.profit + profit);
+      a.profit = robux(a.profit + profit);
       const adjust = won ? onWin : onLoss;
       const pct = Number(adjust.pct) || 0;
-      const nextBet = adjust.mode === "increase" && pct > 0 ? toCents(betNow * (1 + pct / 100)) : a.startBet;
-      setBetText(nextBet.toFixed(2));
+      const nextBet = adjust.mode === "increase" && pct > 0 ? robux(betNow * (1 + pct / 100)) : a.startBet;
+      setBetText(String(nextBet));
       const limit = Number(autoBets) || 0;
       const profitStop = Number(stopProfit) || 0;
       const lossStop = Number(stopLoss) || 0;
@@ -299,9 +299,9 @@ export default function MinesGame() {
 
   // ---- The controls --------------------------------------------------------------------
 
-  const setBet = (n: number) => setBetText(Math.max(0.01, toCents(n)).toFixed(2));
-  const profitNow = toCents(payoutOf(game.bet, mult) - game.bet);
-  const profitNext = toCents(payoutOf(game.bet, next) - game.bet);
+  const setBet = (n: number) => setBetText(String(Math.max(MIN_BET, robux(n))));
+  const profitNow = robux(payoutOf(game.bet, mult) - game.bet);
+  const profitNext = robux(payoutOf(game.bet, next) - game.bet);
 
   return (
     <div className={styles.wrap} data-mines data-phase={phase} data-mode={mode} data-animations={settings.animations}>
@@ -334,8 +334,8 @@ export default function MinesGame() {
                 value={betText}
                 disabled={busy}
                 aria-invalid={short && !busy ? true : undefined}
-                onChange={(e) => setBetText(e.target.value.replace(/[^\d.]/g, ""))}
-                onBlur={() => bet > 0 && setBetText(bet.toFixed(2))}
+                onChange={(e) => setBetText(e.target.value.replace(/\D/g, ""))}
+                onBlur={() => bet > 0 && setBetText(String(bet))}
                 data-bet
               />
               <button type="button" className={styles.betStep} disabled={busy} onClick={() => setBet(bet / 2)} data-bet-half>
@@ -484,10 +484,10 @@ export default function MinesGame() {
                   <input
                     className={styles.input}
                     inputMode="decimal"
-                    placeholder="0.00"
+                    placeholder="0"
                     value={stopProfit}
                     disabled={running}
-                    onChange={(e) => setStopProfit(e.target.value.replace(/[^\d.]/g, ""))}
+                    onChange={(e) => setStopProfit(e.target.value.replace(/\D/g, ""))}
                   />
                 </label>
                 <label className={styles.field}>
@@ -495,10 +495,10 @@ export default function MinesGame() {
                   <input
                     className={styles.input}
                     inputMode="decimal"
-                    placeholder="0.00"
+                    placeholder="0"
                     value={stopLoss}
                     disabled={running}
-                    onChange={(e) => setStopLoss(e.target.value.replace(/[^\d.]/g, ""))}
+                    onChange={(e) => setStopLoss(e.target.value.replace(/\D/g, ""))}
                   />
                 </label>
               </div>

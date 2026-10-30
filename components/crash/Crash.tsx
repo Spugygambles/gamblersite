@@ -165,7 +165,7 @@ export default function Crash() {
     const payout = payoutOf(live.amount, m);
     live.cashedAt = m;
     addToBalance(payout);
-    recordOutcome(Math.round((payout - live.amount) * 100) / 100);
+    recordOutcome(Math.round(payout - live.amount));
     setCashed(m);
     setNote(`Cashed out at ${times(m)} for ${money.format(payout)}`);
   };
@@ -176,7 +176,7 @@ export default function Crash() {
     if (!a.running) return;
     if (live) {
       a.done += 1;
-      a.profit = Math.round((a.profit + (live.cashedAt !== null ? payoutOf(live.amount, live.cashedAt) - live.amount : -live.amount)) * 100) / 100;
+      a.profit = Math.round(a.profit + (live.cashedAt !== null ? payoutOf(live.amount, live.cashedAt) - live.amount : -live.amount));
     }
     const limit = Number(latest.current.autoRounds) || 0;
     const profitStop = Number(latest.current.stopProfit) || 0;

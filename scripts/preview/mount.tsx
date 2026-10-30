@@ -6,7 +6,7 @@ import type { ReactElement } from "react";
 import { gemStore } from "@/lib/gems";
 import { subscribeWallet, walletBalance } from "@/lib/wallet";
 
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const whole = new Intl.NumberFormat("en-US");
 // the built pages, by the site's paths (see build.py LINKS)
 const PAGES: Record<string, string> = {

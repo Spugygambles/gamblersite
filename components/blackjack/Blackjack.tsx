@@ -43,8 +43,8 @@ type Outcome = { results: { result: Result; payout: number }[]; net: number; ins
 type SideResult = { name: string; payout: number };
 type State = "win" | "lose" | "push";
 
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const toCents = (n: number) => Math.round(n * 100) / 100;
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+const robux = (n: number) => Math.round(n);
 // between the cards of the deal, and between the dealer's cards turning
 const DEAL_MS = 250;
 const REVEAL_MS = 420;
@@ -137,10 +137,10 @@ function Pill({ cards, hidden, state }: { cards: Card[]; hidden?: boolean; state
  * turns the hole card and draws to 17. See lib/blackjack.ts for the rules.
  */
 export default function Blackjack() {
-  const bet = useBet("10.00");
+  const bet = useBet("5000");
   const settings = useSettings();
   const [tab, setTab] = useState<Tab>("standard");
-  const [sideText, setSideText] = useState("0.00");
+  const [sideText, setSideText] = useState("0");
   const [phase, setPhase] = useState<Phase>("idle");
   const [game, setGame] = useState<Game | null>(null);
   const [handNo, setHandNo] = useState(0);
@@ -164,9 +164,9 @@ export default function Blackjack() {
   const busy = phase !== "idle" && phase !== "done";
   const sideBet = (() => {
     const n = Number(sideText);
-    return Number.isFinite(n) && n > 0 ? toCents(n) : 0;
+    return Number.isFinite(n) && n > 0 ? robux(n) : 0;
   })();
-  const stake = toCents(bet.bet + sideBet);
+  const stake = robux(bet.bet + sideBet);
   const short = stake > bet.balance;
   const canDeal = !busy && bet.ok && !short;
 
@@ -180,10 +180,10 @@ export default function Blackjack() {
   const settle = (g: Game) => {
     const rs = results(g);
     const insured = insurancePayout(g);
-    const payout = toCents(rs.reduce((s, r) => s + r.payout, 0) + insured);
-    const staked = toCents(g.hands.reduce((s, h) => s + h.bet, 0) + g.insurance);
+    const payout = robux(rs.reduce((s, r) => s + r.payout, 0) + insured);
+    const staked = robux(g.hands.reduce((s, h) => s + h.bet, 0) + g.insurance);
     if (payout > 0) addToBalance(payout);
-    const net = toCents(payout - staked);
+    const net = robux(payout - staked);
     recordOutcome(net);
     setOutcome({ results: rs, net, insured });
     setPhase("done");
@@ -243,7 +243,7 @@ export default function Blackjack() {
       later(() => {
         setSide(pair ? { name: pair.name, payout } : { name: "No pair", payout: 0 });
         if (payout > 0) addToBalance(payout);
-        recordOutcome(toCents(payout - sideBet));
+        recordOutcome(robux(payout - sideBet));
       }, DEAL_MS * 3);
     } else {
       setSide(null);
@@ -462,15 +462,15 @@ export default function Blackjack() {
                 inputMode="decimal"
                 value={sideText}
                 disabled={busy}
-                onChange={(e) => setSideText(e.target.value.replace(/[^\d.]/g, ""))}
-                onBlur={() => setSideText(sideBet.toFixed(2))}
+                onChange={(e) => setSideText(e.target.value.replace(/\D/g, ""))}
+                onBlur={() => setSideText(String(sideBet))}
                 aria-label="Perfect pairs side bet"
                 data-side-bet
               />
-              <button type="button" className={kit.betStep} disabled={busy} onClick={() => setSideText(toCents(sideBet / 2).toFixed(2))}>
+              <button type="button" className={kit.betStep} disabled={busy} onClick={() => setSideText(String(robux(sideBet / 2)))}>
                 ½
               </button>
-              <button type="button" className={kit.betStep} disabled={busy} onClick={() => setSideText(toCents(Math.max(0.1, sideBet * 2)).toFixed(2))}>
+              <button type="button" className={kit.betStep} disabled={busy} onClick={() => setSideText(String(robux(Math.max(50, sideBet * 2))))}>
                 2×
               </button>
             </span>

@@ -244,7 +244,7 @@
     const TAB_IDS = ["all", "big", "lucky"];
     let tab = "all";
     let rows = 8;
-    const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
     const setAmount = (cell, value) => {
       cell.querySelector("span").lastChild.textContent = money.format(value);
     };
@@ -321,7 +321,7 @@
     const saved = localStorage.getItem("csgoneo.balance");
     const balance = Number(saved);
     if (saved !== null && Number.isFinite(balance)) {
-      const money = balance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const money = balance.toLocaleString("en-US", { maximumFractionDigits: 0 });
       document.querySelectorAll("[data-wallet-balance]").forEach((el) => (el.textContent = money));
     }
     const gems = JSON.parse(localStorage.getItem("csgoneo.gems") || "null");

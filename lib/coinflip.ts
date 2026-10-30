@@ -20,11 +20,11 @@ export const other = (side: Side): Side => (side === "heads" ? "tails" : "heads"
 export const flipOf = (serverSeed: string, clientSeed: string, nonce: number): Side => (draws(serverSeed, clientSeed, nonce, 1)[0] < 0.5 ? "heads" : "tails");
 
 /** What the winner takes home: the pot, less the house's share. */
-export const payoutOf = (bet: number) => Math.round(2 * bet * KEEP * 100) / 100;
+export const payoutOf = (bet: number) => Math.round(2 * bet * KEEP);
 
 export type LobbyFlip = { id: number; player: string; side: Side; amount: number };
 
-const AMOUNTS = [2.5, 5, 10, 12.5, 20, 25, 50, 100, 7.5, 15];
+const AMOUNTS = [1250, 2500, 5000, 6250, 10000, 12500, 25000, 50000, 3750, 7500];
 
 /** The n-th sample flip, the same every time. */
 export function sampleFlip(n: number): LobbyFlip {
@@ -39,4 +39,4 @@ export function sampleFlip(n: number): LobbyFlip {
 
 export const SAMPLE_FLIPS: LobbyFlip[] = Array.from({ length: 7 }, (_, i) => sampleFlip(i));
 
-export const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });

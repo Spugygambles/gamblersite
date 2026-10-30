@@ -33,10 +33,10 @@ const SPIN_MS = 4200;
 const FAST_MS = 900;
 const AUTO_PAUSE = 700;
 
-const toCents = (n: number) => Math.round(n * 100) / 100;
+const robux = (n: number) => Math.round(n);
 const parseBet = (text: string) => {
   const n = Number(text);
-  return Number.isFinite(n) && n > 0 ? toCents(n) : 0;
+  return Number.isFinite(n) && n > 0 ? robux(n) : 0;
 };
 
 /**
@@ -50,7 +50,7 @@ export default function Upgrader() {
   const seeds = useSeeds();
 
   const [mode, setMode] = useState<Mode>("manual");
-  const [betText, setBetText] = useState("10.00");
+  const [betText, setBetText] = useState("5000");
   const [zones, setZones] = useState(1);
   const [fast, setFast] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
@@ -80,7 +80,7 @@ export default function Upgrader() {
   const spinning = phase === "spinning";
   const busy = spinning || running;
   const items = selected.map(skinBySlug).filter((s): s is Skin => !!s);
-  const target = toCents(items.reduce((sum, s) => sum + s.price, 0));
+  const target = robux(items.reduce((sum, s) => sum + s.price, 0));
   const mult = multiplierOf(bet, target);
   const chance = chanceOf(bet, target);
   const short = bet > balance;
@@ -123,7 +123,7 @@ export default function Upgrader() {
 
   // ---- The bet -------------------------------------------------------------------------
 
-  const setBet = (n: number) => setBetText(Math.min(Math.max(MIN_BET, toCents(n)), Math.max(MIN_BET, balance)).toFixed(2));
+  const setBet = (n: number) => setBetText(String(Math.min(Math.max(MIN_BET, robux(n)), Math.max(MIN_BET, balance))));
 
   // A quick multiplier: with skins picked, the bet that makes them that
   // multiple; with none, the list narrows to skins around it.
@@ -148,7 +148,7 @@ export default function Upgrader() {
   const afterRound = (p: Spin) => {
     const a = auto.current;
     a.done += 1;
-    a.profit = toCents(a.profit + (p.won ? p.target - p.bet : -p.bet));
+    a.profit = robux(a.profit + (p.won ? p.target - p.bet : -p.bet));
     const limit = Number(autoBets) || 0;
     const profitStop = Number(stopProfit) || 0;
     const lossStop = Number(stopLoss) || 0;
@@ -164,7 +164,7 @@ export default function Upgrader() {
     const p = live.current.pending;
     if (!p) return;
     if (p.won) addToBalance(p.target);
-    recordOutcome(p.won ? toCents(p.target - p.bet) : -p.bet);
+    recordOutcome(p.won ? robux(p.target - p.bet) : -p.bet);
     const next: Phase = p.won ? "won" : "lost";
     live.current = { phase: next, pending: null };
     setPhase(next);
@@ -289,8 +289,8 @@ export default function Upgrader() {
                 value={betText}
                 disabled={busy}
                 aria-invalid={short && !busy ? true : undefined}
-                onChange={(e) => setBetText(e.target.value.replace(/[^\d.]/g, ""))}
-                onBlur={() => bet > 0 && setBetText(bet.toFixed(2))}
+                onChange={(e) => setBetText(e.target.value.replace(/\D/g, ""))}
+                onBlur={() => bet > 0 && setBetText(String(bet))}
                 data-bet
               />
               <button type="button" className={styles.betStep} disabled={busy} onClick={() => setBet(bet / 2)} data-bet-half>
@@ -348,11 +348,11 @@ export default function Upgrader() {
               <div className={styles.fieldRow}>
                 <label className={styles.field}>
                   <span className={styles.fieldLabel}>Stop on profit</span>
-                  <input className={styles.input} inputMode="decimal" placeholder="0.00" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/[^\d.]/g, ""))} />
+                  <input className={styles.input} inputMode="decimal" placeholder="0" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/\D/g, ""))} />
                 </label>
                 <label className={styles.field}>
                   <span className={styles.fieldLabel}>Stop on loss</span>
-                  <input className={styles.input} inputMode="decimal" placeholder="0.00" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/[^\d.]/g, ""))} />
+                  <input className={styles.input} inputMode="decimal" placeholder="0" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/\D/g, ""))} />
                 </label>
               </div>
             </>

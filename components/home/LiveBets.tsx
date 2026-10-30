@@ -26,7 +26,7 @@ const TABS = [
 
 const ROWS = [8, 15, 20];
 
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
 /**
  * The latest bets across the site, newest on top, eight at a time to start.

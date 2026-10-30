@@ -11,10 +11,10 @@ export const PROFILE = {
   xpNext: 23000,
   deposited: 4850,
   withdrawn: 3120.4,
-  wagered: 28416.75,
+  wagered: 14208375,
   bets: 3482,
   wins: 1657,
-  biggestWin: { game: "crash", wager: 25, multiplier: 49.6 },
+  biggestWin: { game: "crash", wager: 12500, multiplier: 49.6 },
 };
 
 /** One of the player's bets, with what proves it was fair. */
@@ -59,7 +59,7 @@ const PLAYED = [
   ["limbo", 2],
   ["keno", 1],
 ] as const;
-const WAGERS = [0.1, 0.25, 0.5, 1, 2, 2.5, 5, 10, 12.5, 20, 25, 50, 100];
+const WAGERS = [50, 125, 250, 500, 1000, 1250, 2500, 5000, 6250, 10000, 12500, 25000, 50000];
 const stamp = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",

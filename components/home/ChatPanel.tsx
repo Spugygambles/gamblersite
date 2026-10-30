@@ -31,7 +31,7 @@ function RainClock() {
   return left ?? "\u00a0";
 }
 
-const coins = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const coins = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
 // Level chips get a colour as players climb.
 const tierOf = (level: number) => (level >= 80 ? styles.gold : level >= 50 ? styles.purple : level >= 20 ? styles.blue : "");

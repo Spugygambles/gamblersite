@@ -13,7 +13,7 @@ import { KEEP } from "./house";
 
 export { KEEP };
 
-export const MIN_BET = 0.01;
+export const MIN_BET = 5;
 
 /** At least one tile has to be safe. */
 export const maxMines = (tiles: number) => tiles - 1;
@@ -31,7 +31,7 @@ export function multiplier(tiles: number, mines: number, picks: number): number 
   return Math.round((KEEP / odds) * 100 + 1e-7) / 100;
 }
 
-export const payoutOf = (bet: number, mult: number) => Math.round(bet * mult * 100) / 100;
+export const payoutOf = (bet: number, mult: number) => Math.round(bet * mult);
 
 /** The hash of a server seed, shown before a game so the seed can be
     checked against it after. */
@@ -64,9 +64,10 @@ export function minePositions(serverSeed: string, clientSeed: string, nonce: num
   return order.slice(0, mines).sort((a, b) => a - b);
 }
 
-export const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 
 /** A multiplier for show: two decimals and a ×. */
 const compact = new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 });
 /** A multiplier for display: "1.13×", "2,277.00×", "1.83B×". */
-export const times = (mult: number) => `${mult >= 1e6 ? compact.format(mult) : money.format(mult)}×`;
+const two = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const times = (mult: number) => `${mult >= 1e6 ? compact.format(mult) : two.format(mult)}×`;

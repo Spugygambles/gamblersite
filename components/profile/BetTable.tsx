@@ -6,7 +6,7 @@ import type { MyBet } from "@/lib/profile";
 import { CheckIcon, CoinIcon, CopyIcon, GAME_ICONS } from "@/components/home/icons";
 import styles from "./Profile.module.css";
 
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const titleOf = (slug: string) => GAMES.find((g) => g.slug === slug)?.title ?? slug;
 
 /** The player's bets as flat bars, like the live bets on the home page:

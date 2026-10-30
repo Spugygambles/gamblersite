@@ -40,7 +40,7 @@ export default function SiteHeader() {
             Deposit
           </Link>
         </div>
-        <Link href="/gems" className={styles.gems} title="Your gems: every 10.00 wagered earns one" data-gems-link>
+        <Link href="/gems" className={styles.gems} title="Your gems: every 5,000 wagered earns one" data-gems-link>
           <span className="sr-only">Gems:</span>
           <GemIcon className={styles.gem} />
           <GemCount />

@@ -30,7 +30,7 @@ const HISTORY = 12;
  * decided; the winner takes the pot less the house's share.
  */
 export default function Coinflip() {
-  const bet = useBet("10.00");
+  const bet = useBet("5000");
   const [side, setSide] = useState<Side>("heads");
   const [fast, setFast] = useState(false);
   const [lobby, setLobby] = useState<LobbyFlip[]>(SAMPLE_FLIPS);
@@ -69,7 +69,7 @@ export default function Coinflip() {
 
   const settle = (m: Match) => {
     if (m.won) addToBalance(payoutOf(m.amount));
-    recordOutcome(m.won ? Math.round((payoutOf(m.amount) - m.amount) * 100) / 100 : -m.amount);
+    recordOutcome(m.won ? Math.round(payoutOf(m.amount) - m.amount) : -m.amount);
     setPhase("done");
     const id = ++pastId.current;
     setHistory((h) => [{ id, text: `${SIDE_NAME[m.result][0]} ${m.won ? "+" : "−"}${money.format(m.won ? payoutOf(m.amount) - m.amount : m.amount)}`, won: m.won }, ...h].slice(0, HISTORY));

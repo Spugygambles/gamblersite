@@ -83,7 +83,7 @@ export function deal(shoe: Card[], bet: number): Game {
 }
 
 export const offersInsurance = (g: Game) => g.phase === "insurance";
-export const insuranceCost = (g: Game) => Math.round((g.hands[0].bet / 2) * 100) / 100;
+export const insuranceCost = (g: Game) => Math.round(g.hands[0].bet / 2);
 
 /** The player's answer to insurance; then the dealer peeks for blackjack. */
 export function insure(g0: Game, take: boolean): Game {
@@ -100,7 +100,7 @@ export function insure(g0: Game, take: boolean): Game {
 }
 
 /** What insurance pays back: the stake and 2 to 1 on it, when the dealer has blackjack. */
-export const insurancePayout = (g: Game) => (g.insurance > 0 && isBlackjack(g.dealer) ? Math.round(g.insurance * 3 * 100) / 100 : 0);
+export const insurancePayout = (g: Game) => (g.insurance > 0 && isBlackjack(g.dealer) ? Math.round(g.insurance * 3) : 0);
 
 export type Pair = { name: string; odds: number };
 
@@ -116,7 +116,7 @@ export function perfectPair(cards: Card[]): Pair | null {
 /** What a side bet pays back, stake included. */
 export const sidePayout = (sideBet: number, cards: Card[]) => {
   const pair = perfectPair(cards);
-  return pair ? Math.round(sideBet * (pair.odds + 1) * 100) / 100 : 0;
+  return pair ? Math.round(sideBet * (pair.odds + 1)) : 0;
 };
 
 export const canHit = (g: Game) => g.phase === "playing" && !g.hands[g.active].done;
@@ -165,7 +165,7 @@ export function double(g0: Game): Game {
   const g = clone(g0);
   if (!canDouble(g)) return g;
   const h = g.hands[g.active];
-  h.bet = Math.round(h.bet * 200) / 100;
+  h.bet = h.bet * 2;
   h.doubled = true;
   h.cards.push(draw(g));
   h.done = true;
@@ -202,7 +202,7 @@ export function results(g: Game): { result: Result; payout: number }[] {
   return g.hands.map((h) => {
     const p = handValue(h.cards).total;
     const natural = !h.split && isBlackjack(h.cards);
-    const pay = (mult: number) => Math.round(h.bet * mult * 100) / 100;
+    const pay = (mult: number) => Math.round(h.bet * mult);
     if (p > 21) return { result: "bust", payout: 0 };
     if (natural && dealerBJ) return { result: "push", payout: pay(1) };
     if (natural) return { result: "blackjack", payout: pay(2.5) };

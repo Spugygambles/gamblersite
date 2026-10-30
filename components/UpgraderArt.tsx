@@ -119,8 +119,8 @@ export default function UpgraderArt() {
           {VALUE_SPARKS.map((s, i) => (
             <Spark key={i} {...s} />
           ))}
-          <span className={styles.from}>$10.00</span>
-          <span className={styles.to}>$100.00</span>
+          <span className={styles.from}>5,000</span>
+          <span className={styles.to}>50,000</span>
         </div>
       </div>
     </div>

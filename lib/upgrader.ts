@@ -12,7 +12,7 @@ import { hmacSha256, utf8 } from "./sha256";
 export const MAX_ITEMS = 4;
 /** The target has to be worth more than the bet, and no more than this many times it. */
 export const MAX_MULT = 100;
-export const MIN_BET = 0.1;
+export const MIN_BET = 50;
 
 export const multiplierOf = (bet: number, target: number) => (bet > 0 ? target / bet : 0);
 
@@ -37,6 +37,6 @@ export function zonesOf(chance: number, zones: number): [number, number][] {
 
 export const isWin = (roll: number, chance: number, zones: number) => zonesOf(chance, zones).some(([a, b]) => roll >= a && roll < b);
 
-export const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 export const percent = (chance: number) => `${(chance * 100).toFixed(2)}%`;
 export const times = (mult: number) => `${(mult >= 100 ? mult.toFixed(0) : mult.toFixed(2))}×`;

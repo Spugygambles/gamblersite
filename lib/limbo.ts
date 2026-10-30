@@ -31,14 +31,14 @@ export function targetFromChance(text: string): number | null {
   return t >= MIN_TARGET && t <= MAX_TARGET ? t : null;
 }
 
-export const payoutOf = (bet: number, target: number) => Math.round(bet * target * 100) / 100;
+export const payoutOf = (bet: number, target: number) => Math.round(bet * target);
 /** What a win adds beyond the stake. */
-export const profitOf = (bet: number, target: number) => Math.round((payoutOf(bet, target) - bet) * 100) / 100;
+export const profitOf = (bet: number, target: number) => payoutOf(bet, target) - bet;
 
 /** The roll for a game, from the seeds and nonce. */
 export const rollOf = (serverSeed: string, clientSeed: string, nonce: number) => burstMultiplier(serverSeed, clientSeed, nonce);
 
-export const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+export const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
 /** A multiplier for display: "2.31x", "1,234.5x". */
 export const times = (m: number) => `${m >= 1000 ? whole.format(m) : m.toFixed(2)}x`;

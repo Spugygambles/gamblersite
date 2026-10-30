@@ -90,7 +90,7 @@ export default function CaseOpening() {
     const { item, from } = live.current;
     if (live.current.phase !== "spinning" || !item || !from) return;
     addToBalance(item.skin.price);
-    recordOutcome(Math.round((item.skin.price - (from.gems ? 0 : from.price)) * 100) / 100);
+    recordOutcome(Math.round(item.skin.price - (from.gems ? 0 : from.price)));
     live.current = { phase: "done", item, from };
     setPhase("done");
     setResult({ item, from });

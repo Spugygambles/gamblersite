@@ -5,18 +5,18 @@ import { createStore } from "./store";
 
 /*
  * Gems: the site's second currency, earned by playing and spent in the
- * Gem Vault on cases. Every GEM_PER coins wagered on any game earns one;
+ * Gem Vault on cases. Every GEM_PER Robux wagered on any game earns one;
  * `toward` carries the remainder between bets. Kept in the browser until
  * the site has accounts, so what's earned holds between pages and visits.
  */
 
-/** Coins wagered for one gem. */
-export const GEM_PER = 10;
+/** Robux wagered for one gem. */
+export const GEM_PER = 5000;
 const KEY = "csgoneo.gems";
 
 export type GemState = {
   gems: number;
-  /** Coins wagered since the last gem, toward the next. */
+  /** Robux wagered since the last gem, toward the next. */
   toward: number;
   /** Cases claimed from the vault, by slug: how many of each. */
   claimed: Record<string, number>;
@@ -49,9 +49,9 @@ export const useGems = () => useSyncExternalStore(gemStore.subscribe, gemStore.g
 export function wagered(coins: number): number {
   addWagered(coins);
   const s = gemStore.get();
-  const toward = Math.round((s.toward + coins) * 100) / 100;
+  const toward = Math.round(s.toward + coins);
   const earned = Math.floor(toward / GEM_PER);
-  gemStore.set(save({ ...s, gems: s.gems + earned, toward: Math.round((toward - earned * GEM_PER) * 100) / 100 }));
+  gemStore.set(save({ ...s, gems: s.gems + earned, toward: toward - earned * GEM_PER }));
   return earned;
 }
 

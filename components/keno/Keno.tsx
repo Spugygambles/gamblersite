@@ -25,9 +25,9 @@ const SETTLE_MS = 350;
 const AUTO_PAUSE = 900;
 const HISTORY = 12;
 
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const times = (m: number) => `${m >= 100 ? m.toFixed(0) : m.toFixed(2)}×`;
-const toCents = (n: number) => Math.round(n * 100) / 100;
+const robux = (n: number) => Math.round(n);
 
 const SPEAKER = (
   <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
@@ -93,7 +93,7 @@ export default function Keno() {
   const afterRound = (profit: number) => {
     const a = auto.current;
     a.done += 1;
-    a.profit = toCents(a.profit + profit);
+    a.profit = robux(a.profit + profit);
     const limit = Number(autoGames) || 0;
     const profitStop = Number(stopProfit) || 0;
     const lossStop = Number(stopLoss) || 0;
@@ -110,9 +110,9 @@ export default function Keno() {
   const settle = (g: Game) => {
     const hits = g.drawn.filter((x) => g.picks.includes(x)).length;
     const mult = multiplier(g.risk, g.picks.length, hits);
-    const payout = toCents(g.bet * mult);
+    const payout = robux(g.bet * mult);
     if (payout > 0) addToBalance(payout);
-    recordOutcome(toCents(payout - g.bet));
+    recordOutcome(robux(payout - g.bet));
     if (payout > g.bet) sfx("win");
     else if (payout > 0) sfx("even");
     live.current = "done";
@@ -238,7 +238,7 @@ export default function Keno() {
           value={
             <>
               <CoinIcon />
-              <span data-max-win>{money.format(toCents(bet.bet * maxMult))}</span>
+              <span data-max-win>{money.format(robux(bet.bet * maxMult))}</span>
             </>
           }
         />
@@ -274,11 +274,11 @@ export default function Keno() {
           <div className={kit.fieldRow}>
             <label className={kit.field}>
               <span className={kit.fieldLabel}>Stop on profit</span>
-              <input className={kit.input} inputMode="decimal" placeholder="0.00" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/[^\d.]/g, ""))} />
+              <input className={kit.input} inputMode="decimal" placeholder="0" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/\D/g, ""))} />
             </label>
             <label className={kit.field}>
               <span className={kit.fieldLabel}>Stop on loss</span>
-              <input className={kit.input} inputMode="decimal" placeholder="0.00" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/[^\d.]/g, ""))} />
+              <input className={kit.input} inputMode="decimal" placeholder="0" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/\D/g, ""))} />
             </label>
           </div>
           {running ? (

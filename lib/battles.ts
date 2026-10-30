@@ -56,7 +56,7 @@ export const keptShare = (borrow: number) => Math.round((1 - borrow) * 100) / 10
 export const COIN_CASES: CaseDef[] = CASES.filter((c) => c.gems === null);
 export const MAX_ROUNDS = 8;
 
-const cents = (n: number) => Math.round(n * 100) / 100;
+const cents = (n: number) => Math.round(n);
 /** A seat's cost: the cases' prices together. */
 export const costOf = (cases: CaseDef[]) => cents(cases.reduce((sum, c) => sum + c.price, 0));
 /** What making the battle costs: a seat, or every seat when the maker funds them all, less what's borrowed. */
@@ -319,5 +319,5 @@ export function describeBattle(cases: CaseDef[], mode: Mode, gamemode: Gamemode,
   const rounds = drops.map((round, r) => `Round ${r + 1} (${cases[r].name}): ${round.map((it, seat) => `${names[seat]} ${it.skin.name}`).join(", ")}`);
   const who = winners.map((w) => names[w]).join(" and ");
   const rule = gamemode === "standard" ? "" : ` (${gamemodeName(gamemode)}${gamemode === "coinflip" || gamemode === "jackpot" ? `, deciding draw ${decider.toFixed(6)}` : ""})`;
-  return `${rounds.join(". ")}. Winner${rule}: ${who} with ${totals.filter((_, i) => winners.includes(i)).reduce((a, b) => a + b, 0).toFixed(2)} of the ${potOf(drops).toFixed(2)} pot.`;
+  return `${rounds.join(". ")}. Winner${rule}: ${who} with ${totals.filter((_, i) => winners.includes(i)).reduce((a, b) => a + b, 0).toFixed(0)} of the ${potOf(drops).toFixed(0)} pot.`;
 }

@@ -17,9 +17,9 @@ import styles from "./Reel.module.css";
  * lands.
  *
  * Standing up (`vertical`, the battles' way) it shows three items at a
- * time with a glow behind each, blurs them with the strip's speed while
- * it's quick, and once it has landed spreads the winner's glow wide with
- * a scatter of sparks round it, and shows its name and price.
+ * time with a low glow behind each, blurs them with the strip's speed
+ * while it's quick, and once it has landed lifts the winner a little on
+ * the win line and shows its name and price.
  */
 
 const TILES = 60;
@@ -197,7 +197,6 @@ export default function Reel({
           {strip.map((it, i) => (
             <div key={i} className={styles.tile} style={{ "--tier": TIERS[tierOf(it.skin.price, casePrice)].color } as CSSProperties} data-tier={tierOf(it.skin.price, casePrice)} data-win={i === WIN_AT || undefined}>
               <span className={styles.tileArt}>
-                {vertical && i === WIN_AT && <i className={styles.dust} aria-hidden />}
                 <SkinArt skin={it.skin} />
               </span>
               <span className={styles.tileName}>{it.skin.finish}</span>

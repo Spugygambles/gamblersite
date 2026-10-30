@@ -20,7 +20,7 @@ const TABS: { id: Tab; label: string; icon: ReactNode }[] = [
   { id: "transactions", label: "Transactions", icon: <SwapIcon /> },
   { id: "affiliates", label: "Affiliates", icon: <UsersIcon /> },
 ];
-const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
 const count = new Intl.NumberFormat("en-US");
 
 // which page the address's #hash asks for
@@ -56,7 +56,7 @@ export default function Account() {
     window.location.assign(`#${t}`);
     setNote("");
   };
-  const net = Math.round((balance - PLAYER.balance) * 100) / 100;
+  const net = Math.round(balance - PLAYER.balance);
   const tradeUrl = tradeDraft ?? account.tradeUrl;
   const tradeOk = tradeUrl === "" || /^https:\/\/steamcommunity\.com\/tradeoffer\/new\/\?partner=\d+&token=[\w-]+$/.test(tradeUrl.trim());
   const referral = `https://csgoneo.gg/r/${account.name.toLowerCase().replace(/[^a-z0-9]+/g, "")}`;
@@ -322,11 +322,11 @@ export default function Account() {
         </div>
         <div className={styles.tile}>
           <span className={styles.tileLabel}>Their wagers</span>
-          <b className={`${styles.tileValue} tabular`}>0.00</b>
+          <b className={`${styles.tileValue} tabular`}>0</b>
         </div>
         <div className={styles.tile}>
           <span className={styles.tileLabel}>Earned</span>
-          <b className={`${styles.tileValue} tabular`}>0.00</b>
+          <b className={`${styles.tileValue} tabular`}>0</b>
         </div>
       </div>
       <p className={styles.hint}>Nobody has signed up through your link yet. Referral earnings start once the site has accounts.</p>

@@ -404,7 +404,7 @@ export default function CaseBattles() {
     const pot = potOf(b.drops);
     const youWon = b.you >= 0 && winners.includes(b.you);
     const share = shareOf(pot, winners.length);
-    return { winners, pot, share: youWon && !b.viewed ? Math.round(share * keptShare(b.options.borrow) * 100) / 100 : share, youWon };
+    return { winners, pot, share: youWon && !b.viewed ? Math.round(share * keptShare(b.options.borrow)) : share, youWon };
   };
 
   const whoWon = (b: Battle, winners: number[]) => winners.map((w) => (w === b.you ? "You" : b.seats[w])).join(" & ");
@@ -416,7 +416,7 @@ export default function CaseBattles() {
     const played = !b.viewed && b.you >= 0;
     if (played) {
       if (r.youWon) addToBalance(r.share);
-      recordOutcome(r.youWon ? Math.round((r.share - b.cost) * 100) / 100 : -b.cost);
+      recordOutcome(r.youWon ? Math.round(r.share - b.cost) : -b.cost);
     }
     setResult(r);
     setLive("done", b);
@@ -587,7 +587,7 @@ export default function CaseBattles() {
         </div>
 
         <div className={styles.cost}>
-          <span className={`${styles.costValue} tabular`} data-row-cost={stake.toFixed(2)}>
+          <span className={`${styles.costValue} tabular`} data-row-cost={stake.toFixed(0)}>
             <CoinIcon />
             {money.format(stake)}
           </span>
@@ -897,7 +897,7 @@ export default function CaseBattles() {
             <small>Battle cost</small>
           </span>
           <span className={styles.infoFigure}>
-            <b className="tabular" data-pot={potNow.toFixed(2)}>
+            <b className="tabular" data-pot={potNow.toFixed(0)}>
               <CoinIcon />
               {money.format(potNow)}
             </b>
@@ -916,10 +916,6 @@ export default function CaseBattles() {
                 </span>
               );
             })}
-          </span>
-          <span className={styles.stripNow}>
-            <b title={battle.cases[cur].name}>{battle.cases[cur].name}</b>
-            <span className={`${styles.stripPrice} tabular`}>{money.format(battle.cases[cur].price)}</span>
           </span>
         </div>
         <div className={styles.infoMode} data-info-mode={battle.mode}>
@@ -1070,7 +1066,7 @@ export default function CaseBattles() {
                   {name ?? "Waiting…"}
                   {you && <small>you</small>}
                 </b>
-                <span className={`${styles.headTotal} tabular`} data-total={totals[seat]?.toFixed(2) ?? "0.00"}>
+                <span className={`${styles.headTotal} tabular`} data-total={totals[seat]?.toFixed(0) ?? "0"}>
                   <CoinIcon />
                   {money.format(totals[seat] ?? 0)}
                 </span>
@@ -1099,7 +1095,7 @@ export default function CaseBattles() {
                       <b>Round {r + 1}</b>
                       <span className={`${styles.dropPrice} tabular`}>
                         <CoinIcon />
-                        0.00
+                        0
                       </span>
                     </li>
                   );

@@ -11,7 +11,7 @@ import { createStore } from "./store";
 export type Stats = { wagered: number; games: number; won: number; lost: number; biggest: number };
 const KEY = "csgoneo.stats";
 const START: Stats = { wagered: 0, games: 0, won: 0, lost: 0, biggest: 0 };
-const cents = (n: number) => Math.round(n * 100) / 100;
+const cents = (n: number) => Math.round(n);
 
 function load(): Stats {
   try {

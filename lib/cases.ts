@@ -6,7 +6,7 @@ import { draws, weighted } from "./fair";
 /*
  * The cases: what's in each and the odds, from which the price follows.
  * A case holds skins from a band of values; the dearer a skin, the rarer
- * it is (weight falls with price). A coin case costs its expected payout
+ * it is (weight falls with price). A Robux case costs its expected payout
  * over the house's share; a gem case is claimed in the Gem Vault.
  */
 
@@ -15,16 +15,16 @@ export type CaseDef = {
   slug: string;
   name: string;
   image: string;
-  /** Coins, for the cases sold for coins. */
+  /** Robux, for the cases sold for Robux. */
   price: number;
   /** Gems, for the cases from the vault. */
   gems: number | null;
   items: CaseItem[];
-  /** What a spin pays on average, in coins. */
+  /** What a spin pays on average, in Robux. */
   value: number;
 };
 
-const money = (n: number) => Math.round(n * 100) / 100;
+const money = (n: number) => Math.round(n);
 
 /** Skins in a band, dearest rarest: weight is price to the minus 1.15. */
 function contents(lo: number, hi: number, limit = 14): CaseItem[] {
@@ -46,9 +46,9 @@ function build(slug: string, name: string, image: string, band: [number, number]
 }
 
 export const CASES: CaseDef[] = [
-  build("music-box", "Music Box", "/cases/music-box-case-thumb.png", [0.5, 110], null),
-  build("toxic", "Toxic", "/cases/toxic-case-thumb.png", [2, 450], null),
-  build("new-year", "New Year", "/cases/new-year-case-thumb.png", [10, 1900], null),
+  build("music-box", "Music Box", "/cases/music-box-case-thumb.png", [250, 55000], null),
+  build("toxic", "Toxic", "/cases/toxic-case-thumb.png", [1000, 225000], null),
+  build("new-year", "New Year", "/cases/new-year-case-thumb.png", [5000, 950000], null),
   ...GEM_CASES.map((g) => build(g.slug, g.name, g.image, g.worth, g.gems)),
 ];
 

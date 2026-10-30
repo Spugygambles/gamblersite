@@ -28,7 +28,7 @@ export const walletStart = () => PLAYER.balance;
 export const subscribeWallet = store.subscribe;
 
 export function setBalance(amount: number) {
-  const next = Math.round(amount * 100) / 100;
+  const next = Math.round(amount);
   store.set(next);
   try {
     localStorage.setItem(KEY, String(next));

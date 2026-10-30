@@ -27,7 +27,7 @@ const FAST_MS = 250;
 const STEP_MS = 45;
 const AUTO_PAUSE = 500;
 
-const toCents = (n: number) => Math.round(n * 100) / 100;
+const robux = (n: number) => Math.round(n);
 // the clock the climb runs on
 const clock = () => performance.now();
 
@@ -66,7 +66,7 @@ const DIE = (
  * if it stops short. The roll comes from the shared provably-fair seeds.
  */
 export default function Limbo() {
-  const bet = useBet("10.00");
+  const bet = useBet("5000");
   const settings = useSettings();
   const [mode, setMode] = useState<Mode>("manual");
   const [targetText, setTargetText] = useState("2.00");
@@ -192,11 +192,11 @@ export default function Limbo() {
   const afterRound = (p: Roll) => {
     const a = auto.current;
     a.done += 1;
-    a.profit = toCents(a.profit + (p.won ? profitOf(p.bet, p.target) : -p.bet));
+    a.profit = robux(a.profit + (p.won ? profitOf(p.bet, p.target) : -p.bet));
     const adjust = p.won ? onWin : onLoss;
     const pct = Number(adjust.pct) || 0;
-    const nextBet = adjust.mode === "increase" && pct > 0 ? toCents(p.bet * (1 + pct / 100)) : a.startBet;
-    bet.setBetText(nextBet.toFixed(2));
+    const nextBet = adjust.mode === "increase" && pct > 0 ? robux(p.bet * (1 + pct / 100)) : a.startBet;
+    bet.setBetText(String(nextBet));
     const limit = Number(autoBets) || 0;
     const profitStop = Number(stopProfit) || 0;
     const lossStop = Number(stopLoss) || 0;
@@ -312,11 +312,11 @@ export default function Limbo() {
           <div className={kit.fieldRow}>
             <label className={kit.field}>
               <span className={kit.fieldLabel}>Stop on profit</span>
-              <input className={kit.input} inputMode="decimal" placeholder="0.00" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/[^\d.]/g, ""))} />
+              <input className={kit.input} inputMode="decimal" placeholder="0" value={stopProfit} disabled={running} onChange={(e) => setStopProfit(e.target.value.replace(/\D/g, ""))} />
             </label>
             <label className={kit.field}>
               <span className={kit.fieldLabel}>Stop on loss</span>
-              <input className={kit.input} inputMode="decimal" placeholder="0.00" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/[^\d.]/g, ""))} />
+              <input className={kit.input} inputMode="decimal" placeholder="0" value={stopLoss} disabled={running} onChange={(e) => setStopLoss(e.target.value.replace(/\D/g, ""))} />
             </label>
           </div>
         </>
