@@ -1791,6 +1791,7 @@
 }
 
 .dropCard {
+  position: relative;
   display: grid;
   justify-items: center;
   gap: 8px;
@@ -1799,17 +1800,56 @@
   background: var(--bg);
   box-shadow: inset 0 0 0 1px var(--edge);
   text-align: center;
+  overflow: hidden;
   animation: dropIn 0.3s ease-out;
 }
 
+/* a line along the top in the item's tier */
+.dropCard[data-tier]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 18px;
+  left: 18px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--tier);
+}
+
+.dropCard[data-tier="grey"]::before {
+  background: var(--surface-3);
+}
+
+/* the art in a ring that glows in the tier's colour; grey has no glow */
 .dropCircle {
   display: grid;
   place-items: center;
   width: 92px;
   height: 92px;
   border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tier) 30%, var(--surface-2)), var(--surface-2) 72%);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--tier) 75%, transparent),
+    0 0 22px color-mix(in srgb, var(--tier) 35%, transparent);
+}
+
+.dropCard[data-tier="grey"] .dropCircle {
   background: var(--surface-2);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--rarity) 55%, transparent);
+  box-shadow: inset 0 0 0 2px var(--surface-3);
+}
+
+.dropCard[data-tier="gold"] .dropCircle {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--tier) 85%, transparent),
+    0 0 30px color-mix(in srgb, var(--tier) 50%, transparent);
+}
+
+.dropCard[data-tier] .dropPrice {
+  color: var(--tier);
+}
+
+.dropCard[data-tier="grey"] .dropPrice {
+  color: var(--text-soft);
 }
 
 .dropCircle > * {

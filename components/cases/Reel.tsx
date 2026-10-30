@@ -4,6 +4,7 @@ import { useEffect, useId, useLayoutEffect, useRef, type CSSProperties } from "r
 import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
 import type { CaseItem } from "@/lib/cases";
+import { TIERS, tierOf } from "@/lib/tiers";
 import { money } from "@/lib/upgrader";
 import styles from "./Reel.module.css";
 
@@ -73,6 +74,7 @@ export default function Reel({
   seed = 0,
   label = "The reel",
   vertical = false,
+  casePrice = 0,
 }: {
   items: CaseItem[];
   winner: CaseItem | null;
@@ -83,6 +85,8 @@ export default function Reel({
   label?: string;
   /** The strip runs top to bottom, three items showing. */
   vertical?: boolean;
+  /** What the case costs: an item's tier (its glow) is its worth against this. */
+  casePrice?: number;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const windowRef = useRef<HTMLDivElement>(null);
@@ -191,7 +195,7 @@ export default function Reel({
       <div ref={windowRef} className={styles.window}>
         <div ref={stripRef} className={styles.strip}>
           {strip.map((it, i) => (
-            <div key={i} className={styles.tile} style={{ "--rarity": it.skin.color } as CSSProperties} data-win={i === WIN_AT || undefined}>
+            <div key={i} className={styles.tile} style={{ "--tier": TIERS[tierOf(it.skin.price, casePrice)].color } as CSSProperties} data-tier={tierOf(it.skin.price, casePrice)} data-win={i === WIN_AT || undefined}>
               <span className={styles.tileArt}>
                 {vertical && i === WIN_AT && (
                   <svg className={styles.hex} viewBox="0 0 100 100" aria-hidden>

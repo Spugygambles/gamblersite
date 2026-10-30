@@ -86,8 +86,14 @@
   padding: 12px 18px 12px 12px;
   border-radius: 12px;
   background: var(--surface);
-  box-shadow: inset 0 0 0 2px var(--rarity);
+  box-shadow:
+    inset 0 0 0 2px var(--tier),
+    0 0 26px color-mix(in srgb, var(--tier) 30%, transparent);
   animation: dropIn 0.3s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+
+.result[data-tier="grey"] {
+  box-shadow: inset 0 0 0 2px var(--surface-3);
 }
 
 .resultArt {
@@ -285,14 +291,23 @@
   right: 14px;
   height: 2px;
   border-radius: 0 0 2px 2px;
-  background: var(--rarity);
+  background: var(--tier);
+}
+
+.item[data-tier="grey"]::before {
+  background: var(--surface-3);
 }
 
 .itemArt {
   display: block;
   width: 100%;
   height: 76px;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--rarity) 20%, transparent), transparent 78%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tier) 26%, transparent), transparent 78%);
+}
+
+/* no profit, no glow */
+.item[data-tier="grey"] .itemArt {
+  background: none;
 }
 
 .itemArt > * {

@@ -47,6 +47,7 @@ import { wagered } from "@/lib/gems";
 import { PLAYER } from "@/lib/home";
 import { seedHash, takeNonce } from "@/lib/seeds";
 import { recordOutcome } from "@/lib/stats";
+import { TIERS, tierOf } from "@/lib/tiers";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import {
@@ -938,6 +939,7 @@ export default function CaseBattles() {
                   onDone={seat === 0 ? roundDone : undefined}
                   label={`${name ?? "Seat"}'s reel`}
                   vertical
+                  casePrice={battle.cases[cur].price}
                 />
               </div>
             );
@@ -1053,8 +1055,9 @@ export default function CaseBattles() {
               <ol className={styles.dropList} aria-label="Rounds">
                 {battle.cases.map((c, r) => {
                   const drop = r < landed ? battle.drops[r][seat] : null;
+                  const tier = drop ? tierOf(drop.skin.price, c.price) : "grey";
                   return drop ? (
-                    <li key={r} className={styles.dropCard} style={{ "--rarity": drop.skin.color } as CSSProperties} data-drop={drop.skin.slug}>
+                    <li key={r} className={styles.dropCard} style={{ "--tier": TIERS[tier].color } as CSSProperties} data-drop={drop.skin.slug} data-tier={tier} title={`${drop.skin.name}: ${TIERS[tier].name}`}>
                       <span className={styles.dropCircle}>
                         <SkinArt skin={drop.skin} />
                       </span>

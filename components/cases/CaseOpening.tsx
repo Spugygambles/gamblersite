@@ -8,6 +8,7 @@ import { CASES, caseBySlug, spinCase, type CaseDef, type CaseItem } from "@/lib/
 import { consumeClaimed, useGems, wagered } from "@/lib/gems";
 import { count } from "@/lib/home";
 import { takeNonce } from "@/lib/seeds";
+import { TIERS, tierOf } from "@/lib/tiers";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import { recordOutcome } from "@/lib/stats";
@@ -187,9 +188,16 @@ export default function CaseOpening() {
                   </p>
                 </div>
               </div>
-              <Reel items={selected.items} winner={winner} spinning={spinning} fast={fast} seed={spinSeed} onDone={settle} label={`${selected.name} reel`} />
+              <Reel items={selected.items} winner={winner} spinning={spinning} fast={fast} seed={spinSeed} onDone={settle} label={`${selected.name} reel`} casePrice={selected.price} />
               {result && (
-                <div className={styles.result} style={{ "--rarity": result.item.skin.color } as CSSProperties} data-result data-skin={result.item.skin.slug} data-value={result.item.skin.price}>
+                <div
+                  className={styles.result}
+                  style={{ "--tier": TIERS[tierOf(result.item.skin.price, selected.price)].color } as CSSProperties}
+                  data-result
+                  data-skin={result.item.skin.slug}
+                  data-value={result.item.skin.price}
+                  data-tier={tierOf(result.item.skin.price, selected.price)}
+                >
                   <span className={styles.resultArt}>
                     <SkinArt skin={result.item.skin} />
                   </span>
@@ -260,7 +268,7 @@ export default function CaseOpening() {
         </h2>
         <ul className={styles.contents} data-contents>
           {selected.items.map((it) => (
-            <li key={it.skin.slug} className={styles.item} style={{ "--rarity": it.skin.color } as CSSProperties}>
+            <li key={it.skin.slug} className={styles.item} style={{ "--tier": TIERS[tierOf(it.skin.price, selected.price)].color } as CSSProperties} data-tier={tierOf(it.skin.price, selected.price)}>
               <span className={styles.itemArt}>
                 <SkinArt skin={it.skin} />
               </span>
