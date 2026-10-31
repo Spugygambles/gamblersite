@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import CaseImage from "@/components/cases/CaseImage";
 import Reel, { staggerOf } from "@/components/cases/Reel";
 import { FairDialog, HowTo, kit } from "@/components/game/kit";
 import { Modal } from "@/components/mines/Dialogs";
@@ -591,8 +592,7 @@ export default function CaseBattles() {
             <span className={styles.reel} style={{ "--shift": shift } as CSSProperties} aria-label={lb.cases.map((c) => c.name).join(", ")}>
               {lb.cases.map((c, i) => (
                 <span key={i} className={styles.thumb} title={c.name} data-played={i < lb.round || undefined} data-now={(!done && i === lb.round) || undefined}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt="" width={72} height={54} />
+                  <CaseImage slug={c.slug} image={c.image} width={72} height={54} />
                 </span>
               ))}
             </span>
@@ -808,8 +808,7 @@ export default function CaseBattles() {
                   <button type="button" className={styles.slotRemove} aria-label={`Remove round ${i + 1}, ${c.name}`} onClick={() => removeCase(i)} data-remove-case={i}>
                     <CloseIcon />
                   </button>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt="" width={120} height={90} />
+                  <CaseImage slug={c.slug} image={c.image} width={120} height={90} />
                   <span className={styles.slotName}>{c.name}</span>
                   <span className={`${styles.slotPrice} tabular`}>
                     <CoinIcon />
@@ -931,8 +930,7 @@ export default function CaseBattles() {
               const at = Math.max(-3, Math.min(1, r - cur));
               return (
                 <span key={r} className={styles.stripCase} style={{ "--at": at } as CSSProperties} title={`Round ${r + 1}: ${c.name}, ${money.format(c.price)}`} data-at={at} data-played={r < landed || undefined} data-now={(r === cur && !over) || undefined}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt="" width={56} height={56} />
+                  <CaseImage slug={c.slug} image={c.image} width={56} height={56} />
                 </span>
               );
             })}
@@ -1115,8 +1113,7 @@ export default function CaseBattles() {
                     <li key={r} className={`${styles.dropCard} ${styles.dropPending}`} data-pending data-now={(phase === "fighting" && r === cur) || undefined} title={`Round ${r + 1}: ${c.name}`}>
                       <span className={styles.dropInner}>
                         <span className={styles.pendingArt}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={c.image} alt="" width={72} height={54} />
+                          <CaseImage slug={c.slug} image={c.image} width={72} height={54} />
                         </span>
                         <b>Round {r + 1}</b>
                         <span className={`${styles.dropPrice} tabular`}>
@@ -1190,8 +1187,7 @@ export default function CaseBattles() {
               return (
                 <li key={c.slug} className={styles.pickCase} data-pick={c.slug}>
                   <span className={styles.pickArt}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={c.image} alt="" width={96} height={72} />
+                    <CaseImage slug={c.slug} image={c.image} width={96} height={72} />
                   </span>
                   <span className={styles.pickName}>{c.name}</span>
                   <span className={`${styles.pickPrice} tabular`}>

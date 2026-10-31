@@ -4,13 +4,14 @@ import { useRef, useState, useSyncExternalStore, type CSSProperties } from "reac
 import { FairDialog, GameFrame, History, HowTo, Readout, Tools, kit } from "@/components/game/kit";
 import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
-import { CASES, caseBySlug, spinCase, type CaseDef, type CaseItem } from "@/lib/cases";
+import { CASES, caseBySlug, riskOf, spinCase, type CaseDef, type CaseItem } from "@/lib/cases";
 import { wagered } from "@/lib/gems";
 import { takeNonce } from "@/lib/seeds";
 import { TIERS, tierOf } from "@/lib/tiers";
 import { money } from "@/lib/upgrader";
 import { addToBalance, subscribeWallet, walletBalance, walletStart } from "@/lib/wallet";
 import { recordOutcome } from "@/lib/stats";
+import CaseImage from "./CaseImage";
 import Reel from "./Reel";
 import styles from "./Cases.module.css";
 
@@ -19,6 +20,19 @@ type Past = { id: number; text: string; won: boolean | null };
 
 const HISTORY = 12;
 const pct = (odds: number) => `${(odds * 100).toFixed(odds < 0.001 ? 3 : 2)}%`;
+
+// the list's ways of being shown
+type Risk = "all" | "high" | "low";
+type Sort = "high" | "low" | "name";
+const RISKS: [Risk, string][] = [
+  ["all", "All"],
+  ["high", "High Risk"],
+  ["low", "Low Risk"],
+];
+// a case's risk, as a band and its colour: green, blue, yellow, red
+function riskBand(r: number): [string, string] {
+  return r < 0.33 ? ["low", "#49c56a"] : r < 0.6 ? ["fair", "#4e8de0"] : r < 0.8 ? ["high", "#e9b949"] : ["extreme", "#e3415e"];
+}
 
 // ?case=<slug> on the page's address picks a case; the server has no address
 const noSubscribe = () => () => {};
@@ -46,6 +60,9 @@ export default function CaseOpening() {
   const [history, setHistory] = useState<Past[]>([]);
   const [note, setNote] = useState("");
   const [dialog, setDialog] = useState<"fair" | "how" | null>(null);
+  const [query, setQuery] = useState("");
+  const [risk, setRisk] = useState<Risk>("all");
+  const [sort, setSort] = useState<Sort>("high");
   const live = useRef<{ phase: Phase; item: CaseItem | null; from: CaseDef | null }>({ phase: "idle", item: null, from: null });
   const pastId = useRef(0);
 
@@ -92,6 +109,10 @@ export default function CaseOpening() {
   };
 
   const best = selected.items[0];
+
+  // the list as asked for: by name, by risk, in order
+  const wanted = query.trim().toLowerCase();
+  const shown = CASES.filter((c) => (!wanted || c.name.toLowerCase().includes(wanted)) && (risk === "all" || (risk === "high" ? riskOf(c) >= 0.5 : riskOf(c) < 0.5))).sort((a, b) => (sort === "name" ? a.name.localeCompare(b.name) : sort === "low" ? a.price - b.price : b.price - a.price));
 
   return (
     <div className={styles.wrap} data-cases data-phase={phase} data-selected-case={selected.slug}>
@@ -150,8 +171,7 @@ export default function CaseOpening() {
             <div className={styles.stageBody}>
               <div className={styles.caseHead}>
                 <span className={styles.caseArt}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={selected.image} alt="" width={200} height={150} />
+                  <CaseImage slug={selected.slug} image={selected.image} width={200} height={150} />
                 </span>
                 <div className={styles.caseText}>
                   <h2 className={styles.caseName}>{selected.name}</h2>
@@ -196,28 +216,59 @@ export default function CaseOpening() {
       />
 
       <section className={styles.section} aria-labelledby="cases-all">
-        <h2 id="cases-all" className={styles.heading}>
-          All cases
-        </h2>
+        <div className={styles.gridHead}>
+          <h2 id="cases-all" className={styles.heading}>
+            All cases <small data-case-count>({shown.length})</small>
+          </h2>
+          <div className={styles.controls}>
+            <label className={styles.search}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden>
+                <circle cx="11" cy="11" r="6.5" />
+                <path d="m16 16 4.5 4.5" />
+              </svg>
+              <input type="search" placeholder="Search by case name" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search by case name" data-case-search />
+            </label>
+            <div className={styles.riskTabs} role="tablist" aria-label="Risk">
+              {RISKS.map(([id, label]) => (
+                <button key={id} type="button" role="tab" className={styles.riskTab} aria-selected={risk === id} onClick={() => setRisk(id)} data-risk-tab={id}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <label className={styles.sort}>
+              Sort by:
+              <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} data-case-sort>
+                <option value="high">Price High-Low</option>
+                <option value="low">Price Low-High</option>
+                <option value="name">Name A-Z</option>
+              </select>
+            </label>
+          </div>
+        </div>
         <ul className={styles.cases} data-case-grid>
-          {CASES.map((c) => {
+          {shown.map((c) => {
+            const r = riskOf(c);
+            const [band, color] = riskBand(r);
             return (
               <li key={c.slug}>
                 <button type="button" className={styles.caseCard} aria-pressed={c.slug === selected.slug} disabled={spinning} onClick={() => pickCase(c.slug)} data-case={c.slug} data-selected={c.slug === selected.slug || undefined}>
                   <span className={styles.cardArt}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={c.image} alt="" width={160} height={120} loading="lazy" decoding="async" />
+                    <CaseImage slug={c.slug} image={c.image} width={160} height={120} />
                   </span>
                   <span className={styles.cardName}>{c.name}</span>
                   <span className={`${styles.cardPrice} tabular`}>
                     <CoinIcon />
                     {money.format(c.price)}
                   </span>
+                  <span className={styles.risk} style={{ "--pos": `${Math.round(8 + r * 84)}%`, "--risk": color } as CSSProperties} title={`Risk: ${band}`} data-risk={band}>
+                    <i />
+                  </span>
                 </button>
               </li>
             );
           })}
         </ul>
+        {shown.length === 0 && <p className={styles.none}>No case by that name.</p>}
       </section>
 
       <section className={styles.section} aria-labelledby="cases-inside">

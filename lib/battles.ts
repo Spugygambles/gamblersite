@@ -52,8 +52,10 @@ export const MAX_BORROW = 0.9;
 /** The share of a win the player keeps when borrowing: the lender takes the borrowed share. */
 export const keptShare = (borrow: number) => Math.round((1 - borrow) * 100) / 100;
 
-/** The cases a battle can be made of: the ones sold for coins. */
-export const COIN_CASES: CaseDef[] = CASES.filter((c) => c.gems === null);
+/** The cases a battle can be made of: every one on sale. */
+export const COIN_CASES: CaseDef[] = CASES;
+// the sample battles are made of the middling ones, so a seat stays affordable
+const SAMPLE_CASES = COIN_CASES.filter((c) => c.price >= 5000 && c.price <= 60000);
 export const MAX_ROUNDS = 8;
 
 const cents = (n: number) => Math.round(n);
@@ -229,7 +231,7 @@ export function lobbyBattle(id: number, status: Status = "open", wanted?: Mode):
   const drawn = MODES[Math.floor(rand() * MODES.length)].id;
   const mode = wanted ?? drawn;
   const rounds = 2 + Math.floor(rand() * 5);
-  const cases = Array.from({ length: rounds }, () => COIN_CASES[Math.floor(rand() * COIN_CASES.length)]);
+  const cases = Array.from({ length: rounds }, () => SAMPLE_CASES[Math.floor(rand() * SAMPLE_CASES.length)]);
   const gamemode: Gamemode = rand() < 0.5 ? "standard" : GAMEMODES[Math.floor(rand() * GAMEMODES.length)].id;
   const options: Options = { ...NO_OPTIONS, gold: rand() < 0.2, fund: rand() < 0.15 };
   const seats = seatsOf(mode);

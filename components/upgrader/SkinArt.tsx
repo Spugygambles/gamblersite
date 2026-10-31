@@ -57,17 +57,20 @@ export default function SkinArt({ skin }: { skin: Skin }) {
         <path d={SHAPES[skin.kind].body} />
         <path className={styles.silhouetteDark} d={SHAPES[skin.kind].dark} />
       </svg>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        ref={ref}
-        src={skin.image}
-        alt=""
-        loading="lazy"
-        decoding="async"
-        referrerPolicy="no-referrer"
-        onLoad={(e) => (e.currentTarget.parentElement!.dataset.art = "loaded")}
-        onError={(e) => (e.currentTarget.parentElement!.dataset.art = "missing")}
-      />
+      {/* a skin with no render yet keeps the silhouette */}
+      {skin.image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          ref={ref}
+          src={skin.image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onLoad={(e) => (e.currentTarget.parentElement!.dataset.art = "loaded")}
+          onError={(e) => (e.currentTarget.parentElement!.dataset.art = "missing")}
+        />
+      )}
     </span>
   );
 }

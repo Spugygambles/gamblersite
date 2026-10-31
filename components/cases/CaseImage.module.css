@@ -1,0 +1,42 @@
+/* The drawn case: a box with its lid, front and side in one hue, lit from behind. */
+
+.drawn {
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+}
+
+.glow {
+  fill: hsl(var(--hue) 85% 60% / 0.28);
+  filter: blur(9px);
+}
+
+.side {
+  fill: hsl(var(--hue) 55% 28%);
+}
+
+.front {
+  fill: hsl(var(--hue) 60% 42%);
+}
+
+.lid {
+  fill: hsl(var(--hue) 65% 60%);
+}
+
+.band {
+  fill: hsl(var(--hue) 55% 34%);
+}
+
+.shine {
+  fill: hsl(var(--hue) 70% 78% / 0.55);
+}
+
+.emblem {
+  fill: hsl(var(--hue) 35% 16%);
+}
+
+.ring {
+  fill: none;
+  stroke: hsl(var(--hue) 75% 68%);
+  stroke-width: 2.5;
+}
