@@ -159,6 +159,11 @@ const PICTURED = new Set([
   "chicken-jockey",
   "bux-or-tix",
   "biograft-bonanza",
+  "valk-volatility",
+  "high-voltage",
+  "encore",
+  "mogger",
+  "dominus-bonanza",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
