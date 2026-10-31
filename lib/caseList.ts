@@ -144,6 +144,11 @@ const PICTURED = new Set([
   "astra-dreams",
   "federation-case",
   "after-life",
+  "azure-case",
+  "crimsonwraths-curse",
+  "mafia-case",
+  "toxic-waste",
+  "tix-nostalgia",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
