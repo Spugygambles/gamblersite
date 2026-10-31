@@ -1,186 +1,31 @@
 /*
- * Case opening: what's the game's own, around the shared kit. The case
- * picked, its reel and the drop on the stage; the cases to pick from and
- * what's inside the one picked, in grids under the frame.
+ * Cases, in two views. The list: every case, with a search, the risk tabs
+ * and an order. A case's own page: the way back, the switches, the case
+ * and its reel between two markers, how many to open and the buttons, and
+ * everything it can drop.
  */
 
-.wrap {
+/* ---- The list ------------------------------------------------------------------- */
+
+.list {
   display: grid;
-  gap: 22px;
+  gap: 18px;
   container-type: inline-size;
 }
 
-.chosen {
-  display: grid;
-  gap: 8px;
-}
-
-.chosenName {
-  font: 900 20px/1.1 var(--font-ui), sans-serif;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.bestName {
-  overflow: hidden;
-  font-size: 13px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* ---- The stage ------------------------------------------------------------------- */
-
-.stageBody {
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 18px;
-  width: 100%;
-}
-
-.caseHead {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-
-.caseArt img,
-.caseArt svg {
-  width: 150px;
-  height: auto;
-  max-height: 120px;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
-}
-
-.caseText {
-  display: grid;
-  gap: 6px;
-}
-
-.caseName {
+.title {
   margin: 0;
-  font: 900 26px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font: 800 26px/1.1 var(--font-ui), sans-serif;
 }
 
-.caseMeta {
-  margin: 0;
+.title small {
+  margin-left: 6px;
   color: var(--text-muted);
-  font: 600 13px/1.4 var(--font-ui), sans-serif;
+  font: 700 14px/1 var(--font-ui), sans-serif;
 }
 
-/* the drop, under the reel */
-.result {
-  display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: center;
-  width: min(100%, 560px);
-  padding: 12px 18px 12px 12px;
-  border-radius: 12px;
-  background: var(--surface);
-  box-shadow:
-    inset 0 0 0 2px var(--tier),
-    0 0 26px color-mix(in srgb, var(--tier) 30%, transparent);
-  animation: dropIn 0.3s cubic-bezier(0.2, 1.2, 0.4, 1) both;
-}
-
-.result[data-tier="grey"] {
-  box-shadow: inset 0 0 0 2px var(--surface-3);
-}
-
-.resultArt {
-  display: block;
-  width: 96px;
-  height: 66px;
-}
-
-.resultArt > * {
-  width: 100%;
-  height: 100%;
-}
-
-.resultText {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-
-.resultName {
-  overflow: hidden;
-  font: 800 16px/1.2 var(--font-ui), sans-serif;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.resultOdds {
-  color: var(--text-muted);
-  font: 600 12px/1.3 var(--font-ui), sans-serif;
-}
-
-.resultPrice {
-  display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  justify-items: end;
-  column-gap: 6px;
-  color: var(--live);
-  font: 900 18px/1 var(--font-ui), sans-serif;
-}
-
-.resultPrice svg {
-  width: 16px;
-  height: 16px;
-}
-
-.resultPrice small {
-  grid-column: 1 / -1;
-  margin-top: 4px;
-  color: var(--text-muted);
-  font: 600 11px/1 var(--font-ui), sans-serif;
-}
-
-@keyframes dropIn {
-  from {
-    opacity: 0;
-    translate: 0 10px;
-  }
-}
-
-/* ---- The grids under the frame ------------------------------------------------------- */
-
-.section {
-  display: grid;
-  gap: 12px;
-}
-
-.heading {
-  margin: 0;
-  font: 900 18px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.heading small {
-  margin-left: 4px;
-  color: var(--text-muted);
-  font: 700 13px/1 var(--font-ui), sans-serif;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
-/* the list's head: the title, and the search, the risk tabs and the order */
-.gridHead {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.controls {
+/* the search and the risk tabs, the order over on the right */
+.listBar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -192,13 +37,13 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 9px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--edge);
   color: var(--text-muted);
-  font: 700 13px/1 var(--font-ui), sans-serif;
+  font: 700 13.5px/1 var(--font-ui), sans-serif;
 }
 
 .search svg {
@@ -208,11 +53,11 @@
 }
 
 .search input {
-  width: 190px;
+  width: 220px;
   border: 0;
   background: none;
   color: var(--text);
-  font: 600 13.5px/1 var(--font-ui), sans-serif;
+  font: 600 14px/1 var(--font-ui), sans-serif;
   outline: none;
 }
 
@@ -222,21 +67,21 @@
 
 .riskTabs {
   display: inline-flex;
-  gap: 4px;
+  gap: 2px;
   padding: 4px;
-  border-radius: 9px;
+  border-radius: 10px;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--edge);
 }
 
 .riskTab {
-  height: 32px;
+  height: 34px;
   padding: 0 12px;
   border: 0;
   border-radius: 7px;
   background: none;
   color: var(--text-muted);
-  font: 700 13px/1 var(--font-ui), sans-serif;
+  font: 700 13.5px/1 var(--font-ui), sans-serif;
   cursor: pointer;
   transition:
     background-color 0.15s ease,
@@ -252,11 +97,15 @@
   color: var(--text);
 }
 
+.sort {
+  margin-left: auto;
+}
+
 .sort select {
   border: 0;
   background: none;
   color: var(--text);
-  font: 800 13px/1 var(--font-ui), sans-serif;
+  font: 800 13.5px/1 var(--font-ui), sans-serif;
   outline: none;
   cursor: pointer;
 }
@@ -273,33 +122,29 @@
 
 .cases {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .caseCard {
-  position: relative;
   display: grid;
   justify-items: center;
   gap: 8px;
-  width: 100%;
-  padding: 12px 12px 14px;
-  border: 0;
+  padding: 16px 12px 16px;
   border-radius: 12px;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--edge);
   color: var(--text);
-  cursor: pointer;
+  text-decoration: none;
   transition:
     background-color 0.15s ease,
-    box-shadow 0.15s ease,
     translate 0.15s ease;
 }
 
-.caseCard:hover:not(:disabled) {
+.caseCard:hover {
   background: var(--surface-2);
   translate: 0 -2px;
 }
@@ -307,14 +152,6 @@
 .caseCard:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
-}
-
-.caseCard[data-selected] {
-  box-shadow: inset 0 0 0 2px var(--brand);
-}
-
-.caseCard:disabled {
-  cursor: default;
 }
 
 .cardArt {
@@ -326,19 +163,47 @@
 
 .cardArt img,
 .cardArt svg {
-  width: 84%;
+  width: 88%;
   height: auto;
   max-height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5));
+  transition: scale 0.2s ease;
+}
+
+.caseCard:hover .cardArt img,
+.caseCard:hover .cardArt svg {
+  scale: 1.05;
+}
+
+.cardName {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--text-soft);
+  font: 700 14.5px/1.2 var(--font-ui), sans-serif;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cardPrice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+}
+
+.cardPrice svg {
+  width: 15px;
+  height: 15px;
 }
 
 /* how much of a gamble the case is: a track, the band's colour about the mark */
 .risk {
   position: relative;
-  width: 70%;
+  width: 80%;
   height: 3px;
-  margin-top: 2px;
+  margin-top: 6px;
   border-radius: 2px;
   background: var(--surface-3);
 }
@@ -365,159 +230,548 @@
   translate: -50% 0;
 }
 
-.cardName {
-  font: 800 13px/1.2 var(--font-ui), sans-serif;
-  letter-spacing: 0.03em;
-  text-align: center;
-  text-transform: uppercase;
-}
+/* ---- A case's page ------------------------------------------------------------- */
 
-.cardPrice {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 7px;
-  background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--line);
-  font: 800 13px/1 var(--font-ui), sans-serif;
-}
-
-.cardPrice svg {
-  width: 14px;
-  height: 14px;
-}
-
-.contents {
+.page {
+  --reel-panel: color-mix(in srgb, var(--surface) 75%, var(--bg));
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 18px;
+  container-type: inline-size;
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--text-soft);
+  font: 700 15px/1 var(--font-ui), sans-serif;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.back svg {
+  width: 16px;
+  height: 16px;
+}
+
+.switches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+/* a switch: its icon, then a pill with a knob that slides across when on */
+.switch {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.switch[aria-checked="true"] {
+  color: var(--brand);
+}
+
+.switch > svg {
+  width: 19px;
+  height: 19px;
+}
+
+.track {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  transition: background-color 0.18s ease;
+}
+
+.knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  transition: translate 0.18s ease;
+}
+
+.switch[aria-checked="true"] .track {
+  background: var(--brand);
+}
+
+.switch[aria-checked="true"] .knob {
+  translate: 18px 0;
+}
+
+.head {
+  display: grid;
+  justify-items: center;
   gap: 10px;
+}
+
+.headArt {
+  display: grid;
+  place-items: center;
+  height: 150px;
+}
+
+.headArt img,
+.headArt svg {
+  width: 200px;
+  height: auto;
+  max-height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.55));
+}
+
+.headName {
+  margin: 0;
+  font: 800 25px/1.15 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+/* the reels, a marker pointing down above them and up below */
+.reelZone {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.pointerDown,
+.pointerUp {
+  width: 0;
+  height: 0;
+  border-right: 11px solid transparent;
+  border-left: 11px solid transparent;
+}
+
+.pointerDown {
+  border-top: 12px solid var(--brand);
+}
+
+.pointerUp {
+  border-bottom: 12px solid var(--brand);
+}
+
+.reels {
+  --reel-h: 200px;
+  --reel-tile: 150px;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.reels[data-reels="2"] {
+  --reel-h: 160px;
+  --reel-tile: 130px;
+}
+
+.reels[data-reels="3"],
+.reels[data-reels="4"] {
+  --reel-h: 128px;
+  --reel-tile: 112px;
+}
+
+/* how many, the open button and the demo spin, in a row */
+.openRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.counts {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.count {
+  min-width: 48px;
+  height: 42px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--text-muted);
+  font: 800 15px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.count:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.count[aria-pressed="true"] {
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.count:disabled {
+  cursor: default;
+}
+
+.openButton,
+.demoButton {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 10px;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition:
+    filter 0.15s ease,
+    translate 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.openButton {
+  min-width: 270px;
+  background: var(--brand);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18),
+    0 6px 18px rgba(var(--brand-rgb), 0.28);
+  color: var(--on-brand);
+}
+
+.openButton svg {
+  width: 18px;
+  height: 18px;
+}
+
+.openButton:hover:not(:disabled) {
+  filter: brightness(1.08);
+  translate: 0 -1px;
+}
+
+.demoButton {
+  min-width: 190px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  color: var(--text-soft);
+}
+
+.demoButton:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.openButton:disabled,
+.demoButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+}
+
+.why {
+  margin: -6px 0 0;
+  color: var(--text-muted);
+  font: 600 13px/1.3 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+/* what the last spin gave */
+.result {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  animation: resultIn 0.35s ease;
+}
+
+@keyframes resultIn {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+.resultItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.item {
-  position: relative;
-  display: grid;
-  gap: 4px;
-  padding: 10px 10px 12px;
-  border-radius: 10px;
+.resultItem {
+  display: inline-flex;
+  gap: 10px;
+  align-items: center;
+  max-width: 320px;
+  padding: 6px 14px 6px 6px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tier) 12%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tier) 40%, transparent);
+}
+
+.resultItem[data-tier="grey"] {
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--edge);
-  overflow: hidden;
 }
 
-.item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 14px;
-  right: 14px;
-  height: 2px;
-  border-radius: 0 0 2px 2px;
-  background: var(--tier);
+.resultArt {
+  flex-shrink: 0;
+  width: 54px;
+  height: 48px;
 }
 
-.item[data-tier="grey"]::before {
-  background: var(--surface-3);
-}
-
-.itemArt {
-  display: block;
-  width: 100%;
-  height: 76px;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--tier) 26%, transparent), transparent 78%);
-}
-
-/* no profit, no glow */
-.item[data-tier="grey"] .itemArt {
-  background: none;
-}
-
-.itemArt > * {
+.resultArt > * {
   width: 100%;
   height: 100%;
 }
 
-.itemName {
+.resultText {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.resultName {
   overflow: hidden;
-  font: 700 13px/1.25 var(--font-ui), sans-serif;
+  font: 700 14px/1.2 var(--font-ui), sans-serif;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.itemWeapon {
-  overflow: hidden;
-  color: var(--text-muted);
-  font: 600 11.5px/1.25 var(--font-ui), sans-serif;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.itemFoot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.itemPrice {
+.resultValue {
   display: inline-flex;
-  align-items: center;
   gap: 5px;
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
+  align-items: center;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
-.itemPrice svg {
-  width: 13px;
-  height: 13px;
+.resultValue svg {
+  width: 14px;
+  height: 14px;
 }
 
-.itemOdds {
-  padding: 4px 7px;
-  border-radius: 5px;
-  background: var(--bg);
+.resultNote {
+  margin: 0;
+  color: var(--text-muted);
+  font: 600 13px/1.3 var(--font-ui), sans-serif;
+}
+
+.resultNote b {
+  color: var(--text);
+}
+
+.rule {
+  width: 100%;
+  height: 1px;
+  margin: 8px 0 0;
+  border: 0;
+  background: var(--line);
+}
+
+/* everything the case can drop */
+.drops {
+  display: grid;
+  gap: 16px;
+}
+
+.dropsHead {
+  margin: 0;
+  font: 800 24px/1.1 var(--font-ui), sans-serif;
+}
+
+.dropGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drop {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 30px 12px 16px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--tier) 16%, var(--surface)), var(--surface) 75%);
+  box-shadow: inset 0 0 0 1px var(--edge);
+}
+
+.drop[data-tier="grey"] {
+  background: var(--surface);
+}
+
+.dropOdds {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  color: var(--text-muted);
+  font: 700 13px/1 var(--font-ui), sans-serif;
+}
+
+/* the picture on a darker circle, a faint square turned behind it */
+.dropArt {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+}
+
+.dropArt::before,
+.dropArt::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+}
+
+.dropArt::before {
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.dropArt::after {
+  width: 40%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.035);
+  rotate: 14deg;
+}
+
+.dropArt > * {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.dropName {
+  max-width: 100%;
+  margin-top: 4px;
+  overflow: hidden;
   color: var(--text-soft);
-  font: 700 11px/1 var(--font-ui), sans-serif;
+  font: 700 14.5px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+.dropPrice {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font: 800 15px/1 var(--font-ui), sans-serif;
+}
+
+.dropPrice svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---- Narrow -------------------------------------------------------------------- */
 
 @container (max-width: 640px) {
-  .caseHead {
-    flex-direction: column;
-    text-align: center;
+  .listBar {
+    gap: 8px;
   }
 
-  .caseArt img {
-    width: 120px;
+  .search {
+    flex: 1 1 100%;
   }
 
-  .caseName {
+  .search input {
+    width: 100%;
+  }
+
+  .sort {
+    margin-left: 0;
+  }
+
+  .cases,
+  .dropGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .title,
+  .dropsHead {
     font-size: 22px;
   }
 
-  .result {
-    grid-template-columns: 72px minmax(0, 1fr);
-    gap: 12px;
+  .headArt {
+    height: 110px;
   }
 
-  .resultArt {
-    width: 72px;
-    height: 50px;
+  .headArt img,
+  .headArt svg {
+    width: 150px;
+    max-height: 110px;
   }
 
-  .resultPrice {
-    grid-column: 1 / -1;
-    justify-items: start;
+  .headName {
+    font-size: 21px;
   }
 
-  .cases {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .reels {
+    --reel-h: 150px;
+    --reel-tile: 112px;
   }
 
-  .contents {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .reels[data-reels="2"],
+  .reels[data-reels="3"],
+  .reels[data-reels="4"] {
+    --reel-h: 112px;
+    --reel-tile: 92px;
+  }
+
+  .counts {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+
+  .count {
+    flex: 1;
+  }
+
+  .openButton,
+  .demoButton {
+    flex: 1 1 100%;
+    min-width: 0;
   }
 }
 
@@ -526,7 +780,9 @@
     animation: none;
   }
 
-  .caseCard {
+  .caseCard,
+  .cardArt img,
+  .cardArt svg {
     transition: none;
   }
 }

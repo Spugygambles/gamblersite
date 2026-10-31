@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
+import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
 import type { CaseItem } from "@/lib/cases";
 import { TIERS, tierOf } from "@/lib/tiers";
@@ -22,10 +23,19 @@ import styles from "./Reel.module.css";
  * settles a hexagon rings the middle; landed, the winner's name comes up
  * under it. `extraMs` lets one reel land a touch after another, as they
  * do.
+ *
+ * Lying down (the case page) it shows the items' pictures alone, each on a
+ * soft light; before its first spin (`idle`) a glowing coin waits in the
+ * middle, and `onTick` is called as each item passes the middle, for the
+ * reel's ticking sound.
  */
 
 const TILES = 60;
 const WIN_AT = 50;
+/** Lying down, the tile in the middle before a spin, and where a spin starts. */
+const IDLE_AT = 8;
+/** The fewest milliseconds between two ticks: a fast reel doesn't buzz. */
+const TICK_GAP = 38;
 /** Lying down (the cases page): a long ride. */
 export const SPIN_MS = 5000;
 export const FAST_MS = 1200;
@@ -85,6 +95,8 @@ export default function Reel({
   vertical = false,
   casePrice = 0,
   extraMs = 0,
+  idle = false,
+  onTick,
 }: {
   items: CaseItem[];
   winner: CaseItem | null;
@@ -99,12 +111,18 @@ export default function Reel({
   casePrice?: number;
   /** Added to the ride, so this reel lands after the others. */
   extraMs?: number;
+  /** Not spun yet: lying down, a coin waits in the middle. */
+  idle?: boolean;
+  /** Each item passing the middle while it spins. */
+  onTick?: () => void;
 }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const done = useRef(onDone);
+  const tick = useRef(onTick);
   useEffect(() => {
     done.current = onDone;
+    tick.current = onTick;
   });
   const strip = stripFor(items, winner, seed);
 
@@ -121,6 +139,27 @@ export default function Reel({
     return () => ro.disconnect();
   }, [vertical]);
 
+  // Lying down and not yet spun, the strip sits with the coin in the middle.
+  useLayoutEffect(() => {
+    if (vertical || spinning || winner) return;
+    const box = boxRef.current;
+    const el = stripRef.current;
+    if (!box || !el || !el.children.length) return;
+    const place = () => {
+      const tile = (el.children[0] as HTMLElement).getBoundingClientRect().width;
+      const style = getComputedStyle(el);
+      const gap = parseFloat(style.columnGap || "0") || 0;
+      const pad = parseFloat(style.paddingLeft || "0") || 0;
+      el.style.transition = "none";
+      el.style.transform = `translateX(${(-(pad + IDLE_AT * (tile + gap) + tile / 2 - box.clientWidth / 2)).toFixed(1)}px)`;
+    };
+    place();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(place);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, [vertical, spinning, winner]);
+
   // A spin: to the start without a transition, then one ride to the winner.
   // Standing up the ring comes on as it settles.
   useEffect(() => {
@@ -136,25 +175,48 @@ export default function Reel({
     const style = getComputedStyle(el);
     const gap = parseFloat((vertical ? style.rowGap : style.columnGap) || "0") || 0;
     const span = vertical ? box.clientHeight : box.clientWidth;
-    // lying down the winner lands a little off its middle (where, the seed says); standing up, dead centre, every reel alike
-    const jitter = vertical ? 0 : (mulberry(seed + 7)() - 0.5) * tile * 0.7;
-    const at = (index: number) => -(index * (tile + gap) + tile / 2 - span / 2);
-    const target = at(WIN_AT) - jitter;
+    // every reel lands its winner dead centre, so reels side by side or stacked stop alike
+    const pad = vertical ? 0 : parseFloat(style.paddingLeft || "0") || 0;
+    const at = (index: number) => -(pad + index * (tile + gap) + tile / 2 - span / 2);
+    const target = at(WIN_AT);
     const still = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const ms = still ? 0 : vertical ? (fast ? STAND_FAST_MS : STAND_MS) + extraMs : fast ? FAST_MS : SPIN_MS;
+    const ms = still ? 0 : (vertical ? (fast ? STAND_FAST_MS : STAND_MS) : fast ? FAST_MS : SPIN_MS) + extraMs;
     const move = (px: number) => (vertical ? `translateY(${px}px)` : `translateX(${px}px)`);
     el.style.transition = "none";
-    el.style.transform = move(vertical ? Number(at(WIN_AT - RIDE).toFixed(1)) : 0);
+    el.style.transform = move(Number(at(vertical ? WIN_AT - RIDE : IDLE_AT).toFixed(1)));
     void el.offsetWidth;
     el.style.transition = ms ? `transform ${ms}ms ${vertical ? STAND_EASE : "cubic-bezier(0.1, 0.7, 0.12, 1)"}` : "none";
     el.style.transform = move(Number(target.toFixed(1)));
 
+    // the tick: each time another item reaches the middle
+    let raf = 0;
+    let passed = -1;
+    let lastTick = 0;
+    const listen = (now: number) => {
+      try {
+        const m = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+        const moved = -(vertical ? m.m42 : m.m41);
+        const index = Math.floor((moved + span / 2 - pad) / (tile + gap));
+        if (index !== passed) {
+          if (passed !== -1 && now - lastTick >= TICK_GAP) {
+            tick.current?.();
+            lastTick = now;
+          }
+          passed = index;
+        }
+      } catch {}
+      raf = requestAnimationFrame(listen);
+    };
+    if (ms && typeof requestAnimationFrame === "function") raf = requestAnimationFrame(listen);
+
     const settle = window.setTimeout(() => box.setAttribute("data-settling", ""), ms * 0.7);
     const timer = window.setTimeout(() => {
+      cancelAnimationFrame(raf);
       box.setAttribute("data-landed", "");
       done.current?.();
     }, ms + 60);
     return () => {
+      cancelAnimationFrame(raf);
       clearTimeout(settle);
       clearTimeout(timer);
     };
@@ -171,6 +233,7 @@ export default function Reel({
       data-spinning={spinning || undefined}
       data-landed={!spinning && winner ? "" : undefined}
       data-winner={winner?.skin.slug}
+      data-idle={idle && !spinning && !winner ? "" : undefined}
     >
       <div className={styles.window}>
         <div ref={stripRef} className={styles.strip}>
@@ -182,7 +245,13 @@ export default function Reel({
                     <polygon points="50,4 90,27 90,73 50,96 10,73 10,27" />
                   </svg>
                 )}
-                <SkinArt skin={it.skin} />
+                {!vertical && idle && !spinning && !winner && i === IDLE_AT ? (
+                  <span className={styles.coin} data-coin>
+                    <CoinIcon />
+                  </span>
+                ) : (
+                  <SkinArt skin={it.skin} />
+                )}
               </span>
               <span className={styles.tileName} data-name>
                 {it.skin.finish}
