@@ -179,6 +179,11 @@ const PICTURED = new Set([
   "cupids-arsenal",
   "pharaohs-curse",
   "steampunk-case",
+  "ruby-roll",
+  "hypebeast",
+  "1-rap-rush",
+  "pepe-case",
+  "american-dream",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
