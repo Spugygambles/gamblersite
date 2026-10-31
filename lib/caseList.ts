@@ -154,6 +154,11 @@ const PICTURED = new Set([
   "aether",
   "sshf-flip",
   "5-horns",
+  "frenzy-faces",
+  "hollow-depths",
+  "chicken-jockey",
+  "bux-or-tix",
+  "biograft-bonanza",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
