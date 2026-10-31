@@ -133,7 +133,18 @@ const LIST: [string, number][] = [
 ];
 
 /** The cases whose pictures are in, as public/cases/<slug>.webp. */
-const PICTURED = new Set(["e-boy-case", "holy-hair", "fedora-fiasco", "max-volume", "inferno-royale"]);
+const PICTURED = new Set([
+  "e-boy-case",
+  "holy-hair",
+  "fedora-fiasco",
+  "max-volume",
+  "inferno-royale",
+  "ultimate-50-50",
+  "midas-touch",
+  "astra-dreams",
+  "federation-case",
+  "after-life",
+]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
   const slug = slugOf(name);
