@@ -229,6 +229,11 @@ const PICTURED = new Set([
   "primal-hunt",
   "island-case",
   "fruit-salad",
+  "bluesteel-case",
+  "200-iq",
+  "paper-trail",
+  "st-patricks-case",
+  "chinatown",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
