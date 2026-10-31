@@ -9,6 +9,9 @@ esbuild (npm install here first) and mounted over its snapshot, so the
 preview plays the real thing. The result lands in out/: index.html is the
 homepage.
 """
+import base64
+import io
+import json
 import pathlib
 import re
 import shutil
@@ -19,6 +22,10 @@ HERE = pathlib.Path(__file__).parent
 OUT = HERE / "out"
 SITE = HERE.parents[1]
 BASE = "http://localhost:3000"
+# the pages that show case items, which load the packed item pictures; and
+# how big those pictures are packed (the cards show them at 140px at most)
+ITEM_PAGES = {"cases.html", "case-battles.html"}
+ITEM_PX = 200
 
 def get(path):
     with urllib.request.urlopen(BASE + path) as r:
@@ -156,6 +163,9 @@ OUT.mkdir()
 used = set()
 for path, name, title in PAGES:
     head, main, body = snapshot(path, title)
+    # the packed item pictures go ahead of the game, so they are there when it mounts
+    if name in ITEM_PAGES:
+        main += '\n<script src="items.js"></script>'
     # a game's bundle, or for a page without one just the header's wallet window
     main += "\n" + bundle(BUNDLES.get(name, HERE / "header-entry.tsx"))
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
@@ -168,11 +178,21 @@ for rel in used:
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(SITE / "public" / rel, dst)
 print(len(used), "images:", ", ".join(used))
-# the case items: a case shows its own only once it's picked, so all of them go
+# the case items: a case shows its own only once it's picked, so all of them
+# go. They are hundreds, more than an artifact holds as files, so they go
+# packed into one script, smaller than the site's own, that the pages
+# showing them load ahead of their game (mount.tsx puts them in place).
 items = SITE / "public" / "items"
 if items.exists():
-    shutil.copytree(items, OUT / "items", dirs_exist_ok=True)
-    print(len(list(items.glob("*"))), "item pictures")
+    from PIL import Image
+
+    packed = {}
+    for pic in sorted(items.glob("*.webp")):
+        buf = io.BytesIO()
+        Image.open(pic).convert("RGBA").resize((ITEM_PX, ITEM_PX), Image.LANCZOS).save(buf, "WEBP", quality=80, method=4)
+        packed[pic.stem] = "data:image/webp;base64," + base64.b64encode(buf.getvalue()).decode()
+    (OUT / "items.js").write_text("globalThis.__itemPictures=" + json.dumps(packed, separators=(",", ":")) + ";\n")
+    print(len(packed), "item pictures packed into items.js,", (OUT / "items.js").stat().st_size, "bytes")
 # the sounds the games fetch themselves
 sfx = SITE / "public" / "sfx"
 if sfx.exists():

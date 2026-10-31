@@ -36,13 +36,19 @@ export function mount(selector: string, element: ReactElement) {
     root.setAttribute("data-mounted", "");
     // React writes an href or src only when it changes, so a rewritten one
     // holds: links point at the built pages, the site's own images at the
-    // copies beside them.
+    // copies beside them. The case items' pictures, too many to publish one
+    // file each, come packed in items.js (see build.py) where a page has it.
+    const packed = (globalThis as { __itemPictures?: Record<string, string> }).__itemPictures;
     const relink = () => {
       root.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((a) => {
         const to = PAGES[a.getAttribute("href") ?? ""];
         if (to) a.setAttribute("href", to);
       });
-      root.querySelectorAll<HTMLImageElement>('img[src^="/"]').forEach((img) => img.setAttribute("src", (img.getAttribute("src") ?? "").slice(1)));
+      root.querySelectorAll<HTMLImageElement>('img[src^="/"]').forEach((img) => {
+        const src = img.getAttribute("src") ?? "";
+        const item = /^\/items\/([a-z0-9-]+)\.webp$/.exec(src);
+        img.setAttribute("src", (item && packed?.[item[1]]) || src.slice(1));
+      });
     };
     relink();
     new MutationObserver(relink).observe(root, { childList: true, subtree: true });
