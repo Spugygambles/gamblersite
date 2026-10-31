@@ -1,7 +1,7 @@
 import { KEEP } from "./house";
 import { robuxAt } from "./robux";
 import { CASE_LIST } from "./caseList";
-import { CONTENTS, type Content } from "./caseContents";
+import { CONTENTS, ROSTAKE_ROBUX_PER_USD, type Content } from "./caseContents";
 import { slugOf } from "./caseList";
 import { SKINS, type Item, type Skin } from "./skins";
 import { tierColor } from "./tiers";
@@ -10,9 +10,10 @@ import { draws, weighted } from "./fair";
 /*
  * The cases: what's in each and the odds, and what each costs. A case is
  * priced first (lib/caseList.ts, and New Year below). A case whose
- * contents are in (lib/caseContents.ts) holds those items at their odds;
- * the rest hold stand-in skins, their odds tuned so that what a case pays
- * on average is the house's share of its price, the dearer the rarer.
+ * contents are in (lib/caseContents.ts) holds those items at their odds and
+ * is priced from them instead, so the house keeps its share; the rest hold
+ * stand-in skins, their odds tuned so that what a case pays on average is
+ * the house's share of its price, the dearer the rarer.
  */
 
 export type CaseItem = { skin: Item; weight: number; odds: number };
@@ -75,22 +76,25 @@ function buildTo(slug: string, name: string, price: number, image: string | null
 
 /**
  * A case holding the items it's listed with, at the odds listed: tickets
- * out of 100,000, as Rostake counts them, so a 2.5% item holds 2,500.
+ * out of 100,000, as Rostake counts them, so a 2.5% item holds 2,500. It's
+ * priced from what it pays back on average, so the house keeps its share.
  */
-function fromContents(slug: string, name: string, price: number, image: string | null, contents: Content[]): CaseDef {
+function fromContents(slug: string, name: string, image: string | null, contents: Content[]): CaseDef {
   const weights = contents.map(([, , percent]) => Math.round(percent * 1000));
   const total = weights.reduce((x, y) => x + y, 0);
-  const items = contents.map(([itemName, usd], i): CaseItem => {
-    const value = robuxAt(usd);
+  const values = contents.map(([, robux]) => robuxAt(robux / ROSTAKE_ROBUX_PER_USD));
+  const paid = values.reduce((sum, v, i) => sum + (v * weights[i]) / total, 0);
+  const price = Math.round(paid / KEEP);
+  const items = contents.map(([itemName, , , picture], i): CaseItem => {
     const itemSlug = slugOf(itemName);
-    const skin: Item = { slug: itemSlug, name: itemName, weapon: "", finish: itemName, price: value, rarity: "", color: tierColor(value, price), kind: "accessory", image: `/items/${itemSlug}.webp` };
+    const skin: Item = { slug: itemSlug, name: itemName, weapon: "", finish: itemName, price: values[i], rarity: "", color: tierColor(values[i], price), kind: "accessory", image: `/items/${picture ?? itemSlug}.webp` };
     return { skin, weight: weights[i], odds: weights[i] / total };
   });
-  return { slug, name, image, price, items, value: money(valueOf(items)) };
+  return { slug, name, image, price, items, value: money(paid) };
 }
 
 const build = (slug: string, name: string, price: number, image: string | null) =>
-  CONTENTS[slug] ? fromContents(slug, name, price, image, CONTENTS[slug]) : buildTo(slug, name, price, image);
+  CONTENTS[slug] ? fromContents(slug, name, image, CONTENTS[slug]) : buildTo(slug, name, price, image);
 
 export const CASES: CaseDef[] = [
   build("new-year", "New Year", robuxAt(47.63), "/cases/new-year-case-thumb.png"),
