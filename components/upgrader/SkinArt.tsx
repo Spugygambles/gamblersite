@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
-import type { Kind, Skin } from "@/lib/skins";
+import type { Item, Kind } from "@/lib/skins";
 import styles from "./Upgrader.module.css";
 
 // A silhouette for each kind of item, drawn in a 100 by 60 box, side on
@@ -32,6 +32,11 @@ const SHAPES: Record<Kind, { body: string; dark: string }> = {
     body: "M41 28 70 22l27 5-5 7-30 4-21 2z",
     dark: "M4 29q0-3 3-3h31v15H7q-3 0-3-3z M36 26h5v18h-5z",
   },
+  // a Roblox item: a bowler hat, its band darker
+  accessory: {
+    body: "M30 41q0-27 20-27t20 27z M14 43q0-5 6-5h60q6 0 6 5t-6 5H20q-6 0-6-5z",
+    dark: "M30 34h40v7H30z",
+  },
   gloves: {
     body: "M30 22q0-8 6-8t6 8v12H30z M43 18q0-8 6-8t6 8v16H43z M56 20q0-8 6-8t6 8v14H56z M69 24q0-7 5-7t5 7v10H69z M24 30q-6-2-6 4l8 10z M26 34h54v14H26z",
     dark: "M26 48h54v2q0 6-6 6H32q-6 0-6-6z M34 34h2v8h-2z M47 34h2v8h-2z M60 34h2v8h-2z",
@@ -44,7 +49,7 @@ const SHAPES: Record<Kind, { body: string; dark: string }> = {
  * if it can't be fetched; once the render is in, it goes, so nothing
  * shows through the render's transparent parts.
  */
-export default function SkinArt({ skin }: { skin: Skin }) {
+export default function SkinArt({ skin }: { skin: Pick<Item, "color" | "kind" | "image"> }) {
   const ref = useRef<HTMLImageElement>(null);
   // a render that finished before React got here never fires onLoad
   useEffect(() => {

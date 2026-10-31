@@ -68,7 +68,7 @@ def snapshot(path, title):
     body = re.sub(r"<!--\$\??-->|<!--/\$-->", "", body)
     assert "<script" not in body
     # Public images sit beside the page.
-    body = re.sub(r'src="/(cases|battles|coinflip|gems|skins)/', r'src="\1/', body)
+    body = re.sub(r'src="/(cases|battles|coinflip|gems|skins|items)/', r'src="\1/', body)
     # a link to a built page points at its file, its #hash kept
     def link(m):
         path, _, hash_ = m.group(1).partition("#")
@@ -160,7 +160,7 @@ for path, name, title in PAGES:
     main += "\n" + bundle(BUNDLES.get(name, HERE / "header-entry.tsx"))
     page = f"{head}\n{main}\n" if name == "index.html" else document(head, main)
     (OUT / name).write_text(page)
-    used |= set(re.findall(r'src="((?:cases|battles|coinflip|gems|skins)/[^"]+)"', body))
+    used |= set(re.findall(r'src="((?:cases|battles|coinflip|gems|skins|items)/[^"]+)"', body))
     print(name, len(page), "bytes")
 used = sorted(used)
 for rel in used:
@@ -168,6 +168,11 @@ for rel in used:
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy(SITE / "public" / rel, dst)
 print(len(used), "images:", ", ".join(used))
+# the case items: a case shows its own only once it's picked, so all of them go
+items = SITE / "public" / "items"
+if items.exists():
+    shutil.copytree(items, OUT / "items", dirs_exist_ok=True)
+    print(len(list(items.glob("*"))), "item pictures")
 # the sounds the games fetch themselves
 sfx = SITE / "public" / "sfx"
 if sfx.exists():

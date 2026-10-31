@@ -215,7 +215,7 @@ export default function AddCases({
                   <SkinArt skin={it.skin} />
                 </span>
                 <span className={styles.itemName}>{it.skin.finish}</span>
-                <span className={styles.itemWeapon}>{it.skin.weapon}</span>
+                {it.skin.weapon && <span className={styles.itemWeapon}>{it.skin.weapon}</span>}
                 <span className={styles.itemFoot}>
                   <span className={`${styles.itemPrice} tabular`}>
                     <CoinIcon />

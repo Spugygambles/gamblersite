@@ -197,7 +197,8 @@ export default function CaseOpening() {
                   <span className={styles.resultText}>
                     <span className={styles.resultName}>{result.item.skin.name}</span>
                     <span className={styles.resultOdds}>
-                      {result.item.skin.rarity} · {pct(result.item.odds)} odds
+                      {result.item.skin.rarity ? `${result.item.skin.rarity} · ` : ""}
+                      {pct(result.item.odds)} odds
                     </span>
                   </span>
                   <span className={`${styles.resultPrice} tabular`}>
@@ -282,7 +283,7 @@ export default function CaseOpening() {
                 <SkinArt skin={it.skin} />
               </span>
               <span className={styles.itemName}>{it.skin.finish}</span>
-              <span className={styles.itemWeapon}>{it.skin.weapon}</span>
+              {it.skin.weapon && <span className={styles.itemWeapon}>{it.skin.weapon}</span>}
               <span className={styles.itemFoot}>
                 <span className={`${styles.itemPrice} tabular`}>
                   <CoinIcon />

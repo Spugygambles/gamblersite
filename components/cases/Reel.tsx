@@ -187,7 +187,7 @@ export default function Reel({
               <span className={styles.tileName} data-name>
                 {it.skin.finish}
               </span>
-              <span className={styles.tileWeapon}>{it.skin.weapon}</span>
+              {it.skin.weapon && <span className={styles.tileWeapon}>{it.skin.weapon}</span>}
               <span className={`${styles.tilePrice} tabular`}>{money.format(it.skin.price)}</span>
             </div>
           ))}
