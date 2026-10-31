@@ -812,6 +812,34 @@
   width: min(640px, calc(100% - 32px));
 }
 
+/* a window that fills the screen, for a long list: what's inside lays the
+   body out and scrolls its own part */
+.modalFull {
+  width: min(1440px, calc(100% - 32px));
+  height: calc(100% - 32px);
+  max-height: 1120px;
+}
+
+.modalFull[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalFull .modalHead {
+  flex-shrink: 0;
+  padding: 22px 28px 18px;
+}
+
+.modalFull .modalBody {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+}
+
 .modal::backdrop {
   background: rgba(6, 7, 20, 0.74);
 }

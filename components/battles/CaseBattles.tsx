@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import CaseImage from "@/components/cases/CaseImage";
+import AddCases from "./AddCases";
 import Reel, { staggerOf } from "@/components/cases/Reel";
 import { FairDialog, HowTo, kit } from "@/components/game/kit";
 import { Modal } from "@/components/mines/Dialogs";
@@ -678,7 +679,6 @@ export default function CaseBattles() {
 
   const modeDef = MODES.find((m) => m.id === mode)!;
   const slots = Math.min(MAX_ROUNDS, Math.max(4, Math.ceil((picked.length + 1) / 4) * 4));
-  const countOf = (c: CaseDef) => picked.filter((p) => p.slug === c.slug).length;
 
   const createPage = (
     <div className={styles.createPage} data-create-page>
@@ -1179,46 +1179,7 @@ export default function CaseBattles() {
         </div>
       )}
 
-      {picking && (
-        <Modal title="Add cases" onClose={() => setPicking(false)} wide>
-          <ul className={styles.picker} aria-label="Cases" data-picker>
-            {COIN_CASES.map((c) => {
-              const n = countOf(c);
-              return (
-                <li key={c.slug} className={styles.pickCase} data-pick={c.slug}>
-                  <span className={styles.pickArt}>
-                    <CaseImage slug={c.slug} image={c.image} width={96} height={72} />
-                  </span>
-                  <span className={styles.pickName}>{c.name}</span>
-                  <span className={`${styles.pickPrice} tabular`}>
-                    <CoinIcon />
-                    {money.format(c.price)}
-                  </span>
-                  <span className={styles.pickCount}>
-                    <button type="button" className={styles.pickStep} aria-label={`One ${c.name} fewer`} disabled={n === 0} onClick={() => removeLast(c)} data-less-case={c.slug}>
-                      −
-                    </button>
-                    <b className="tabular" data-count={n}>
-                      {n}
-                    </b>
-                    <button type="button" className={styles.pickStep} aria-label={`One ${c.name} more`} disabled={picked.length >= MAX_ROUNDS} onClick={() => addCase(c)} data-add-case={c.slug}>
-                      +
-                    </button>
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <div className={styles.pickerFoot}>
-            <span className={styles.pickerSum}>
-              {picked.length} of {MAX_ROUNDS} rounds, <b className="tabular">{money.format(costOf(picked))}</b> a seat
-            </span>
-            <button type="button" className={kit.primary} onClick={() => setPicking(false)} data-picker-done>
-              Done
-            </button>
-          </div>
-        </Modal>
-      )}
+      {picking && <AddCases picked={picked} onAdd={addCase} onLess={removeLast} onClose={() => setPicking(false)} />}
 
       {dialog === "fair" && (
         <FairDialog

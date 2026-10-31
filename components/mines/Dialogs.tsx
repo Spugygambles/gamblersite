@@ -11,7 +11,22 @@ import styles from "./Mines.module.css";
  * a click outside close it. `label` names it for assistive tech when the
  * title isn't plain text.
  */
-export function Modal({ title, label, onClose, children, wide }: { title: ReactNode; label?: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+export function Modal({
+  title,
+  label,
+  onClose,
+  children,
+  wide,
+  full,
+}: {
+  title: ReactNode;
+  label?: string;
+  onClose: () => void;
+  children: ReactNode;
+  wide?: boolean;
+  /** Fills the screen, for a long list: what's inside lays the body out and scrolls its own part. */
+  full?: boolean;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current;
@@ -20,7 +35,7 @@ export function Modal({ title, label, onClose, children, wide }: { title: ReactN
   return (
     <dialog
       ref={ref}
-      className={`${styles.modal} ${wide ? styles.modalWide : ""}`}
+      className={`${styles.modal} ${wide ? styles.modalWide : ""} ${full ? styles.modalFull : ""}`}
       aria-label={label ?? (typeof title === "string" ? title : undefined)}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}

@@ -1,0 +1,529 @@
+/*
+ * The Add Cases window on the Create Battle page: a bar of controls, the
+ * cases in a grid that scrolls under it, and the totals with Continue along
+ * the bottom. The eye on a case opens a second, smaller window of what's
+ * inside.
+ */
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+}
+
+.title img,
+.title svg {
+  flex-shrink: 0;
+}
+
+.box {
+  width: 30px;
+  height: 30px;
+}
+
+.window {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  /* the container the narrow-width rules below ask about */
+  container-type: inline-size;
+}
+
+/* ---- The controls ---------------------------------------------------------------------- */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 24px 16px;
+}
+
+.tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: var(--surface-2);
+}
+
+.tab {
+  height: 40px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--text-muted);
+  font: 700 15px/1 var(--font-ui), sans-serif;
+  cursor: default;
+}
+
+.tab[aria-selected="true"] {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.select,
+.search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font: 700 15px/1 var(--font-ui), sans-serif;
+  transition: box-shadow 0.15s ease;
+}
+
+.select:focus-within,
+.search:focus-within {
+  box-shadow: 0 0 0 2px var(--brand);
+}
+
+/* the label, the choice, a chevron: the select itself lies over the whole
+   pill, unseen, so a click anywhere on it opens the list */
+.select {
+  position: relative;
+  cursor: pointer;
+}
+
+.select b {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.select svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  color: var(--text-soft);
+}
+
+.cover {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cover option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.search {
+  flex: 1 1 240px;
+  margin-left: auto;
+  cursor: text;
+}
+
+.search svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+}
+
+.search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: 600 15px/1 var(--font-ui), sans-serif;
+  outline: none;
+}
+
+.search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ---- The cases ------------------------------------------------------------------------- */
+
+.grid {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  gap: 18px;
+  align-content: start;
+  margin: 0;
+  padding: 4px 24px 24px;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.case {
+  position: relative;
+  border-radius: 12px;
+  background: var(--surface-2);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  transition:
+    box-shadow 0.15s ease,
+    translate 0.15s ease;
+}
+
+.case:hover {
+  translate: 0 -2px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.case[data-picked] {
+  box-shadow: inset 0 0 0 2px var(--brand);
+}
+
+/* the case itself is the button that adds it */
+.add {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 24px 14px 22px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+}
+
+.add:disabled {
+  cursor: default;
+}
+
+.add:disabled .art {
+  opacity: 0.5;
+}
+
+/* a flex box, not a grid: the picture's max-height needs a height to be a
+   percentage of, and a grid area doesn't count as one */
+.art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 170px;
+}
+
+.art img,
+.art svg {
+  width: min(74%, 220px);
+  max-height: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.45));
+  transition: scale 0.2s ease;
+}
+
+.case:hover .art img,
+.case:hover .art svg {
+  scale: 1.04;
+}
+
+.name {
+  color: var(--text-soft);
+  font: 700 16px/1.25 var(--font-ui), sans-serif;
+}
+
+.price {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+}
+
+.price svg {
+  width: 15px;
+  height: 15px;
+}
+
+.view {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.view:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text);
+}
+
+.view svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* how many of the case are in the battle, with a step either way */
+.count {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.count b {
+  min-width: 22px;
+  text-align: center;
+  font: 800 13px/1 var(--font-ui), sans-serif;
+}
+
+.step {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.18);
+  color: inherit;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.step:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.none {
+  grid-column: 1 / -1;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font: 600 15px/1.4 var(--font-ui), sans-serif;
+  text-align: center;
+}
+
+/* ---- The bottom ------------------------------------------------------------------------ */
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 24px 22px;
+  border-top: 1px solid var(--line);
+}
+
+.sum {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font: 700 15px/1 var(--font-ui), sans-serif;
+}
+
+.sum b {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.sum b svg {
+  width: 15px;
+  height: 15px;
+}
+
+.go {
+  height: 52px;
+  margin-left: auto;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 10px;
+  font: 800 16px/1 var(--font-ui), sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.3);
+  transition:
+    filter 0.15s ease,
+    translate 0.15s ease;
+}
+
+.go:hover:not(:disabled) {
+  filter: brightness(1.08);
+  translate: 0 -1px;
+}
+
+.go:disabled {
+  opacity: 0.5;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* ---- What's inside a case -------------------------------------------------------------- */
+
+.insideNote {
+  margin: 0;
+  color: var(--text-muted);
+  font: 600 13.5px/1.45 var(--font-ui), sans-serif;
+}
+
+.inside {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 12px 10px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--edge);
+  overflow: hidden;
+}
+
+.item::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--tier);
+}
+
+.itemArt {
+  display: block;
+  width: 100%;
+  height: 76px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--tier) 26%, transparent), transparent 78%);
+}
+
+.itemArt > * {
+  width: 100%;
+  height: 100%;
+}
+
+.itemName {
+  overflow: hidden;
+  font: 700 13px/1.25 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemWeapon {
+  overflow: hidden;
+  color: var(--text-muted);
+  font: 600 12px/1.2 var(--font-ui), sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.itemPrice {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 800 12.5px/1 var(--font-ui), sans-serif;
+}
+
+.itemPrice svg {
+  width: 12px;
+  height: 12px;
+}
+
+.itemOdds {
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font: 700 11px/1 var(--font-ui), sans-serif;
+}
+
+.insideFoot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---- Narrower ------------------------------------------------------------------------- */
+
+@container (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 760px) {
+  .bar,
+  .foot {
+    padding-inline: 14px;
+  }
+
+  .search {
+    flex-basis: 100%;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding-inline: 14px;
+  }
+
+  .add {
+    padding: 16px 10px 14px;
+  }
+
+  .art {
+    height: 120px;
+  }
+
+  .name,
+  .price {
+    font-size: 14px;
+  }
+
+  .sum {
+    height: 44px;
+    padding: 0 16px;
+    font-size: 13.5px;
+  }
+
+  .go {
+    height: 44px;
+    padding: 0 20px;
+    font-size: 14.5px;
+  }
+}
