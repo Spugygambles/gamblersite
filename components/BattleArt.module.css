@@ -1,6 +1,6 @@
 /*
- * A case battle: two cases face off, the New Year case on the left in warm
- * orange light and the Music Box on the right in cool blue, with a purple VS
+ * A case battle: two cases face off, Molten Core on the left in warm
+ * orange light and Frostbite on the right in cool blue, with a purple VS
  * between them. As the page loads the cases slide in from either side; then,
  * every time (on load and on hover), the VS slams down with a flash, the
  * cases wind up and lunge at each other, and where they meet a shockwave,
@@ -72,13 +72,13 @@
 .side[data-side="left"] {
   --dir: -1;
   left: 7%;
-  width: 82cqw;
+  width: 92cqw;
 }
 
 .side[data-side="right"] {
   --dir: 1;
   left: 95%;
-  width: 88cqw;
+  width: 92cqw;
 }
 
 .shadow {

@@ -49,9 +49,10 @@ const EMBERS_RIGHT: Ember[] = [
   { x: 130, y: 126, size: 3.5, rise: 155, sway: -2, speed: 2, phase: 0.1 },
 ];
 
+// Two cases from the catalogue, one to suit each side's light.
 const CASES = [
-  { side: "left", src: "/battles/new-year-case.png", width: 576, height: 582 },
-  { side: "right", src: "/battles/music-box-case.png", width: 1088, height: 844 },
+  { side: "left", src: "/cases/molten-core.webp", width: 640, height: 490 },
+  { side: "right", src: "/cases/frostbite.webp", width: 640, height: 499 },
 ] as const;
 
 export default function BattleArt() {
@@ -86,7 +87,7 @@ export default function BattleArt() {
                   alt=""
                   width={c.width}
                   height={c.height}
-                  // Served as-is: already sized for sharp high-DPI screens.
+                  // Served as-is: the catalogue's own picture.
                   unoptimized
                   loading="eager"
                   draggable={false}

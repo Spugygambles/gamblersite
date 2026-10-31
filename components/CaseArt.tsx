@@ -11,8 +11,6 @@ import { useBannerPlay } from "./useBannerPlay";
 // 2000ms).
 const PLAY_MS = 2100;
 
-const LAYERS = ["base", "loot", "launcher"] as const;
-
 // Sparkles that twinkle round the case as it pops: where each sits, as % of
 // the stage, and how big it is.
 const SPARKLES = [
@@ -25,7 +23,7 @@ const SPARKLES = [
   { x: 96, y: 74, size: 7 },
 ];
 
-// Toxic bubbles that boil up out of the open case, in cqw.
+// Green bubbles that boil up out of the case, in cqw.
 const BUBBLES = [
   { dx: -14, size: 6 },
   { dx: 6, size: 8 },
@@ -79,25 +77,19 @@ export default function CaseArt() {
       <div className={styles.float}>
         <div className={styles.hop}>
           <div className={styles.enter}>
-            {/* The case in three layers so its loot can pop out and drop
-                back: the case itself, the skull mask with the launcher lying
-                across it, and the striped launcher out front. Together at
-                rest they make up the whole picture. */}
+            {/* After Life, from the catalogue: its green suits the light. */}
             <div className={styles.caseBox}>
-              {LAYERS.map((layer) => (
-                <Image
-                  key={layer}
-                  className={layer === "base" ? styles.layer : `${styles.layer} ${styles[layer]}`}
-                  src={`/cases/toxic-case-${layer}.png`}
-                  alt=""
-                  width={796}
-                  height={780}
-                  // Served as-is: already sized for sharp high-DPI screens.
-                  unoptimized
-                  loading="eager"
-                  draggable={false}
-                />
-              ))}
+              <Image
+                className={styles.layer}
+                src="/cases/after-life.webp"
+                alt=""
+                width={640}
+                height={485}
+                // Served as-is: the catalogue's own picture.
+                unoptimized
+                loading="eager"
+                draggable={false}
+              />
             </div>
           </div>
         </div>

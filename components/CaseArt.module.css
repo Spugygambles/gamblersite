@@ -1,11 +1,9 @@
 /*
- * The toxic case, popped open: it sits glowing on a pad of green light and,
- * as the page loads and again on hover, squashes and hops with a wiggle
- * while its loot pops out: the skull mask and the launcher across it rise up
- * out of the case and the striped launcher out front jumps, then they drop
- * back in as the case lands. A flash of green light goes off behind it,
- * toxic bubbles boil up out of the lid, sparkles twinkle round it and a ring
- * runs out across the pad (see CaseArt.tsx).
+ * A case popping open: After Life sits glowing on a pad of green light and,
+ * as the page loads and again on hover, squashes and hops with a wiggle. A
+ * flash of green light goes off behind it, green bubbles boil up out of the
+ * lid, sparkles twinkle round it and a ring runs out across the pad as it
+ * lands (see CaseArt.tsx).
  *
  * data-playing is set for one pop; the intro (data-intro) also grows the case
  * in first. Between pops the case floats, its aura breathes and green spores
@@ -144,10 +142,10 @@
 
 .caseBox {
   position: absolute;
-  top: 43%;
+  top: 52%;
   left: 50%;
-  width: 122cqw;
-  aspect-ratio: 796 / 780;
+  width: 118cqw;
+  aspect-ratio: 640 / 485;
   translate: -50% -50%;
   filter: drop-shadow(0 0 3cqw rgba(110, 255, 60, 0.35));
 }
@@ -159,14 +157,6 @@
   height: 100%;
 }
 
-/* Each piece of loot pivots round its own middle. */
-.loot {
-  transform-origin: 62% 30%;
-}
-
-.launcher {
-  transform-origin: 45% 86%;
-}
 
 .sparkle {
   position: absolute;
@@ -194,13 +184,6 @@
     animation: hop 1s linear 400ms;
   }
 
-  .stage[data-playing] .loot {
-    animation: loot-pop 1.2s linear 400ms;
-  }
-
-  .stage[data-playing] .launcher {
-    animation: launcher-pop 1.2s linear 460ms;
-  }
 
   .stage[data-playing] .shadow {
     animation: shadow 1s linear 400ms;
@@ -285,69 +268,6 @@
   82% {
     transform: translateY(-1.5cqw) scale(0.98, 1.03) rotate(1deg);
     animation-timing-function: ease-in-out;
-  }
-  100% {
-    transform: none;
-  }
-}
-
-/* The mask and the launcher across the case pop up out of it, hang a
-   moment and drop back in with a little bounce. */
-@keyframes loot-pop {
-  0% {
-    transform: none;
-    animation-timing-function: ease-out;
-  }
-  16% {
-    transform: translateY(1cqw);
-    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
-  }
-  40% {
-    transform: translateY(-12cqw) rotate(-3deg) scale(1.05);
-    animation-timing-function: ease-in-out;
-  }
-  60% {
-    transform: translateY(-13cqw) rotate(2deg) scale(1.05);
-    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
-  }
-  80% {
-    transform: translateY(0.6cqw) rotate(0deg) scale(1);
-    animation-timing-function: ease-out;
-  }
-  90% {
-    transform: translateY(-1.2cqw);
-    animation-timing-function: ease-in;
-  }
-  100% {
-    transform: none;
-  }
-}
-
-/* The launcher out front jumps up and tips, then lands back. */
-@keyframes launcher-pop {
-  0% {
-    transform: none;
-    animation-timing-function: ease-out;
-  }
-  16% {
-    transform: translateY(0.6cqw);
-    animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
-  }
-  40% {
-    transform: translateY(-7cqw) rotate(-4deg);
-    animation-timing-function: ease-in-out;
-  }
-  60% {
-    transform: translateY(-8cqw) rotate(3deg);
-    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.4);
-  }
-  80% {
-    transform: translateY(0.4cqw) rotate(0deg);
-    animation-timing-function: ease-out;
-  }
-  90% {
-    transform: translateY(-0.8cqw);
-    animation-timing-function: ease-in;
   }
   100% {
     transform: none;
