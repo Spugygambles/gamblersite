@@ -199,6 +199,11 @@ const PICTURED = new Set([
   "enchanted-vault",
   "adurite-case",
   "viridian-case",
+  "katana-flip",
+  "blood-trail",
+  "pirates-plunder",
+  "monochrome",
+  "beach-case",
 ]);
 
 export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
