@@ -25,6 +25,7 @@ export type Content = [name: string, robux: number, percent: number, picture?: s
 
 /** The items whose pictures are in, as public/items/<slug>.webp; the rest show a stand-in. */
 export const ITEM_PICTURES = new Set([
+  "a-dark-presence",
   "black-iron-king-of-the-night",
   "black-sparkle-time-fedora",
   "blue-clockwork-headphones",
@@ -34,12 +35,15 @@ export const ITEM_PICTURES = new Set([
   "cw-ultimate-rose-quartz-rebellion",
   "cw-ultimate-ruby-rapture",
   "cw-ultimate-wulfinite-will",
+  "dark-assassin",
   "dominus-infernus",
   "fiery-horns-of-the-netherworld",
   "firebrand",
   "frozen-horns-of-the-frigid-planes",
   "fuchsia-fantastique",
   "green-sparkle-time-fedora",
+  "gucci-dionysus-bag",
+  "hooded-spacelord",
   "knee-busting-knife-of-madness",
   "midnight-blue-shaggy",
   "midnight-blue-sparkle-time-fedora",
@@ -53,6 +57,7 @@ export const ITEM_PICTURES = new Set([
   "sinister-fedora",
   "sky-blue-sparkle-time-fedora",
   "sparkle-time-fedora",
+  "steampunk-bobbie",
   "stickmasterlukes-peanut-butter-sparkle-time",
   "striped-red-fedora",
   "telamon-hair",
@@ -1146,7 +1151,7 @@ export const CONTENTS: Record<string, Content[]> = {
     ["Roblox Sunglasses", 1, 45],
   ],
   "gucci-dream": [
-    ["Gucci Dionysus Bag...", 12934, 1],
+    ["Gucci Dionysus Bag...", 12934, 1, "gucci-dionysus-bag-beige"],
     ["Gucci Spiked Baske...", 298, 19],
     ["Gucci Horsebit 1955...", 285, 20],
     ["Gucci Geometric Bag", 214, 20],
