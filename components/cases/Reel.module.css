@@ -199,7 +199,7 @@
 .reel[data-vertical] .tile {
   display: grid;
   flex: 0 0 var(--vtile);
-  grid-template-rows: minmax(0, 1fr) auto auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   align-content: center;
   justify-items: center;
   gap: 2px;
@@ -262,7 +262,7 @@
   opacity: 1;
 }
 
-/* landed: the winner a touch bigger and brighter, its name and price under it, the rest in the shade */
+/* landed: the winner a touch bigger and brighter, its name under it, the rest in the shade */
 .reel[data-vertical][data-landed] .tile[data-win] .tileArt {
   scale: 1.06;
   background: radial-gradient(circle, color-mix(in srgb, var(--tier) 26%, transparent), transparent 62%);
@@ -288,26 +288,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   animation: nameIn 0.3s ease-out;
-}
-
-.reel[data-vertical][data-landed] .tile[data-win] .tilePrice {
-  display: inline-flex;
-  position: relative;
-  z-index: 1;
-  align-items: center;
-  gap: 4px;
-  color: var(--tier);
-  font: 800 12.5px/1 var(--font-ui), sans-serif;
-  animation: nameIn 0.3s ease-out;
-}
-
-.reel[data-vertical][data-landed] .tile[data-win][data-tier="grey"] .tilePrice {
-  color: var(--text);
-}
-
-.reel[data-vertical] .tilePrice svg {
-  width: 13px;
-  height: 13px;
 }
 
 @keyframes nameIn {
@@ -343,8 +323,7 @@
     transition: none;
   }
 
-  .reel[data-vertical][data-landed] .tile[data-win] .tileName,
-  .reel[data-vertical][data-landed] .tile[data-win] .tilePrice {
+  .reel[data-vertical][data-landed] .tile[data-win] .tileName {
     animation: none;
   }
 }

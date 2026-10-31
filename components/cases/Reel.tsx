@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
-import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
 import type { CaseItem } from "@/lib/cases";
 import { TIERS, tierOf } from "@/lib/tiers";
@@ -21,8 +20,8 @@ import styles from "./Reel.module.css";
  * of RIDE tiles that pulls up in the last third, every reel landing its
  * winner dead centre. As it
  * settles a hexagon rings the middle; landed, the winner's name comes up
- * and its price counts up to what it is. `extraMs` lets one reel land a
- * touch after another, as they do.
+ * under it. `extraMs` lets one reel land a touch after another, as they
+ * do.
  */
 
 const TILES = 60;
@@ -35,9 +34,12 @@ export const STAND_MS = 2400;
 export const STAND_FAST_MS = 1200;
 /** How many tiles a standing reel rides through. */
 const RIDE = 18;
-/** The rush, then the pull-up: most of the way at a steady pace, the rest eased off. */
-const STAND_EASE = "linear(0, 0.78 62%, 0.9 75%, 0.965 86%, 0.992 94%, 1)";
-const COUNT_MS = 450;
+/**
+ * The run, then the pull-up: a steady pace for the first 60% of the time,
+ * then the speed eased off along a cosine to a stop, sampled closely so
+ * nothing jerks.
+ */
+const STAND_EASE = "linear(0, 0.7500 60%, 0.7811 62.5%, 0.8117 65%, 0.8411 67.5%, 0.8688 70%, 0.8943 72.5%, 0.9173 75%, 0.9374 77.5%, 0.9546 80%, 0.9687 82.5%, 0.9798 85%, 0.9880 87.5%, 0.9938 90%, 0.9973 92.5%, 0.9992 95%, 0.9999 97.5%, 1)";
 
 // Small, repeatable random numbers for the strip's order.
 function mulberry(seed: number) {
@@ -119,9 +121,8 @@ export default function Reel({
     return () => ro.disconnect();
   }, [vertical]);
 
-  // A spin: to the start without a transition, then one ride to the winner,
-  // landing a little off its middle (where, the seed says). Standing up the
-  // ring comes on as it settles, and the price counts up once it has.
+  // A spin: to the start without a transition, then one ride to the winner.
+  // Standing up the ring comes on as it settles.
   useEffect(() => {
     if (!spinning) return;
     const box = boxRef.current;
@@ -149,29 +150,15 @@ export default function Reel({
     el.style.transform = move(Number(target.toFixed(1)));
 
     const settle = window.setTimeout(() => box.setAttribute("data-settling", ""), ms * 0.7);
-    let raf = 0;
     const timer = window.setTimeout(() => {
       box.setAttribute("data-landed", "");
-      // the winner's price counts up to what it is
-      const price = el.children[WIN_AT]?.querySelector<HTMLElement>("[data-price]");
-      const worth = winner?.skin.price ?? 0;
-      if (vertical && price && worth > 0 && !still) {
-        const from = performance.now();
-        const count = (now: number) => {
-          const p = Math.min(1, (now - from) / COUNT_MS);
-          price.textContent = money.format(Math.round(worth * (0.95 + 0.05 * p)));
-          if (p < 1) raf = requestAnimationFrame(count);
-        };
-        raf = requestAnimationFrame(count);
-      }
       done.current?.();
     }, ms + 60);
     return () => {
       clearTimeout(settle);
       clearTimeout(timer);
-      cancelAnimationFrame(raf);
     };
-  }, [spinning, seed, fast, vertical, extraMs, winner]);
+  }, [spinning, seed, fast, vertical, extraMs]);
 
   return (
     <div
@@ -201,10 +188,7 @@ export default function Reel({
                 {it.skin.finish}
               </span>
               <span className={styles.tileWeapon}>{it.skin.weapon}</span>
-              <span className={`${styles.tilePrice} tabular`}>
-                {vertical && <CoinIcon />}
-                <span data-price={i === WIN_AT || undefined}>{money.format(it.skin.price)}</span>
-              </span>
+              <span className={`${styles.tilePrice} tabular`}>{money.format(it.skin.price)}</span>
             </div>
           ))}
         </div>
