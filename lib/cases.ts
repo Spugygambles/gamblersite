@@ -1,7 +1,7 @@
 import { KEEP } from "./house";
 import { robuxAt } from "./robux";
 import { CASE_LIST } from "./caseList";
-import { CONTENTS, ROSTAKE_ROBUX_PER_USD, type Content } from "./caseContents";
+import { CONTENTS, ITEM_PICTURES, ROSTAKE_ROBUX_PER_USD, type Content } from "./caseContents";
 import { slugOf } from "./caseList";
 import { SKINS, type Item, type Skin } from "./skins";
 import { tierColor } from "./tiers";
@@ -87,7 +87,9 @@ function fromContents(slug: string, name: string, image: string | null, contents
   const price = Math.round(paid / KEEP);
   const items = contents.map(([itemName, , , picture], i): CaseItem => {
     const itemSlug = slugOf(itemName);
-    const skin: Item = { slug: itemSlug, name: itemName, weapon: "", finish: itemName, price: values[i], rarity: "", color: tierColor(values[i], price), kind: "accessory", image: `/items/${picture ?? itemSlug}.webp` };
+    const pic = picture ?? itemSlug;
+    const image = ITEM_PICTURES.has(pic) ? `/items/${pic}.webp` : "";
+    const skin: Item = { slug: itemSlug, name: itemName, weapon: "", finish: itemName, price: values[i], rarity: "", color: tierColor(values[i], price), kind: "accessory", image };
     return { skin, weight: weights[i], odds: weights[i] / total };
   });
   return { slug, name, image, price, items, value: money(paid) };
