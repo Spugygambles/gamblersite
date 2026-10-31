@@ -48,11 +48,11 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "hydra", level: 83, text: "morning" },
   { name: "Obi", level: 88, text: "anyone tried the new year case yet" },
   { name: "tiko", level: 14, text: "pulled a glock water elemental from it" },
-  { name: "hydra", level: 83, text: "music box case is so clean" },
+  { name: "hydra", level: 83, text: "frostbite case is so clean" },
   { name: "rook", level: 56, text: "keno with 4 picks is underrated" },
   { name: "kyro", level: 42, text: "gg on that karambit" },
   { name: "mira", level: 47, text: "just hit 12x on limbo" },
-  { name: "MaxiM", level: 18, text: "anyone up for a 2v2? toxic case" },
+  { name: "MaxiM", level: 18, text: "anyone up for a 2v2? deep sea case" },
   { name: "nova", level: 63, text: "crash went 31x and i cashed at 2 lol" },
   { name: "sk8r", level: 29, text: "classic" },
   { system: "rain", text: "93,100 Robux of rain was shared by 41 players" },
@@ -81,9 +81,7 @@ export type CaseInfo = {
 };
 
 export const CASES: CaseInfo[] = [
-  { slug: "toxic", name: "Toxic", thumb: "/cases/toxic-case-thumb.png" },
   { slug: "new-year", name: "New Year", thumb: "/cases/new-year-case-thumb.png" },
-  { slug: "music-box", name: "Music Box", thumb: "/cases/music-box-case-thumb.png" },
 ];
 
 export const caseBySlug = (slug: string) => CASES.find((c) => c.slug === slug)!;

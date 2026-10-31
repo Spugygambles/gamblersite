@@ -69,8 +69,6 @@ function buildTo(slug: string, name: string, price: number, image: string | null
 }
 
 export const CASES: CaseDef[] = [
-  buildTo("music-box", "Music Box", 13256, "/cases/music-box-case-thumb.png"),
-  buildTo("toxic", "Toxic", 16783, "/cases/toxic-case-thumb.png"),
   buildTo("new-year", "New Year", 23816, "/cases/new-year-case-thumb.png"),
   ...CASE_LIST.map((c) => buildTo(c.slug, c.name, c.price, c.image ?? null)),
 ];

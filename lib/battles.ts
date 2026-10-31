@@ -54,6 +54,12 @@ export const keptShare = (borrow: number) => Math.round((1 - borrow) * 100) / 10
 
 /** The cases a battle can be made of: every one on sale. */
 export const COIN_CASES: CaseDef[] = CASES;
+/** The cases the Create Battle page starts with, the first two, and the ones its presets are made of. */
+export const STARTER_CASES: CaseDef[] = ["beach-case", "viridian-case", "new-year"].map((slug) => {
+  const c = CASES.find((c) => c.slug === slug);
+  if (!c) throw new Error(`No case ${slug} to start a battle with`);
+  return c;
+});
 // the sample battles are made of the middling ones, so a seat stays affordable
 const SAMPLE_CASES = COIN_CASES.filter((c) => c.price >= 5000 && c.price <= 60000);
 export const MAX_ROUNDS = 8;

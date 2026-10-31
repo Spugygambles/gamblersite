@@ -15,6 +15,7 @@ import {
   LOBBY,
   MAX_BORROW,
   MAX_ROUNDS,
+  STARTER_CASES,
   MODES,
   NO_OPTIONS,
   battleDrops,
@@ -118,7 +119,7 @@ const OPTIONS: { key: keyof Options; label: string; icon: (p: { className?: stri
   { key: "gold", label: "Gold Spin", icon: StarIcon, hint: "Golden reels for the whole battle." },
 ];
 
-// ready-made battles, by case index into COIN_CASES
+// ready-made battles, by case index into STARTER_CASES
 const PRESETS: { name: string; mode: Mode; gamemode: Gamemode; cases: number[]; options?: Partial<Options> }[] = [
   { name: "Quick 1v1", mode: "1v1", gamemode: "standard", cases: [0, 0] },
   { name: "Crazy three-way", mode: "1v1v1", gamemode: "crazy", cases: [1, 2, 1] },
@@ -178,7 +179,7 @@ export default function CaseBattles() {
   const [mode, setMode] = useState<Mode>("1v1");
   const [gamemode, setGamemode] = useState<Gamemode>("standard");
   const [options, setOptions] = useState<Options>(NO_OPTIONS);
-  const [picked, setPicked] = useState<CaseDef[]>([COIN_CASES[0], COIN_CASES[1]]);
+  const [picked, setPicked] = useState<CaseDef[]>([STARTER_CASES[0], STARTER_CASES[1]]);
   const [menu, setMenu] = useState<"type" | "presets" | null>(null);
   const [picking, setPicking] = useState(false);
   const [borrowing, setBorrowing] = useState<number | null>(null);
@@ -503,7 +504,7 @@ export default function CaseBattles() {
   const applyPreset = (p: (typeof PRESETS)[number]) => {
     setMode(p.mode);
     setGamemode(p.gamemode);
-    setPicked(p.cases.map((i) => COIN_CASES[i % COIN_CASES.length]));
+    setPicked(p.cases.map((i) => STARTER_CASES[i % STARTER_CASES.length]));
     setOptions({ ...NO_OPTIONS, fast, ...p.options });
     setMenu(null);
   };
@@ -522,7 +523,7 @@ export default function CaseBattles() {
     const setup = lastSetup.current ?? {
       mode,
       gamemode,
-      cases: picked.length ? picked : [COIN_CASES[0]],
+      cases: picked.length ? picked : [STARTER_CASES[0]],
       names: Array.from({ length: seatsOf(mode) }, (_, i) => (i === 0 ? "you" : `seat ${i + 1}`)),
     };
     return describeBattle(setup.cases, setup.mode, setup.gamemode, setup.names, server, client, nonce);
