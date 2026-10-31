@@ -85,9 +85,15 @@ function fromContents(slug: string, name: string, image: string | null, contents
   const values = contents.map(([, robux]) => robuxAt(robux / ROSTAKE_ROBUX_PER_USD));
   const paid = values.reduce((sum, v, i) => sum + (v * weights[i]) / total, 0);
   const price = Math.round(paid / KEEP);
+  // two items can show the same cut-off name ("Telamon's Mystery ..."): each
+  // after the first gets its count on its slug, so every item in a case has its own
+  const seen = new Map<string, number>();
   const items = contents.map(([itemName, , , picture], i): CaseItem => {
-    const itemSlug = slugOf(itemName);
-    const pic = picture ?? itemSlug;
+    const base = slugOf(itemName);
+    const n = (seen.get(base) ?? 0) + 1;
+    seen.set(base, n);
+    const itemSlug = n > 1 ? `${base}-${n}` : base;
+    const pic = picture ?? base;
     const image = ITEM_PICTURES.has(pic) ? `/items/${pic}.webp` : "";
     const skin: Item = { slug: itemSlug, name: itemName, weapon: "", finish: itemName, price: values[i], rarity: "", color: tierColor(values[i], price), kind: "accessory", image };
     return { skin, weight: weights[i], odds: weights[i] / total };
