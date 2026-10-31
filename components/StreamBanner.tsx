@@ -1,11 +1,9 @@
-import { Russo_One } from "next/font/google";
 import type { CSSProperties } from "react";
 import { CLAW_MARKS, lens } from "@/lib/claw";
 import Embers, { type Ember } from "./Embers";
 import styles from "./StreamBanner.module.css";
 
 // The heavy, squared-off face closest to the Rustwild wordmark.
-const russo = Russo_One({ weight: "400", subsets: ["latin"] });
 
 // A long, horizontal banner for the stream overlay. It loops forever between
 // two scenes, each brought in by a claw swipe across the whole banner: the
@@ -40,7 +38,7 @@ const REEL_ONES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0
 
 export default function StreamBanner() {
   return (
-    <div className={`${styles.banner} ${russo.className}`} role="img" aria-label="Rustwild: 10% deposit bonus and more rewards">
+    <div className={`${styles.banner} ${"stream-font"}`} role="img" aria-label="Rustwild: 10% deposit bonus and more rewards">
       <div className={styles.backdrop}>
         <div className={styles.aurora} />
         <div className={styles.hatch} />

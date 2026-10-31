@@ -234,30 +234,6 @@
 
 /* ---- The player -------------------------------------------------------- */
 
-.gems {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 8px;
-  background: var(--surface-2);
-  color: var(--text);
-  font: 600 14px/1 var(--font-ui), sans-serif;
-  text-decoration: none;
-  transition: background-color 0.15s ease;
-}
-
-.gems:hover {
-  background: var(--surface-3);
-}
-
-.gem {
-  width: 18px;
-  height: 18px;
-  color: var(--gem);
-}
-
 .account {
   position: relative;
 }
@@ -385,9 +361,6 @@
 }
 
 @media (max-width: 900px) {
-  .gems {
-    display: none;
-  }
 }
 
 /* Phones: the bar along the bottom has the games and rewards, so the links
@@ -449,8 +422,7 @@
   .navItem .caret,
   .menuItem,
   .menuIcon,
-  .deposit,
-  .gems {
+  .deposit {
     transition: none;
   }
 }

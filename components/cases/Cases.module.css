@@ -21,12 +21,6 @@
   text-transform: uppercase;
 }
 
-.gemIcon {
-  width: 15px;
-  height: 15px;
-  color: var(--gem);
-}
-
 .bestName {
   overflow: hidden;
   font-size: 13px;
@@ -250,17 +244,6 @@
 .cardPrice svg {
   width: 14px;
   height: 14px;
-}
-
-.cardClaimed {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 7px;
-  border-radius: 999px;
-  background: var(--live);
-  color: #0e1a11;
-  font: 800 10.5px/1 var(--font-ui), sans-serif;
 }
 
 .contents {

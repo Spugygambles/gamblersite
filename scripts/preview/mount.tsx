@@ -1,20 +1,17 @@
 // What every bundled page of the preview does: mount the game where the
-// snapshot has it, and keep the plain-HTML header's balance and gem count
-// in step with the stores (which hold in the browser between pages).
+// snapshot has it, and keep the plain-HTML header's balance in step with
+// the wallet (which holds in the browser between pages).
 import { createRoot } from "react-dom/client";
 import type { ReactElement } from "react";
-import { gemStore } from "@/lib/gems";
 import { subscribeWallet, walletBalance } from "@/lib/wallet";
 import { mountWallet } from "./wallet";
 
 const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
-const whole = new Intl.NumberFormat("en-US");
 // the built pages, by the site's paths (see build.py LINKS)
 const PAGES: Record<string, string> = {
   "/": "index.html",
   "/mines": "mines.html",
   "/upgrader": "upgrader.html",
-  "/gems": "gems.html",
   "/cases": "cases.html",
   "/case-battles": "case-battles.html",
   "/crash": "crash.html",
@@ -52,9 +49,7 @@ export function mount(selector: string, element: ReactElement) {
   }
   const header = () => {
     document.querySelectorAll("[data-wallet-balance]").forEach((el) => (el.textContent = money.format(walletBalance())));
-    document.querySelectorAll("[data-gem-count]").forEach((el) => (el.textContent = whole.format(gemStore.get().gems)));
   };
   header();
   subscribeWallet(header);
-  gemStore.subscribe(header);
 }

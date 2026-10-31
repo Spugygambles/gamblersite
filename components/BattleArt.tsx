@@ -1,6 +1,5 @@
 "use client";
 
-import { Montserrat } from "next/font/google";
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import Embers, { type Ember } from "./Embers";
@@ -8,7 +7,6 @@ import styles from "./BattleArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // The site's heavy number face (see LimboArt), at its heaviest for the VS.
-const montserrat = Montserrat({ weight: "900", subsets: ["latin"] });
 
 // Length of one battle: it must outlast the last animation in
 // BattleArt.module.css (the last sparkle, ending at 1000 + 4 * 110 + 700 =
@@ -113,7 +111,7 @@ export default function BattleArt() {
           />
         ))}
         <div className={styles.vsSlam}>
-          <span className={`${styles.vs} ${montserrat.className}`}>VS</span>
+          <span className={`${styles.vs} ${"display-font"}`}>VS</span>
         </div>
       </div>
 

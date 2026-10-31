@@ -1,13 +1,11 @@
 "use client";
 
-import { Montserrat } from "next/font/google";
 import type { CSSProperties } from "react";
 import Embers, { type Ember } from "./Embers";
 import styles from "./LimboArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // The heavy, wide face closest to the site's Limbo multiplier.
-const montserrat = Montserrat({ weight: "800", subsets: ["latin"] });
 
 // Length of one roll: it must outlast the last animation in
 // LimboArt.module.css (the green wash settling, ending at 1200 + 900 = 2100ms).
@@ -72,11 +70,11 @@ export default function LimboArt() {
             }
           />
         ))}
-        <span className={`${styles.num} ${montserrat.className}`} aria-hidden />
+        <span className={`${styles.num} ${"display-font"}`} aria-hidden />
       </div>
 
       {/* The result drops into the corner, like the game's last-result pill. */}
-      <span className={`${styles.pill} ${montserrat.className}`} aria-hidden>
+      <span className={`${styles.pill} ${"display-font"}`} aria-hidden>
         2.29×
       </span>
     </div>

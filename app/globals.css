@@ -48,6 +48,10 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
+  /* the interface face, and the banners' display face; both from Google's stylesheet (app/layout.tsx) */
+  --font-ui: "Rubik";
+  --font-display: "Montserrat";
+  --font-stream: "Russo One";
   --font-sans: var(--font-ui);
 }
 
@@ -94,4 +98,13 @@ html:has(dialog[open]) {
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+/* the banners' big figures */
+.display-font {
+  font-family: var(--font-display), var(--font-ui), sans-serif;
+}
+
+.stream-font {
+  font-family: var(--font-stream), var(--font-ui), sans-serif;
 }

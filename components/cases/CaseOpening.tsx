@@ -2,11 +2,10 @@
 
 import { useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { FairDialog, GameFrame, History, HowTo, Readout, Tools, kit } from "@/components/game/kit";
-import { CoinIcon, GemIcon } from "@/components/home/icons";
+import { CoinIcon } from "@/components/home/icons";
 import SkinArt from "@/components/upgrader/SkinArt";
 import { CASES, caseBySlug, spinCase, type CaseDef, type CaseItem } from "@/lib/cases";
-import { consumeClaimed, useGems, wagered } from "@/lib/gems";
-import { count } from "@/lib/home";
+import { wagered } from "@/lib/gems";
 import { takeNonce } from "@/lib/seeds";
 import { TIERS, tierOf } from "@/lib/tiers";
 import { money } from "@/lib/upgrader";
@@ -26,15 +25,14 @@ const noSubscribe = () => () => {};
 const queriedCase = () => (typeof location === "undefined" ? null : new URLSearchParams(location.search).get("case"));
 
 /**
- * Case opening. Pick a case, open it for its price (or use one claimed in
- * the Gem Vault), and the reel stops on the skin it gives. The skin's
+ * Case opening. Pick a case, open it for its price, and the reel stops on
+ * the skin it gives. The skin's
  * value goes straight to the balance, the site having no inventory yet.
  * Each case lists everything inside with the odds. The item comes from the
  * shared provably-fair seeds (lib/cases.ts).
  */
 export default function CaseOpening() {
   const balance = useSyncExternalStore(subscribeWallet, walletBalance, walletStart);
-  const { claimed } = useGems();
   const queried = useSyncExternalStore(noSubscribe, queriedCase, () => null);
   const [chosen, setChosen] = useState<string | null>(null);
   const slug = chosen ?? (queried && caseBySlug(queried) ? queried : CASES[0].slug);
@@ -52,10 +50,8 @@ export default function CaseOpening() {
   const pastId = useRef(0);
 
   const spinning = phase === "spinning";
-  const have = claimed[selected.slug] ?? 0;
-  const gemCase = selected.gems !== null;
-  const canOpen = !spinning && (gemCase ? have > 0 : balance >= selected.price);
-  const why = spinning ? "" : gemCase ? (have > 0 ? "" : "Claim one in the Gem Vault first") : balance < selected.price ? "Not enough balance" : "";
+  const canOpen = !spinning && balance >= selected.price;
+  const why = spinning ? "" : balance < selected.price ? "Not enough balance" : "";
 
   const pickCase = (s: string) => {
     if (spinning) return;
@@ -69,12 +65,8 @@ export default function CaseOpening() {
   const open = () => {
     if (!canOpen || live.current.phase === "spinning") return;
     const c = selected;
-    if (gemCase) {
-      if (!consumeClaimed(c.slug)) return;
-    } else {
-      addToBalance(-c.price);
-      wagered(c.price);
-    }
+    addToBalance(-c.price);
+    wagered(c.price);
     const s = takeNonce();
     const item = spinCase(c, s.serverSeed, s.clientSeed, s.nonce);
     live.current = { phase: "spinning", item, from: c };
@@ -90,12 +82,12 @@ export default function CaseOpening() {
     const { item, from } = live.current;
     if (live.current.phase !== "spinning" || !item || !from) return;
     addToBalance(item.skin.price);
-    recordOutcome(Math.round(item.skin.price - (from.gems ? 0 : from.price)));
+    recordOutcome(Math.round(item.skin.price - from.price));
     live.current = { phase: "done", item, from };
     setPhase("done");
     setResult({ item, from });
     const id = ++pastId.current;
-    setHistory((h) => [{ id, text: money.format(item.skin.price), won: from.gems ? null : item.skin.price >= from.price }, ...h].slice(0, HISTORY));
+    setHistory((h) => [{ id, text: money.format(item.skin.price), won: item.skin.price >= from.price }, ...h].slice(0, HISTORY));
     setNote(`Unboxed ${item.skin.name}, sold for ${money.format(item.skin.price)}`);
   };
 
@@ -112,29 +104,16 @@ export default function CaseOpening() {
                 {selected.name}
               </span>
             </div>
-            {gemCase ? (
-              <Readout
-                label="Claimed in the Gem Vault"
-                value={
-                  <>
-                    <GemIcon className={styles.gemIcon} />
-                    {count.format(selected.gems ?? 0)} · {have} to open
-                  </>
-                }
-                attr="data-claimed"
-              />
-            ) : (
-              <Readout
-                label="Price"
-                value={
-                  <>
-                    <CoinIcon />
-                    {money.format(selected.price)}
-                  </>
-                }
-                attr="data-price"
-              />
-            )}
+            <Readout
+              label="Price"
+              value={
+                <>
+                  <CoinIcon />
+                  {money.format(selected.price)}
+                </>
+              }
+              attr="data-price"
+            />
             <div className={kit.readouts}>
               <Readout
                 label="Pays on average"
@@ -148,15 +127,9 @@ export default function CaseOpening() {
               <Readout label={`Best drop, ${pct(best.odds)}`} value={<span className={styles.bestName}>{best.skin.name}</span>} />
             </div>
             <div className={kit.go}>
-              {gemCase && have === 0 ? (
-                <a href="/gems" className={kit.secondary} data-claim-link>
-                  Claim one in the Gem Vault
-                </a>
-              ) : (
-                <button type="button" className={kit.primary} disabled={!canOpen} onClick={open} data-open>
-                  {spinning ? "Opening…" : gemCase ? `Open · ${have} claimed` : `Open for ${money.format(selected.price)}`}
-                </button>
-              )}
+              <button type="button" className={kit.primary} disabled={!canOpen} onClick={open} data-open>
+                {spinning ? "Opening…" : `Open for ${money.format(selected.price)}`}
+              </button>
               <button type="button" className={kit.iconButton} aria-pressed={fast} aria-label="Fast open" title="Fast open" onClick={() => setFast(!fast)} data-fast>
                 <svg viewBox="0 0 24 24" aria-hidden>
                   <path d="M13 2 4 14h6l-1 8 9-12h-6z" />
@@ -228,7 +201,6 @@ export default function CaseOpening() {
         </h2>
         <ul className={styles.cases} data-case-grid>
           {CASES.map((c) => {
-            const n = claimed[c.slug] ?? 0;
             return (
               <li key={c.slug}>
                 <button type="button" className={styles.caseCard} aria-pressed={c.slug === selected.slug} disabled={spinning} onClick={() => pickCase(c.slug)} data-case={c.slug} data-selected={c.slug === selected.slug || undefined}>
@@ -238,23 +210,9 @@ export default function CaseOpening() {
                   </span>
                   <span className={styles.cardName}>{c.name}</span>
                   <span className={`${styles.cardPrice} tabular`}>
-                    {c.gems ? (
-                      <>
-                        <GemIcon className={styles.gemIcon} />
-                        {count.format(c.gems)}
-                      </>
-                    ) : (
-                      <>
-                        <CoinIcon />
-                        {money.format(c.price)}
-                      </>
-                    )}
+                    <CoinIcon />
+                    {money.format(c.price)}
                   </span>
-                  {n > 0 && (
-                    <span className={styles.cardClaimed} data-card-claimed>
-                      {n} claimed
-                    </span>
-                  )}
                 </button>
               </li>
             );
@@ -303,7 +261,7 @@ export default function CaseOpening() {
           onClose={() => setDialog(null)}
           steps={[
             "Pick a case from the list. Everything inside it, and the odds of each skin, are shown underneath.",
-            "Open it for its price, or use a case you claimed with gems in the Gem Vault.",
+            "Open it for its price.",
             "The reel runs and stops on your skin. Its value is sold to your balance straight away, since the site has no inventory yet.",
             "A case costs what it pays on average plus the house's 10%, and every drop can be checked under Provably fair.",
           ]}

@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { resetSample, useAccount } from "@/lib/account";
 import { homeHref } from "@/lib/assets";
 import { PLAYER } from "@/lib/home";
-import { ChevronIcon, ClockIcon, GemIcon, LogoutIcon, SwapIcon, UserIcon, UsersIcon } from "./icons";
+import { ChevronIcon, ClockIcon, LogoutIcon, SwapIcon, UserIcon, UsersIcon } from "./icons";
 import styles from "./SiteHeader.module.css";
 
 /**
  * The player in the header: the level chip, the avatar and a caret, which
- * open a menu to the account pages, the Gem Vault and logging out. The
+ * open a menu to the account pages and logging out. The
  * menu is in the page from the start (hidden), so the preview can work it
  * without React; a click outside or Escape closes it.
  */
@@ -66,10 +66,6 @@ export default function AccountMenu() {
         <Link href="/account#affiliates" role="menuitem" className={styles.menuItem} onClick={close}>
           <UsersIcon />
           Affiliates
-        </Link>
-        <Link href="/gems" role="menuitem" className={styles.menuItem} onClick={close}>
-          <GemIcon />
-          Gem Vault
         </Link>
         <button type="button" role="menuitem" className={`${styles.menuItem} ${styles.logout}`} onClick={logout} data-logout>
           <LogoutIcon />

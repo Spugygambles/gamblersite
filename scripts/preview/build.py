@@ -29,7 +29,6 @@ PAGES = [
     ("/", "index.html", "CsgoNeo Homepage"),
     ("/mines", "mines.html", "Mines — CsgoNeo"),
     ("/upgrader", "upgrader.html", "Upgrader — CsgoNeo"),
-    ("/gems", "gems.html", "Gem Vault — CsgoNeo"),
     ("/cases", "cases.html", "Cases — CsgoNeo"),
     ("/case-battles", "case-battles.html", "Case Battles — CsgoNeo"),
     ("/crash", "crash.html", "Crash — CsgoNeo"),
@@ -52,7 +51,7 @@ LINKS = {"/": "index.html", "/#games": "index.html#games", **{path: name for pat
 
 fonts = (
     "https://fonts.googleapis.com/css2?"
-    "family=Montserrat:wght@800;900&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap"
+    "family=Montserrat:wght@800;900&family=Russo+One&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap"
 )
 js = (HERE / "preview.js").read_text()
 

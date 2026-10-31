@@ -28,7 +28,7 @@ export const PLAYER = {
   name: "Spugy",
   /** Sample Robux to try the games with. */
   balance: 500000,
-  /** Gems to start with: earned as the player wagers (lib/gems.ts), spent in the Gem Vault. */
+  /** Gems to start with: earned as the player wagers (lib/gems.ts). */
   gems: 12,
   level: 70,
   /** Progress through the current level, 0-100. */
@@ -66,7 +66,6 @@ export const CHAT_SAMPLE: ChatMessage[] = [
   { name: "MaxiM", level: 18, text: "2v2 is up in battles, join" },
   { name: "zenn", level: 34, text: "swept a whole row in mines lol" },
   { name: "dusk", level: 70, text: "got one in keno, 3 left to find" },
-  { system: "event", text: "Gems are live: every 5,000 you wager earns one. Spend them in the Gem Vault." },
   { name: "ghostR", level: 31, text: "who else is waiting on the rain" },
   { name: "Obi", level: 88, text: "happy thanksgiving all, good luck" },
 ];

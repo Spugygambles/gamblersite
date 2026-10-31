@@ -1,13 +1,12 @@
 import { KEEP } from "./house";
-import { GEM_CASES } from "./gemCases";
 import { SKINS, type Skin } from "./skins";
 import { draws, weighted } from "./fair";
 
 /*
  * The cases: what's in each and the odds, from which the price follows.
  * A case holds skins from a band of values; the dearer a skin, the rarer
- * it is (weight falls with price). A Robux case costs its expected payout
- * over the house's share; a gem case is claimed in the Gem Vault.
+ * it is (weight falls with price). A case costs its expected payout over
+ * the house's share.
  */
 
 export type CaseItem = { skin: Skin; weight: number; odds: number };
@@ -15,9 +14,9 @@ export type CaseDef = {
   slug: string;
   name: string;
   image: string;
-  /** Robux, for the cases sold for Robux. */
+  /** Robux. */
   price: number;
-  /** Gems, for the cases from the vault. */
+  /** Gems, for a case given rather than sold: none now. */
   gems: number | null;
   items: CaseItem[];
   /** What a spin pays on average, in Robux. */
@@ -49,7 +48,6 @@ export const CASES: CaseDef[] = [
   build("music-box", "Music Box", "/cases/music-box-case-thumb.png", [250, 55000], null),
   build("toxic", "Toxic", "/cases/toxic-case-thumb.png", [1000, 225000], null),
   build("new-year", "New Year", "/cases/new-year-case-thumb.png", [5000, 950000], null),
-  ...GEM_CASES.map((g) => build(g.slug, g.name, g.image, g.worth, g.gems)),
 ];
 
 export const caseBySlug = (slug: string) => CASES.find((c) => c.slug === slug);

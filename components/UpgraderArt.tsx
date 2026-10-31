@@ -1,13 +1,11 @@
 "use client";
 
-import { Montserrat } from "next/font/google";
 import { useId, type CSSProperties } from "react";
 import Embers, { type Ember } from "./Embers";
 import styles from "./UpgraderArt.module.css";
 import { useBannerPlay } from "./useBannerPlay";
 
 // The site's heavy number face (see LimboArt).
-const montserrat = Montserrat({ weight: "800", subsets: ["latin"] });
 
 // Length of one spin: it must outlast the last animation in
 // UpgraderArt.module.css (the purple wash settling, ending at 2800 + 900 =
@@ -115,7 +113,7 @@ export default function UpgraderArt() {
           </span>
         </div>
 
-        <div className={`${styles.value} ${montserrat.className}`}>
+        <div className={`${styles.value} ${"display-font"}`}>
           {VALUE_SPARKS.map((s, i) => (
             <Spark key={i} {...s} />
           ))}

@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Rubik } from "next/font/google";
 import "./globals.css";
 
-// One face for the whole interface.
-const rubik = Rubik({
-  variable: "--font-ui",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
-});
+// One face for the whole interface (Rubik), Montserrat for the banners'
+// big figures and Russo One for the stream banner: Google serves both, linked from the head (globals.css names
+// them), so nothing is fetched at build time.
+const FONTS = "https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Russo+One&family=Rubik:ital,wght@0,400..900;1,400..900&display=swap";
 
 const title = "CsgoNeo — CS2 Case Opening, Battles & Games";
 const description = "Open CS2 cases, battle other players and play Upgrader, Mines, Crash and more on CsgoNeo.";
@@ -36,7 +32,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} antialiased`}>{children}</body>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={FONTS} />
+      </head>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
