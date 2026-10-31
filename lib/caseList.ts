@@ -1,7 +1,7 @@
 /*
  * The cases on sale, by name and price in Robux, dearest first. Each is
  * built to its price in lib/cases.ts. Their pictures come one by one as
- * public/cases/<slug>.png; until a case has one, a drawn case stands in.
+ * public/cases/<slug>.webp; until a case has one, a drawn case stands in.
  */
 
 export type CaseEntry = { slug: string; name: string; price: number; image?: string };
@@ -132,4 +132,10 @@ const LIST: [string, number][] = [
   ["Half A Cola", 36],
 ];
 
-export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => ({ slug: slugOf(name), name, price }));
+/** The cases whose pictures are in, as public/cases/<slug>.webp. */
+const PICTURED = new Set(["e-boy-case", "holy-hair", "fedora-fiasco", "max-volume", "inferno-royale"]);
+
+export const CASE_LIST: CaseEntry[] = LIST.map(([name, price]) => {
+  const slug = slugOf(name);
+  return { slug, name, price, image: PICTURED.has(slug) ? `/cases/${slug}.webp` : undefined };
+});

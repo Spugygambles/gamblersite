@@ -8,8 +8,8 @@
 .title {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-size: 22px;
+  gap: 10px;
+  font-size: 19px;
 }
 
 .title img,
@@ -18,8 +18,8 @@
 }
 
 .box {
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
 }
 
 .window {
@@ -36,9 +36,9 @@
 .bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
-  padding: 20px 24px 16px;
+  padding: 14px 18px 12px;
 }
 
 .tabs {
@@ -50,13 +50,13 @@
 }
 
 .tab {
-  height: 40px;
-  padding: 0 26px;
+  height: 34px;
+  padding: 0 22px;
   border: 0;
-  border-radius: 8px;
+  border-radius: 7px;
   background: none;
   color: var(--text-muted);
-  font: 700 15px/1 var(--font-ui), sans-serif;
+  font: 700 14px/1 var(--font-ui), sans-serif;
   cursor: default;
 }
 
@@ -70,12 +70,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 48px;
-  padding: 0 16px;
-  border-radius: 10px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 9px;
   background: var(--surface-2);
   color: var(--text-muted);
-  font: 700 15px/1 var(--font-ui), sans-serif;
+  font: 700 14px/1 var(--font-ui), sans-serif;
   transition: box-shadow 0.15s ease;
 }
 
@@ -97,9 +97,9 @@
 }
 
 .select svg {
-  width: 18px;
-  height: 18px;
-  margin-left: 6px;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
   color: var(--text-soft);
 }
 
@@ -117,15 +117,15 @@
 }
 
 .search {
-  flex: 1 1 240px;
+  flex: 1 1 200px;
   margin-left: auto;
   cursor: text;
 }
 
 .search svg {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .search input {
@@ -134,7 +134,7 @@
   border: 0;
   background: none;
   color: var(--text);
-  font: 600 15px/1 var(--font-ui), sans-serif;
+  font: 600 14px/1 var(--font-ui), sans-serif;
   outline: none;
 }
 
@@ -147,12 +147,12 @@
 .grid {
   display: grid;
   flex: 1 1 auto;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
   grid-auto-rows: max-content;
-  gap: 18px;
+  gap: 12px;
   align-content: start;
   margin: 0;
-  padding: 4px 24px 24px;
+  padding: 4px 18px 18px;
   overflow-y: auto;
   list-style: none;
   scrollbar-width: thin;
@@ -181,9 +181,9 @@
 .add {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  padding: 24px 14px 22px;
+  padding: 18px 12px 16px;
   border: 0;
   border-radius: 12px;
   background: none;
@@ -207,12 +207,12 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 170px;
+  height: 124px;
 }
 
 .art img,
 .art svg {
-  width: min(74%, 220px);
+  width: min(76%, 180px);
   max-height: 100%;
   height: auto;
   object-fit: contain;
@@ -227,29 +227,29 @@
 
 .name {
   color: var(--text-soft);
-  font: 700 16px/1.25 var(--font-ui), sans-serif;
+  font: 700 14.5px/1.25 var(--font-ui), sans-serif;
 }
 
 .price {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font: 800 16px/1 var(--font-ui), sans-serif;
+  gap: 5px;
+  font: 800 14px/1 var(--font-ui), sans-serif;
 }
 
 .price svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 
 .view {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 9px;
+  right: 9px;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
@@ -266,15 +266,15 @@
 }
 
 .view svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 /* how many of the case are in the battle, with a step either way */
 .count {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 9px;
+  left: 9px;
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -293,8 +293,8 @@
 .step {
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border: 0;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.18);
@@ -327,8 +327,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
-  padding: 18px 24px 22px;
+  gap: 10px;
+  padding: 12px 18px 14px;
   border-top: 1px solid var(--line);
 }
 
@@ -336,12 +336,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 52px;
-  padding: 0 24px;
-  border-radius: 10px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 9px;
   background: var(--surface-2);
   color: var(--text-soft);
-  font: 700 15px/1 var(--font-ui), sans-serif;
+  font: 700 14px/1 var(--font-ui), sans-serif;
 }
 
 .sum b {
@@ -353,17 +353,17 @@
 }
 
 .sum b svg {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
 }
 
 .go {
-  height: 52px;
+  height: 44px;
   margin-left: auto;
-  padding: 0 28px;
+  padding: 0 24px;
   border: 0;
-  border-radius: 10px;
-  font: 800 16px/1 var(--font-ui), sans-serif;
+  border-radius: 9px;
+  font: 800 15px/1 var(--font-ui), sans-serif;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.3);
   transition:
@@ -480,12 +480,6 @@
 
 /* ---- Narrower ------------------------------------------------------------------------- */
 
-@container (max-width: 1100px) {
-  .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 @container (max-width: 760px) {
   .bar,
   .foot {
@@ -503,27 +497,27 @@
   }
 
   .add {
-    padding: 16px 10px 14px;
+    padding: 14px 10px 12px;
   }
 
   .art {
-    height: 120px;
+    height: 110px;
   }
 
   .name,
   .price {
-    font-size: 14px;
-  }
-
-  .sum {
-    height: 44px;
-    padding: 0 16px;
     font-size: 13.5px;
   }
 
+  .sum {
+    height: 40px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
   .go {
-    height: 44px;
-    padding: 0 20px;
-    font-size: 14.5px;
+    height: 40px;
+    padding: 0 18px;
+    font-size: 14px;
   }
 }

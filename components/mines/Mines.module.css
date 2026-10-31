@@ -815,9 +815,8 @@
 /* a window that fills the screen, for a long list: what's inside lays the
    body out and scrolls its own part */
 .modalFull {
-  width: min(1440px, calc(100% - 32px));
-  height: calc(100% - 32px);
-  max-height: 1120px;
+  width: min(1200px, 85%);
+  height: min(820px, 86%);
 }
 
 .modalFull[open] {
@@ -827,7 +826,7 @@
 
 .modalFull .modalHead {
   flex-shrink: 0;
-  padding: 22px 28px 18px;
+  padding: 16px 22px 14px;
 }
 
 .modalFull .modalBody {
@@ -838,6 +837,13 @@
   max-height: none;
   padding: 0;
   overflow: hidden;
+}
+
+@media (max-width: 760px) {
+  .modalFull {
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+  }
 }
 
 .modal::backdrop {
